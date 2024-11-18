@@ -1,0 +1,6 @@
+package vives.bancovives.rest.users.models;
+
+public enum Role {
+    ROLE_USER,
+    ROLE_ADMIN
+}
