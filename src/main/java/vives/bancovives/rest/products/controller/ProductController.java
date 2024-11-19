@@ -48,7 +48,7 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String direction,
             HttpServletRequest request
     ) {
-        log.info("Buscando todos los funkos");
+        log.info("Buscando todos los productos");
         // Creamos el objeto de ordenación
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         // Creamos cómo va a ser la paginación
