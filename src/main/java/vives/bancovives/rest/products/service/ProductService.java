@@ -6,6 +6,7 @@ import vives.bancovives.rest.products.dto.input.InputProduct;
 import vives.bancovives.rest.products.model.Product;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface ProductService {
     Page<Product> findAll(
@@ -14,9 +15,9 @@ public interface ProductService {
         Optional<String> name,
         Pageable pageable
     );
-    Product findById(Long id);
+    Product findById(UUID id);
     Product save(InputProduct product);
-    Product deleteById(Long id, Boolean logical);
-    Product updateById(Long id, InputProduct updatedProduct);
+    Product deleteById(UUID id, Boolean logical);
+    Product updateById(UUID id, InputProduct updatedProduct);
 
 }

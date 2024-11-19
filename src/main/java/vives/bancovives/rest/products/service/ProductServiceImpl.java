@@ -14,6 +14,7 @@ import vives.bancovives.rest.products.repositories.ProductRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -58,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findById(Long id) {
+    public Product findById(UUID id) {
         log.info("Buscando el producto con id: " + id);
         return repository.findById(id).orElseThrow(() -> new ProductDoesNotExistException("El producto con id: " + id + " no existe"));
     }
@@ -72,12 +73,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product deleteById(Long id, Boolean logical) {
+    public Product deleteById(UUID id, Boolean logical) {
         log.info("Eliminando el producto con id: " + id);
         Optional<Product> result = repository.findById(id);
         if (result.isPresent()) {
             Product productToDelete = result.get();
             productToDelete.setIsDeleted(true);
+            productToDelete.setUpdatedAt(LocalDateTime.now());
             if (logical) {
                 repository.save(productToDelete);
             }else repository.deleteById(id);
@@ -88,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateById(Long id, InputProduct updatedProduct) {
+    public Product updateById(UUID id, InputProduct updatedProduct) {
         log.info("Actualizando el producto con id: " + id);
         Optional<Product> result = repository.findById(id);
         if (result.isPresent()) {

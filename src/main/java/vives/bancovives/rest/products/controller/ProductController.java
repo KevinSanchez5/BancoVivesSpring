@@ -19,6 +19,7 @@ import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.nio.file.LinkOption;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -71,7 +72,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OutputProduct> getProductById(@PathVariable Long id) {
+    public ResponseEntity<OutputProduct> getProductById(@PathVariable UUID id) {
         log.info("Buscando un producto por ID {}", id);
         return ResponseEntity.ok(
                 ProductMapper.toOutputProduct(
@@ -81,7 +82,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OutputProduct> updateProduct(@PathVariable Long id, @RequestBody @Valid InputProduct inputProduct) {
+    public ResponseEntity<OutputProduct> updateProduct(@PathVariable UUID id, @RequestBody @Valid InputProduct inputProduct) {
         log.info("Actualizando un producto por ID {}", id);
         return ResponseEntity.ok(
                 ProductMapper.toOutputProduct(
@@ -92,7 +93,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<OutputProduct> deleteProduct(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam(defaultValue = "true") Boolean logical
     ) {
         log.info("Borrando un producto por ID {}", id);
