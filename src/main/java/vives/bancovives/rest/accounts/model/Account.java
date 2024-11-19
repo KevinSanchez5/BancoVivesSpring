@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vives.bancovives.rest.clients.model.Client;
-import vives.bancovives.rest.products.model.ProductAccount;
+import vives.bancovives.rest.products.model.Product;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,7 +21,7 @@ public class Account {
     private String password;
 
     private Client client;
-    private ProductAccount accountType;
+    private Product accountType;
 
     private boolean isDeleted;
     private LocalDateTime creationDate;
