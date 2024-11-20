@@ -98,6 +98,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
+     * Recupera un producto por su nombre.
+     *
+     * @param name el nombre del producto
+     * @return el objeto Product con el nombre especificado, o lanza una excepción ProductDoesNotExistException si no se encuentra
+     */
+    @Override
+    public Product findByName(String name) {
+        log.info("Buscando el producto con nombre: " + name);
+        return repository.findByName(name.trim().toUpperCase()).orElseThrow(() -> new ProductDoesNotExistException("El producto con nombre: " + name + " no existe"));
+    }
+
+    /**
      * Guarda un nuevo producto en la base de datos.
      *
      * @param product el objeto InputProduct que se va a guardar

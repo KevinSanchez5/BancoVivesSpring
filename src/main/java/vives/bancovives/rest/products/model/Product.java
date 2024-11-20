@@ -36,12 +36,14 @@ public class Product{
     private String description;
     @Builder.Default
     @Min(value = 0, message = "El interés no puede ser negativo")
-    private Double interest = 0.0;
+    private Double interest = null;
     @CreatedBy
     @Builder.Default
+    @NotNull
     private LocalDateTime createdAt = LocalDateTime.now();
     @LastModifiedBy
     @Builder.Default
+    @NotNull
     private LocalDateTime updatedAt = LocalDateTime.now();
     @NotNull
     @Builder.Default

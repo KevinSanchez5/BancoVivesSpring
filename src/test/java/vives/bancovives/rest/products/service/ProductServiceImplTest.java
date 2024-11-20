@@ -8,15 +8,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import vives.bancovives.rest.products.dto.input.InputProduct;
 import vives.bancovives.rest.products.exceptions.ProductAlreadyExistsException;
 import vives.bancovives.rest.products.exceptions.ProductDoesNotExistException;
 import vives.bancovives.rest.products.model.Product;
 import vives.bancovives.rest.products.repositories.ProductRepository;
+import vives.bancovives.utils.PageResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,7 +83,32 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void save_ProductDoesNotAlreadyExist() {
+    void findByName_Exists() {
+        // Arrange
+        when(productRepository.findByName(inputProduct.getName())).thenReturn(Optional.of(product));
+
+        // Act
+        Product result = productService.findByName(inputProduct.getName());
+
+        // Assert
+        assertEquals(result, product);
+        verify(productRepository, times(1)).findByName(inputProduct.getName());
+    }
+
+    @Test
+    void findByName_DoesNotExist() {
+        // Arrange
+        when(productRepository.findByName(inputProduct.getName())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                ProductDoesNotExistException.class,
+                () -> productService.findByName(inputProduct.getName())
+        );
+    }
+
+    @Test
+    void save_ProductWithTheSameNameDoesNotAlreadyExist() {
         // Arrange
         when(productRepository.findByName(inputProduct.getName())).thenReturn(Optional.empty());
         when(productRepository.save(any(Product.class))).thenReturn(product);
@@ -99,7 +123,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void save_ProductAlreadyExists() {
+    void save_ProductWithTheSameNameAlreadyExists() {
         // Arrange
         when(productRepository.findByName(inputProduct.getName())).thenReturn(Optional.of(product));
 
@@ -166,6 +190,28 @@ class ProductServiceImplTest {
                 ProductDoesNotExistException.class,
                 () -> productService.updateById(product.getId(), inputProduct)
         );
+    }
+
+    @Test
+    void updateById_ProductWithThatNameAlreadyExists() {
+        // Arrange
+        InputProduct updateInputProduct = inputProduct;
+        Product updatedProduct = product;
+        updatedProduct.setName("Updated Product");
+        updateInputProduct.setName("Updated Product");
+        Product anotherProductWithDifferentIdAndTheSameName = Product.builder()
+                .id(UUID.randomUUID())
+                .name("Updated Product").build();
+
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(anotherProductWithDifferentIdAndTheSameName));
+
+        // Act & Assert
+        assertThrows(
+                ProductAlreadyExistsException.class,
+                () -> productService.updateById(product.getId(), updateInputProduct)
+        );
+
     }
 
     @Test

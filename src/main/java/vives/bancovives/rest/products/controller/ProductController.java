@@ -118,6 +118,21 @@ public class ProductController {
     }
 
     /**
+     * Recupera un producto por su nombre.
+     *
+     * @param name el nombre del producto que se quiere recuperar
+     */
+    @GetMapping("/name/{name}")
+    public ResponseEntity<OutputProduct> getProductByName(@PathVariable String name) {
+        log.info("Buscando un producto con nombre {}", name);
+        return ResponseEntity.ok(
+                ProductMapper.toOutputProduct(
+                        productService.findByName(name)
+                )
+        );
+    }
+
+    /**
      * Actualiza un producto por su ID.
      *
      * @param id el ID del producto que se quiere actualizar

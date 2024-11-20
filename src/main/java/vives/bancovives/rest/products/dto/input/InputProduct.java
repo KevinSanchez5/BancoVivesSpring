@@ -20,5 +20,5 @@ public class InputProduct {
     private String description;
     @Builder.Default
     @Min(value = 0, message = "El interés no puede ser negativo")
-    private Double interest = 0.0;
+    private Double interest = null;
 }

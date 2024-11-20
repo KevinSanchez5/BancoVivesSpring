@@ -16,6 +16,7 @@ public interface ProductService {
         Pageable pageable
     );
     Product findById(UUID id);
+    Product findByName(String name);
     Product save(InputProduct product);
     Product deleteById(UUID id);
     Product updateById(UUID id, InputProduct updatedProduct);
