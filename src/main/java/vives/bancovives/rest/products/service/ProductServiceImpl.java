@@ -48,9 +48,9 @@ public class ProductServiceImpl implements ProductService {
      * Recupera una lista paginada de productos basada en los criterios de búsqueda proporcionados.
      *
      * @param productType parámetro opcional para filtrar productos por tipo
-     * @param isDeleted parámetro opcional para filtrar productos por estado de eliminación
-     * @param name parámetro opcional para filtrar productos por nombre
-     * @param pageable información de paginación
+     * @param isDeleted   parámetro opcional para filtrar productos por estado de eliminación
+     * @param name        parámetro opcional para filtrar productos por nombre
+     * @param pageable    información de paginación
      * @return una página de objetos Product que coinciden con los criterios de búsqueda
      */
     @Override
@@ -94,7 +94,8 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "#id")
     public Product findById(UUID id) {
         log.info("Buscando el producto con id: " + id);
-        return repository.findById(id).orElseThrow(() -> new ProductDoesNotExistException("El producto con id: " + id + " no existe"));
+        return repository.findById(id).orElseThrow(
+                () -> new ProductDoesNotExistException("El producto con id: " + id + " no existe"));
     }
 
     /**
@@ -106,24 +107,41 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findByName(String name) {
         log.info("Buscando el producto con nombre: " + name);
-        return repository.findByName(name.trim().toUpperCase()).orElseThrow(() -> new ProductDoesNotExistException("El producto con nombre: " + name + " no existe"));
+        return repository.findByName(name.trim().toUpperCase()).orElseThrow(
+                () -> new ProductDoesNotExistException("El producto con nombre: " + name + " no existe"));
     }
 
     /**
-     * Guarda un nuevo producto en la base de datos.
+     * Valida que el nombre del producto sea único en el repositorio.
+     * Si un producto con el mismo nombre ya existe y su ID es diferente del ID proporcionado,
+     * se lanza una {@link ProductAlreadyExistsException}.
+     *
+     * @param name el nombre del producto a validar
+     * @param id   el ID del producto que se está actualizando, o null si se está creando un nuevo producto
+     * @throws ProductAlreadyExistsException si un producto con el mismo nombre ya existe y su ID es diferente
+     */
+
+    private void validateUniqueProductName(String name, UUID id) {
+        Optional<Product> existingProduct = repository.findByName(name.trim().toUpperCase());
+        if (existingProduct.isPresent() && (id == null || !existingProduct.get().getId().equals(id))) {
+            throw new ProductAlreadyExistsException("El producto con nombre: " + name + " ya existe");
+        }
+    }
+
+    /**
+     * Guarda un nuevo producto en la base de datos después de validar que el nombre del producto sea único.
      *
      * @param product el objeto InputProduct que se va a guardar
      * @return el objeto Product guardado
+     * @throws ProductAlreadyExistsException si un producto con el mismo nombre ya existe
      */
     @Override
     @CachePut(key = "#result.id")
     public Product save(InputProduct product) {
         log.info("Guardando el producto: " + product);
         Product mappedProduct = ProductMapper.toProduct(product);
-        if (repository.findByName(mappedProduct.getName()).isPresent()) throw new ProductAlreadyExistsException("El producto con nombre: " + product.getName() + " ya existe");
-        return repository.save(
-                mappedProduct
-        );
+        validateUniqueProductName(mappedProduct.getName(), null);
+        return repository.save(mappedProduct);
     }
 
     /**
@@ -136,43 +154,28 @@ public class ProductServiceImpl implements ProductService {
     @CacheEvict(key = "#id")
     public Product deleteById(UUID id) {
         log.info("Eliminando el producto con id: " + id);
-        Optional<Product> result = repository.findById(id);
-        if (result.isPresent()) {
-            Product productToDelete = result.get();
-            productToDelete.setIsDeleted(true);
-            productToDelete.setUpdatedAt(LocalDateTime.now());
-            return repository.save(productToDelete);
-        } else {
-            throw new ProductDoesNotExistException("El producto con id: " + id + " no existe");
-        }
+        Product productToDelete = findById(id);
+        productToDelete.setIsDeleted(true);
+        productToDelete.setUpdatedAt(LocalDateTime.now());
+        return repository.save(productToDelete);
     }
 
     /**
-     * Actualiza un producto existente en la base de datos.
+     * Actualiza un producto existente en la base de datos después de validar que el nombre del producto sea único.
      *
-     * @param id el identificador único del producto
+     * @param id             el identificador único del producto
      * @param updatedProduct el objeto InputProduct actualizado
-     * @return el objeto Product actualizado, o lanza una excepción ProductDoesNotExistException si no se encuentra
+     * @return el objeto Product actualizado
+     * @throws ProductDoesNotExistException  si el producto con el id especificado no se encuentra
+     * @throws ProductAlreadyExistsException si un producto con el mismo nombre ya existe y su ID es diferente
      */
     @Override
     @CachePut(key = "#id")
     public Product updateById(UUID id, InputProduct updatedProduct) {
         log.info("Actualizando el producto con id: " + id);
-        Optional<Product> result = repository.findById(id);
-        Optional<Product> anotherOneNamedTheSame = repository.findByName(updatedProduct.getName().trim().toUpperCase());
-        if (result.isPresent()) {
-            if (anotherOneNamedTheSame.isPresent() && anotherOneNamedTheSame.get().getId() != id) {
-                throw new ProductAlreadyExistsException("El producto con nombre: " + updatedProduct.getName() + " ya existe");
-            }
-            Product existingProduct = result.get();
-            existingProduct.setName(updatedProduct.getName().trim().toUpperCase());
-            existingProduct.setProductType(updatedProduct.getProductType().trim().toUpperCase());
-            existingProduct.setInterest(updatedProduct.getInterest());
-            existingProduct.setDescription(updatedProduct.getDescription());
-            existingProduct.setUpdatedAt(LocalDateTime.now());
-            return repository.save(existingProduct);
-        } else {
-            throw new ProductDoesNotExistException("El producto con id: " + id + " no existe");
-        }
+        Product existingProduct = findById(id);
+        validateUniqueProductName(updatedProduct.getName(), id);
+        ProductMapper.updateProductFromInput(existingProduct, updatedProduct);
+        return repository.save(existingProduct);
     }
 }
