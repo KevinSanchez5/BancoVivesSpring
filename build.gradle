@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'jacoco'
 }
 
 group = 'vives'
@@ -37,6 +38,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 	//Validacion
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	//Redis
+	implementation 'org.springframework.data:spring-data-redis:3.4.0'
 
     //Librerias para tests
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -45,4 +48,21 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+tasks.jacocoTestReport {
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+	}
 }

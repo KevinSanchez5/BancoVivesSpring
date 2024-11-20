@@ -4,12 +4,19 @@ import vives.bancovives.rest.products.dto.input.InputProduct;
 import vives.bancovives.rest.products.dto.output.OutputProduct;
 import vives.bancovives.rest.products.model.Product;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+/**
+ * Esta clase proporciona métodos para mapear entre objetos {@link Product} y {@link OutputProduct}, así como entre
+ * objetos {@link InputProduct} y {@link Product}.
+ */
 public class ProductMapper {
     private ProductMapper() {}
 
+    /**
+     * Mapea un objeto {@link Product} a un objeto {@link OutputProduct}.
+     *
+     * @param product El objeto {@link Product} que se va a mapear.
+     * @return Un objeto {@link OutputProduct} que contiene los datos mapeados.
+     */
     public static OutputProduct toOutputProduct(Product product) {
         return OutputProduct.builder()
                 .name(product.getName())
@@ -23,16 +30,18 @@ public class ProductMapper {
                 .build();
     }
 
+    /**
+     * Mapea un objeto {@link InputProduct} a un objeto {@link Product}.
+     *
+     * @param inputProduct El objeto {@link InputProduct} que se va a mapear.
+     * @return Un objeto {@link Product} que contiene los datos mapeados.
+     */
     public static Product toProduct(InputProduct inputProduct) {
         return Product.builder()
-                .id(UUID.fromString(inputProduct.getId()))
-                .name(inputProduct.getName())
+                .name(inputProduct.getName().trim().toUpperCase())
                 .description(inputProduct.getDescription())
-                .productType(inputProduct.getProductType())
+                .productType(inputProduct.getProductType().trim().toUpperCase())
                 .interest(inputProduct.getInterest())
-                .createdAt(LocalDateTime.parse(inputProduct.getCreatedAt()))
-                .updatedAt(LocalDateTime.parse(inputProduct.getUpdatedAt()))
-                .isDeleted(inputProduct.getIsDeleted())
                 .build();
     }
 }

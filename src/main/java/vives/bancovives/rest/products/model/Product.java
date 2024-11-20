@@ -16,14 +16,15 @@ import java.util.UUID;
 @Data
 @Builder
 @Entity
-@Table(name = "account_types")
+@Table(name = "products")
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product{
     @Id
-    private UUID id;
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
     @NotBlank(message = "El nombre no puede estar vacío")
     @Column(nullable = false, unique = true)
     private String name;
@@ -35,12 +36,14 @@ public class Product{
     private String description;
     @Builder.Default
     @Min(value = 0, message = "El interés no puede ser negativo")
-    private Double interest = 0.0;
+    private Double interest = null;
     @CreatedBy
     @Builder.Default
+    @NotNull
     private LocalDateTime createdAt = LocalDateTime.now();
     @LastModifiedBy
     @Builder.Default
+    @NotNull
     private LocalDateTime updatedAt = LocalDateTime.now();
     @NotNull
     @Builder.Default
