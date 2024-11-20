@@ -44,11 +44,11 @@ class ProductMapperTest {
     void toProduct() {
         // Arrange
         InputProduct inputProduct = InputProduct.builder()
-               .name("Product 1")
-               .description("This is a test product")
-               .interest(0.1)
-               .productType("TEST")
-               .build();
+                .name("Product 1")
+                .description("This is a test product")
+                .interest(0.1)
+                .productType("TEST")
+                .build();
 
         // Act
         Product product = ProductMapper.toProduct(inputProduct);
@@ -75,5 +75,37 @@ class ProductMapperTest {
         // Assert
         assertNotNull(mappedProduct);
         assertNull(mappedProduct.getInterest());
+    }
+
+    @Test
+    void updateProductFromInput() {
+        // Arrange
+        Product existingProduct = Product.builder()
+                .id(UUID.randomUUID())
+                .name("Old Product")
+                .description("Old Description")
+                .interest(0.1)
+                .createdAt(LocalDateTime.of(2022, 1, 1, 12, 0))
+                .updatedAt(LocalDateTime.of(2022, 1, 2, 12, 0))
+                .isDeleted(false)
+                .productType("OLD")
+                .build();
+
+        InputProduct updatedProduct = InputProduct.builder()
+                .name("Updated Product")
+                .description("Updated Description")
+                .interest(0.2)
+                .productType("UPDATED")
+                .build();
+
+        // Act
+        ProductMapper.updateProductFromInput(existingProduct, updatedProduct);
+
+        // Assert
+        assertEquals("UPDATED PRODUCT", existingProduct.getName());
+        assertEquals(updatedProduct.getDescription(), existingProduct.getDescription());
+        assertEquals(updatedProduct.getInterest(), existingProduct.getInterest());
+        assertEquals("UPDATED", existingProduct.getProductType());
+        assertNotNull(existingProduct.getUpdatedAt());
     }
 }
