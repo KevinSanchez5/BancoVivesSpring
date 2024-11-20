@@ -16,14 +16,15 @@ import java.util.UUID;
 @Data
 @Builder
 @Entity
-@Table(name = "account_types")
+@Table(name = "products")
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product{
     @Id
-    private UUID id;
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
     @NotBlank(message = "El nombre no puede estar vacío")
     @Column(nullable = false, unique = true)
     private String name;

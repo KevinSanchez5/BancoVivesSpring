@@ -17,7 +17,6 @@ public interface ProductService {
     );
     Product findById(UUID id);
     Product save(InputProduct product);
-    Product deleteById(UUID id, Boolean logical);
+    Product deleteById(UUID id);
     Product updateById(UUID id, InputProduct updatedProduct);
-
 }

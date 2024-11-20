@@ -21,6 +21,13 @@ import java.nio.file.LinkOption;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Esta clase se encarga de manejar las solicitudes HTTP relacionadas con los productos.
+ * Proporciona puntos finales para recuperar, crear, actualizar y eliminar productos.
+ *
+ * @author Diego Novillo Luceño
+ * @since 1.0.0
+ */
 @Slf4j
 @RestController
 @RequestMapping("${api.version}/products")
@@ -29,6 +36,12 @@ public class ProductController {
     private final ProductService productService;
     private final PaginationLinksUtils paginationLinksUtils;
 
+    /**
+     * Constructor para ProductController.
+     *
+     * @param productService       El servicio para administrar productos.
+     * @param paginationLinksUtils La utilidad para crear enlaces de paginación.
+     */
     @Autowired
     public ProductController(
             ProductService productService,
@@ -38,6 +51,19 @@ public class ProductController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    /**
+     * Recupera una lista de productos basada en los filtros proporcionados y parámetros de paginación.
+     *
+     * @param productType El tipo de producto para filtrar por.
+     * @param name        El nombre del producto para filtrar por.
+     * @param isDeleted   Si se filtra por productos eliminados.
+     * @param page        El número de página para la paginación.
+     * @param size        El número de productos por página.
+     * @param sortBy      El campo por el que se ordena.
+     * @param direction   La dirección de ordenamiento (asc o desc).
+     * @param request     La solicitud HTTP.
+     * @return Un ResponseEntity que contiene un PageResponse de objetos OutputProduct.
+     */
     @GetMapping
     public ResponseEntity<PageResponse<OutputProduct>> getProducts(
             @RequestParam(required = false) Optional<String> productType,
@@ -61,6 +87,11 @@ public class ProductController {
                 .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
+    /**
+     * Crea un nuevo producto.
+     *
+     * @param inputProduct el producto que se quiere crear
+     */
     @PostMapping
     public ResponseEntity<OutputProduct> createProduct(@RequestBody @Valid InputProduct inputProduct) {
         log.info("Creando un nuevo producto");
@@ -71,6 +102,11 @@ public class ProductController {
         );
     }
 
+    /**
+     * Recupera un producto por su ID.
+     *
+     * @param id el ID del producto que se quiere recuperar
+     */
     @GetMapping("/{id}")
     public ResponseEntity<OutputProduct> getProductById(@PathVariable UUID id) {
         log.info("Buscando un producto por ID {}", id);
@@ -81,8 +117,17 @@ public class ProductController {
         );
     }
 
+    /**
+     * Actualiza un producto por su ID.
+     *
+     * @param id el ID del producto que se quiere actualizar
+     * @param inputProduct los cambios que se desean aplicar al producto
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<OutputProduct> updateProduct(@PathVariable UUID id, @RequestBody @Valid InputProduct inputProduct) {
+    public ResponseEntity<OutputProduct> updateProduct(
+            @PathVariable UUID id,
+            @RequestBody @Valid InputProduct inputProduct
+    ) {
         log.info("Actualizando un producto por ID {}", id);
         return ResponseEntity.ok(
                 ProductMapper.toOutputProduct(
@@ -91,15 +136,19 @@ public class ProductController {
         );
     }
 
+    /**
+     * Elimina un producto por su ID.
+     *
+     * @param id el ID del producto que se quiere eliminar
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<OutputProduct> deleteProduct(
-            @PathVariable UUID id,
-            @RequestParam(defaultValue = "true") Boolean logical
+            @PathVariable UUID id
     ) {
         log.info("Borrando un producto por ID {}", id);
         return ResponseEntity.ok(
                 ProductMapper.toOutputProduct(
-                        productService.deleteById(id, logical)
+                        productService.deleteById(id)
                 )
         );
     }

@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-// Es un compnente de paginación standard
+// Es un componente de paginación standard
 @Component
 public class PaginationLinksUtils {
 

@@ -37,6 +37,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 	//Validacion
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	//Redis
+	implementation 'org.springframework.data:spring-data-redis:3.4.0'
 
     //Librerias para tests
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
