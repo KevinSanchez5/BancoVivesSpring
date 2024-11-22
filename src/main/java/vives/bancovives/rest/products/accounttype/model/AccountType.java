@@ -1,14 +1,18 @@
-package vives.bancovives.rest.products.model;
+package vives.bancovives.rest.products.accounttype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,21 +20,20 @@ import java.util.UUID;
 @Data
 @Builder
 @Entity
-@Table(name = "products")
+@Table(name = "account_type")
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Product{
+public class AccountType {
     @Id
     @Builder.Default
     private UUID id = UUID.randomUUID();
+    @NotBlank
+    @Builder.Default
+    String publicId = IdGenerator.generateId();
     @NotBlank(message = "El nombre no puede estar vacío")
     @Column(nullable = false, unique = true)
     private String name;
-    @Column(nullable = false)
-    @NotBlank(message = "El tipo de producto no puede estar vacío")
-    private String productType;
     @Column(nullable = false)
     @NotBlank(message = "La descripción no puede estar vacía")
     private String description;
