@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -20,6 +21,6 @@ public class User {
         private Role role;
 
         private boolean isDeleted;
-        private String creationDate;
-        private String lastUpdate;
+        private LocalDateTime creationDate;
+        private LocalDateTime lastUpdate;
 }
