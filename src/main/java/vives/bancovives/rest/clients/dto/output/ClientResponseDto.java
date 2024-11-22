@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import vives.bancovives.rest.clients.model.Adress;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data

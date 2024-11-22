@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
-import vives.bancovives.rest.clients.exceptions.ClientBadRequest;
+import vives.bancovives.rest.clients.exceptions.ClientConflict;
 import vives.bancovives.rest.clients.exceptions.ClientNotFound;
 import vives.bancovives.rest.clients.mapper.ClientMapper;
 import vives.bancovives.rest.clients.model.Client;
@@ -134,10 +134,10 @@ public class ClientServiceImpl implements ClientService {
 
     public void existsClient(String dni, String email) {
         if (clientRepository.findByDniIgnoreCase(dni).isPresent()) {
-            throw new ClientBadRequest("Cliente con ese dni ya existe");
+            throw new ClientConflict("Cliente con ese dni ya existe");
         }
         if (clientRepository.findByEmailIgnoreCase(email).isPresent()) {
-            throw new ClientBadRequest("Ese email ya esta en uso");
+            throw new ClientConflict("Ese email ya esta en uso");
         }
 
     }
