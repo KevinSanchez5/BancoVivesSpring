@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Client;
 
 import java.util.Optional;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 public interface ClientService {
 
-    Page<Client> findAll(
+    Page<ClientResponseDto> findAll(
             Optional<String> dni,
             Optional<String> completeName,
             Optional<String> email,
@@ -22,11 +23,11 @@ public interface ClientService {
             Pageable pageable
     );
 
-    Client findById(UUID id);
-    Client save(ClientCreateDto createDto);
-    Client update(UUID id, ClientUpdateDto updateDto);
-    Client deleteByIdLogically(UUID id, Optional<Boolean> deleteData);
-    Client deleteDataOfClient(UUID id);
-    Client validateClient(UUID id);
+    ClientResponseDto findById(UUID id);
+    ClientResponseDto save(ClientCreateDto createDto);
+    ClientResponseDto update(UUID id, ClientUpdateDto updateDto);
+    ClientResponseDto deleteByIdLogically(UUID id, Optional<Boolean> deleteData);
+    ClientResponseDto deleteDataOfClient(Client client);
+    ClientResponseDto validateClient(UUID id);
 
 }

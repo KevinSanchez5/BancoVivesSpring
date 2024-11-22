@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vives.bancovives.rest.clients.model.Adress;
+import vives.bancovives.rest.clients.model.Address;
 
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +13,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientResponseDto {
 
-    private UUID id;
     private String idPath;
     private String dni;
     private String completeName;
@@ -22,8 +20,9 @@ public class ClientResponseDto {
     private String phoneNumber;
     private String photo;
     private String dniPicture;
-    private Adress adress;
+    private Address address;
     private Boolean validated;
+    private Boolean isDeleted;
     private String createdAt;
     private String updatedAt;
 }

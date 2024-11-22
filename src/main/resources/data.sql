@@ -32,4 +32,8 @@ VALUES ('64c283f0-bb2e-4c8f-bd2d-3b60c860ef79', 'QkKVVAzSSYhddoW6sFd', 'CUENTA E
 
 /* Clientes */
 INSERT INTO clients(id, id_path, dni, complete_name, street, house_number, city, country , email, phone_number, photo, dni_picture, validated, is_deleted, created_at, updated_at)
-VALUES('fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', null, '87654321B', 'Cliente test', 'calle falsa', '123', 'Springfield', 'España','test@test.com', 654123789, null, null, true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+VALUES('fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', null, '87654321B', 'Cliente test', 'calle falsa', '123', 'SPRINGFIELD', 'ESTADOS UNIDOS','test@test.com', 654123789, null, null, true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO clients(id, id_path, dni, complete_name, street, house_number, city, country , email, phone_number, photo, dni_picture, validated, is_deleted, created_at, updated_at)
+VALUES('11b12967-5ffd-455a-aa35-65172f9b86fe', null, '87654321X', 'Pepe uno', 'calle leganes', '123', 'LEGANES', 'ESPAÑA','pepeuno@test.com', 654123788, null, null, true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO clients(id, id_path, dni, complete_name, street, house_number, city, country , email, phone_number, photo, dni_picture, validated, is_deleted, created_at, updated_at)
+VALUES('f885418f-e1c0-4476-bd0e-acf1f65dbda2', null, '45678912L', 'Pepe dos', 'calle getafe', '123', 'GETAFE', 'ESPAÑA','pepedos@test.com', 654123700, null, null, true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());

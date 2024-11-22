@@ -3,7 +3,8 @@ package vives.bancovives.rest.clients.mapper;
 import org.springframework.stereotype.Component;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
-import vives.bancovives.rest.clients.model.Adress;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
+import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class ClientMapper {
                 createDto.getPhoto(),
                 createDto.getDniPicture()
         );
-        newClient.setAdress(new Adress(
+        newClient.setAddress(new Address(
                 createDto.getStreet().trim(),
                 createDto.getHouseNumber().trim(),
                 createDto.getCity().trim().toUpperCase(),
@@ -31,18 +32,18 @@ public class ClientMapper {
     }
 
     public Client fromUpdateDtoToEntity(Client client, ClientUpdateDto updateDto) {
-        Adress updatedAdress = new Adress(
-                updateDto.getStreet() != null ? updateDto.getStreet().trim() : client.getAdress().getStreet(),
-                updateDto.getHouseNumber() != null ? updateDto.getHouseNumber().trim() : client.getAdress().getHouseNumber(),
-                updateDto.getCity() != null ? updateDto.getCity().trim().toUpperCase() : client.getAdress().getCity(),
-                updateDto.getCountry() != null ? updateDto.getCountry().trim().toUpperCase() : client.getAdress().getCountry()
+        Address updatedAddress = new Address(
+                updateDto.getStreet() != null ? updateDto.getStreet().trim() : client.getAddress().getStreet(),
+                updateDto.getHouseNumber() != null ? updateDto.getHouseNumber().trim() : client.getAddress().getHouseNumber(),
+                updateDto.getCity() != null ? updateDto.getCity().trim().toUpperCase() : client.getAddress().getCity(),
+                updateDto.getCountry() != null ? updateDto.getCountry().trim().toUpperCase() : client.getAddress().getCountry()
         );
         return new Client (
                 client.getId(),
                 client.getIdPath(),
                 updateDto.getDni() != null ? updateDto.getDni().toUpperCase() : client.getDni(),
                 updateDto.getCompleteName() != null ? updateDto.getCompleteName().trim() : client.getCompleteName(),
-                updatedAdress,
+                updatedAddress,
                 updateDto.getEmail() != null ? updateDto.getEmail().trim() : client.getEmail(),
                 updateDto.getPhoneNumber() != null ? updateDto.getPhoneNumber() : client.getPhoneNumber(),
                 updateDto.getPhoto() != null ? updateDto.getPhoto() : client.getPhoto(),
@@ -51,6 +52,23 @@ public class ClientMapper {
                 false,
                 client.getCreatedAt(),
                 LocalDateTime.now()
+        );
+    }
+
+    public ClientResponseDto fromEntityToResponse(Client client){
+        return new ClientResponseDto(
+                client.getIdPath(),
+                client.getDni(),
+                client.getCompleteName(),
+                client.getEmail(),
+                client.getPhoneNumber(),
+                client.getPhoto(),
+                client.getDniPicture(),
+                client.getAddress(),
+                client.isValidated(),
+                client.isDeleted(),
+                client.getCreatedAt().toString(),
+                client.getUpdatedAt().toString()
         );
     }
 }

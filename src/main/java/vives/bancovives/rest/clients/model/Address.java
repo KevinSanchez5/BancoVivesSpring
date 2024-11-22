@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class Adress {
+public class Address {
     @Column(name = "street")
     private String street;
     @Column(name = "house_number")
