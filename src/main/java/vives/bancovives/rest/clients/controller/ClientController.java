@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.service.ClientService;
 import vives.bancovives.utils.PageResponse;
@@ -35,7 +36,7 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<Client>> getClients(
+    public ResponseEntity<PageResponse<ClientResponseDto>> getClients(
             @RequestParam(required = false) Optional<String> dni,
             @RequestParam(required = false) Optional<String> completeName,
             @RequestParam(required = false) Optional<String> email,
@@ -53,38 +54,38 @@ public class ClientController {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<Client> pageResult = clientService.findAll(dni, completeName, email, street, city, validated, isDeleted, PageRequest.of(page, size, sort));
+        Page<ClientResponseDto> pageResult = clientService.findAll(dni, completeName, email, street, city, validated, isDeleted, PageRequest.of(page, size, sort));
         return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
                 .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Client> getClientById(@PathVariable UUID id) {
+    public ResponseEntity<ClientResponseDto> getClientById(@PathVariable UUID id) {
         log.info("Recuperando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Client> createClient(@RequestBody @Valid ClientCreateDto createDto) {
+    public ResponseEntity<ClientResponseDto> createClient(@RequestBody @Valid ClientCreateDto createDto) {
         log.info("Creando un nuevo cliente");
         return ResponseEntity.ok(clientService.save(createDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable UUID id, @RequestBody ClientUpdateDto updateDto) {
+    public ResponseEntity<ClientResponseDto> updateClient(@PathVariable UUID id, @RequestBody ClientUpdateDto updateDto) {
         log.info("Actualizando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.update(id, updateDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Client> deleteClient(@PathVariable UUID id, @RequestParam(defaultValue = "false") Optional<Boolean> deleteData) {
+    public ResponseEntity<ClientResponseDto> deleteClient(@PathVariable UUID id, @RequestParam(defaultValue = "false") Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.deleteByIdLogically(id, deleteData));
     }
 
     @PutMapping("/{id}/validate")
-    public ResponseEntity<Client> validateClient(@PathVariable UUID id) {
+    public ResponseEntity<ClientResponseDto> validateClient(@PathVariable UUID id) {
         log.info("Validando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.validateClient(id));
     }

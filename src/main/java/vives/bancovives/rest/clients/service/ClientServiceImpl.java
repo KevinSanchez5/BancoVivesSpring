@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.exceptions.ClientConflict;
 import vives.bancovives.rest.clients.exceptions.ClientNotFound;
 import vives.bancovives.rest.clients.mapper.ClientMapper;
@@ -40,7 +41,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Page<Client> findAll(
+    public Page<ClientResponseDto> findAll(
             Optional<String> dni,
             Optional<String> completeName,
             Optional<String> email,
@@ -73,53 +74,47 @@ public class ClientServiceImpl implements ClientService {
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
         Specification<Client> criterio = Specification.where(specDni).and(specCompleteName).and(specEmail).and(specStreet).and(specCity).and(specValidated).and(specIsDeleted);
-        return clientRepository.findAll(criterio, pageable);
+        return clientRepository.findAll(criterio, pageable).map(clientMapper::fromEntityToResponse);
     }
 
     @Override
-    @Cacheable(key = "#id")
-    public Client findById(UUID id) {
+    public ClientResponseDto findById(UUID id) {
         log.info("Buscando el cliente con id: " + id);
-        return clientRepository.findById(id).orElseThrow(
-                () -> new ClientNotFound("El cliente con id: " + id + " no encontrado"));
+        return clientMapper.fromEntityToResponse(existClientById(id));
     }
 
     @Override
-    @CachePut(key = "#result.id")
-    public Client save(ClientCreateDto createDto) {
+    public ClientResponseDto save(ClientCreateDto createDto) {
         log.info("Guardando un nuevo cliente");
         Client clientToSave = clientMapper.fromCreateDtoToEntity(createDto);
-        existsClient(createDto.getDni(), createDto.getEmail());
-        return clientRepository.save(clientToSave);
+        existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail());
+        return clientMapper.fromEntityToResponse(clientRepository.save(clientToSave));
     }
 
     @Override
-    @CachePut(key = "#result.id")
-    public Client update(UUID id, ClientUpdateDto updateDto) {
+    public ClientResponseDto update(UUID id, ClientUpdateDto updateDto) {
         log.info("Actualizando cliente con id: " + id);
         updateValidator.validateUpdateDto(updateDto);
-        existsClient(updateDto.getDni(), updateDto.getEmail());
-        Client client = findById(id);
+        existsClientByDniAndEmail(updateDto.getDni(), updateDto.getEmail());
+        Client client = existClientById(id);
         Client updatedClient = clientMapper.fromUpdateDtoToEntity(client, updateDto);
-        return clientRepository.save(updatedClient);
+        return clientMapper.fromEntityToResponse(clientRepository.save(updatedClient));
     }
 
     @Override
-    @CacheEvict(key = "#id")
-    public Client deleteByIdLogically(UUID id, Optional<Boolean> deleteData) {
+    public ClientResponseDto deleteByIdLogically(UUID id, Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: " + id);
-        Client client = findById(id);
+        Client client = existClientById(id);
         if (deleteData.isPresent() && deleteData.get()) {
-            return deleteDataOfClient(id);
+            return deleteDataOfClient(client);
         }
         client.setDeleted(true);
-        return clientRepository.save(client);
+        return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
     @Override
-    public Client deleteDataOfClient(UUID id) {
-        log.info("Borrando datos del cliente con id: " + id);
-        Client client = findById(id);
+    public ClientResponseDto deleteDataOfClient(Client client) {
+        log.info("Borrando datos del cliente con id: " + client.getId());
         client.setDni(null);
         client.setCompleteName(null);
         client.setEmail(null);
@@ -129,10 +124,10 @@ public class ClientServiceImpl implements ClientService {
         client.setAddress(null);
         client.setUpdatedAt(LocalDateTime.now());
         client.setDeleted(true);
-        return clientRepository.save(client);
+        return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
-    public void existsClient(String dni, String email) {
+    public void existsClientByDniAndEmail(String dni, String email) {
         if (clientRepository.findByDniIgnoreCase(dni).isPresent()) {
             throw new ClientConflict("Cliente con ese dni ya existe");
         }
@@ -141,11 +136,15 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    public Client validateClient(UUID id) {
-        Client client = clientRepository.findById(id).orElseThrow(
-                () -> new ClientNotFound("El cliente con id: " + id + " no encontrado"));
+    public ClientResponseDto validateClient(UUID id) {
+        Client client = existClientById(id);
         client.setValidated(true);
-        return clientRepository.save(client);
+        return clientMapper.fromEntityToResponse(clientRepository.save(client));
+    }
+
+    public Client existClientById(UUID id) {
+        return clientRepository.findById(id).orElseThrow(
+                () -> new ClientNotFound("El cliente con id: " + id + " no encontrado"));
     }
 }
 

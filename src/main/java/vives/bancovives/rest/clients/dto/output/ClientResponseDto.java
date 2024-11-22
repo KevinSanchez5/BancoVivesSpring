@@ -14,7 +14,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientResponseDto {
 
-    private UUID id;
     private String idPath;
     private String dni;
     private String completeName;
@@ -24,6 +23,7 @@ public class ClientResponseDto {
     private String dniPicture;
     private Address address;
     private Boolean validated;
+    private Boolean isDeleted;
     private String createdAt;
     private String updatedAt;
 }

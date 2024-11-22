@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.exceptions.ClientConflict;
 import vives.bancovives.rest.clients.exceptions.ClientNotFound;
 import vives.bancovives.rest.clients.mapper.ClientMapper;
@@ -37,6 +38,7 @@ class ClientServiceImplTest {
     Client client ;
     ClientCreateDto createDto;
     ClientUpdateDto updateDto;
+    ClientResponseDto responseDto;
 
 
     @Mock
@@ -54,15 +56,16 @@ class ClientServiceImplTest {
         client = new Client(id, null, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
+        responseDto = clientMapper.fromEntityToResponse(client);
     }
 
 
     @Test
     void findAll() {
-        Page<Client> resultPage = new PageImpl<>(List.of(client));
+        Page<ClientResponseDto> resultPage = new PageImpl<>(List.of(responseDto));
         when(clientRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(resultPage);
 
-        Page<Client> result = clientService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), PageRequest.of(0, 10));
+        Page<ClientResponseDto> result = clientService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), PageRequest.of(0, 10));
 
         assertAll(
                 () -> assertNotNull(result),
@@ -77,12 +80,11 @@ class ClientServiceImplTest {
     void findById_Success() {
         when(clientRepository.findById(id)).thenReturn(Optional.of(client));
 
-        Client result = clientService.findById(id);
+        ClientResponseDto result = clientService.findById(id);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(client, result),
-                () -> assertEquals(id, result.getId()),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
@@ -108,12 +110,11 @@ class ClientServiceImplTest {
         when(clientRepository.findByEmailIgnoreCase(createDto.getEmail())).thenReturn(Optional.empty());
         when(clientRepository.save(client)).thenReturn(client);
 
-        Client result = clientService.save(createDto);
+        ClientResponseDto result = clientService.save(createDto);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(client, result),
-                () -> assertEquals(id, result.getId()),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
@@ -158,12 +159,11 @@ class ClientServiceImplTest {
         when(clientMapper.fromUpdateDtoToEntity(client, updateDto)).thenReturn(client);
         when(clientRepository.save(client)).thenReturn(client);
 
-        Client result = clientService.update(id, updateDto);
+        ClientResponseDto result = clientService.update(id, updateDto);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(client, result),
-                () -> assertEquals(id, result.getId()),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
@@ -208,12 +208,11 @@ class ClientServiceImplTest {
         when(clientRepository.findById(id)).thenReturn(Optional.of(client));
         when(clientRepository.save(client)).thenReturn(client);
 
-        Client result = clientService.deleteDataOfClient(id);
+        ClientResponseDto result = clientService.deleteDataOfClient(client);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(client, result),
-                () -> assertEquals(id, result.getId()),
                 () -> assertNull(result.getDni()),
                 () -> assertNull(result.getCompleteName()),
                 () -> assertNull(result.getEmail()),
@@ -228,11 +227,11 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void existsClient_DoesNotExist() {
+    void existsClient_ByDniAndEmail_DoesNotExist() {
         when(clientRepository.findByDniIgnoreCase(createDto.getDni())).thenReturn(Optional.empty());
         when(clientRepository.findByEmailIgnoreCase(createDto.getEmail())).thenReturn(Optional.empty());
 
-        clientService.existsClient(createDto.getDni(), createDto.getEmail());
+        clientService.existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail());
 
         verify(clientRepository).findByDniIgnoreCase(createDto.getDni());
         verify(clientRepository).findByEmailIgnoreCase(createDto.getEmail());
@@ -240,10 +239,10 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void existsClient_ThrowConflictDni() {
+    void existsClient_ByDniAndEmail_ThrowConflictDni() {
         when(clientRepository.findByDniIgnoreCase(createDto.getDni())).thenReturn(Optional.of(client));
 
-        ClientConflict exception = assertThrows(ClientConflict.class, () -> clientService.existsClient(createDto.getDni(), createDto.getEmail()));
+        ClientConflict exception = assertThrows(ClientConflict.class, () -> clientService.existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail()));
 
         assertEquals("Cliente con ese dni ya existe", exception.getMessage());
 
@@ -252,11 +251,11 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void existsClient_ThrowConflictEmail() {
+    void existsClient_ByDniAndEmail_ThrowConflictEmail() {
         when(clientRepository.findByDniIgnoreCase(createDto.getDni())).thenReturn(Optional.empty());
         when(clientRepository.findByEmailIgnoreCase(createDto.getEmail())).thenReturn(Optional.of(client));
 
-        ClientConflict exception = assertThrows(ClientConflict.class, () -> clientService.existsClient(createDto.getDni(), createDto.getEmail()));
+        ClientConflict exception = assertThrows(ClientConflict.class, () -> clientService.existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail()));
 
         assertEquals("Ese email ya esta en uso", exception.getMessage());
 
@@ -270,13 +269,12 @@ class ClientServiceImplTest {
         client.setValidated(true);
         when(clientRepository.save(any())).thenReturn(client);
 
-        Client result = clientService.validateClient(id);
+        ClientResponseDto result = clientService.validateClient(id);
 
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(client, result),
-                () -> assertEquals(id, result.getId()),
-                () -> assertTrue(result.isValidated()),
+                () -> assertTrue(result.getValidated()),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );

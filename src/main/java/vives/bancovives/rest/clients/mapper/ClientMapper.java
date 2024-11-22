@@ -3,6 +3,7 @@ package vives.bancovives.rest.clients.mapper;
 import org.springframework.stereotype.Component;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
 
@@ -51,6 +52,23 @@ public class ClientMapper {
                 false,
                 client.getCreatedAt(),
                 LocalDateTime.now()
+        );
+    }
+
+    public ClientResponseDto fromEntityToResponse(Client client){
+        return new ClientResponseDto(
+                client.getIdPath(),
+                client.getDni(),
+                client.getCompleteName(),
+                client.getEmail(),
+                client.getPhoneNumber(),
+                client.getPhoto(),
+                client.getDniPicture(),
+                client.getAddress(),
+                client.isValidated(),
+                client.isDeleted(),
+                client.getCreatedAt().toString(),
+                client.getUpdatedAt().toString()
         );
     }
 }
