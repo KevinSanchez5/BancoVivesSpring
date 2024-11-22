@@ -14,8 +14,6 @@ import vives.bancovives.rest.accounts.dto.input.InputAccount;
 import vives.bancovives.rest.accounts.dto.output.OutputAccount;
 import vives.bancovives.rest.accounts.mapper.AccountMapper;
 import vives.bancovives.rest.accounts.service.AccountService;
-import vives.bancovives.rest.products.dto.output.OutputProduct;
-import vives.bancovives.rest.products.mappers.ProductMapper;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 

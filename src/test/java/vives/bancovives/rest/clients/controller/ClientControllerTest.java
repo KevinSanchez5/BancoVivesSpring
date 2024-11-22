@@ -20,6 +20,7 @@ import vives.bancovives.rest.clients.exceptions.ClientNotFound;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.service.ClientService;
+import vives.bancovives.utils.IdGenerator;
 import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.time.LocalDateTime;
@@ -37,11 +38,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class ClientControllerTest {
 
     UUID id = UUID.randomUUID();
+    String publicId = IdGenerator.generateId();
     Address address = new Address("streetTest","123", "CITYTEST", "PORTUGAL");
-    Client client = new Client(id, null, "12345678Z", "nameTest",address, "email@test.com", "654321987", null, null, true, false,LocalDateTime.now(), LocalDateTime.now());
+    Client client = new Client(id, publicId, "12345678Z", "nameTest",address, "email@test.com", "654321987", null, null, true, false,LocalDateTime.now(), LocalDateTime.now());
     ClientCreateDto createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "PORTUGAL");
     ClientUpdateDto updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
-    ClientResponseDto responseDto = new ClientResponseDto(null, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
+    ClientResponseDto responseDto = new ClientResponseDto(publicId, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
 
     ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -66,7 +68,7 @@ class ClientControllerTest {
 
     @Test
     void getClientById_Success() throws Exception {
-        when(clientService.findById(id)).thenReturn(responseDto);
+        when(clientService.findById(publicId)).thenReturn(responseDto);
         MockHttpServletResponse response = mockMvc.perform(
                 get(endpoint + "/" + id.toString())
                         .accept(MediaType.APPLICATION_JSON))
@@ -79,12 +81,12 @@ class ClientControllerTest {
                 () -> assertEquals(client, responseClient),
                 () -> assertEquals(client.getId(), responseClient.getId())
         );
-        verify(clientService, times(1)).findById(id);
+        verify(clientService, times(1)).findById(publicId);
     }
 
     @Test
     void getClientById_NotFound() throws Exception {
-        when(clientService.findById(id)).thenThrow(new ClientNotFound(id.toString()));
+        when(clientService.findById(publicId)).thenThrow(new ClientNotFound(id.toString()));
         MockHttpServletResponse response = mockMvc.perform(
                 get(endpoint + "/" + id.toString())
                         .accept(MediaType.APPLICATION_JSON))
@@ -93,7 +95,7 @@ class ClientControllerTest {
         assertAll(
                 () -> assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus())
         );
-        verify(clientService, times(1)).findById(id);
+        verify(clientService, times(1)).findById(publicId);
     }
 
     @Test
@@ -106,7 +108,7 @@ class ClientControllerTest {
         assertAll(
                 () -> assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus())
         );
-        verify(clientService, times(0)).findById(id);
+        verify(clientService, times(0)).findById(publicId);
     }
 
     @Test

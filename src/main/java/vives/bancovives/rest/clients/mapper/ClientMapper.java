@@ -40,7 +40,7 @@ public class ClientMapper {
         );
         return new Client (
                 client.getId(),
-                client.getIdPath(),
+                client.getPublicId(),
                 updateDto.getDni() != null ? updateDto.getDni().toUpperCase() : client.getDni(),
                 updateDto.getCompleteName() != null ? updateDto.getCompleteName().trim() : client.getCompleteName(),
                 updatedAddress,
@@ -57,7 +57,7 @@ public class ClientMapper {
 
     public ClientResponseDto fromEntityToResponse(Client client){
         return new ClientResponseDto(
-                client.getIdPath(),
+                client.getPublicId(),
                 client.getDni(),
                 client.getCompleteName(),
                 client.getEmail(),

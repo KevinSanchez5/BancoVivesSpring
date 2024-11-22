@@ -3,9 +3,6 @@ package vives.bancovives.rest.clients.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,7 +19,6 @@ import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @CacheConfig(cacheNames = {"clients"})
@@ -78,9 +74,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientResponseDto findById(UUID id) {
+    public ClientResponseDto findById(String id) {
         log.info("Buscando el cliente con id: " + id);
-        return clientMapper.fromEntityToResponse(existClientById(id));
+        return clientMapper.fromEntityToResponse(existClientByPublicId(id));
     }
 
     @Override
@@ -92,19 +88,19 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientResponseDto update(UUID id, ClientUpdateDto updateDto) {
+    public ClientResponseDto update(String id, ClientUpdateDto updateDto) {
         log.info("Actualizando cliente con id: " + id);
         updateValidator.validateUpdateDto(updateDto);
         existsClientByDniAndEmail(updateDto.getDni(), updateDto.getEmail());
-        Client client = existClientById(id);
+        Client client = existClientByPublicId(id);
         Client updatedClient = clientMapper.fromUpdateDtoToEntity(client, updateDto);
         return clientMapper.fromEntityToResponse(clientRepository.save(updatedClient));
     }
 
     @Override
-    public ClientResponseDto deleteByIdLogically(UUID id, Optional<Boolean> deleteData) {
+    public ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: " + id);
-        Client client = existClientById(id);
+        Client client = existClientByPublicId(id);
         if (deleteData.isPresent() && deleteData.get()) {
             return deleteDataOfClient(client);
         }
@@ -136,14 +132,14 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    public ClientResponseDto validateClient(UUID id) {
-        Client client = existClientById(id);
+    public ClientResponseDto validateClient(String id) {
+        Client client = existClientByPublicId(id);
         client.setValidated(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
-    public Client existClientById(UUID id) {
-        return clientRepository.findById(id).orElseThrow(
+    public Client existClientByPublicId(String id) {
+        return clientRepository.findByPublicId(id).orElseThrow(
                 () -> new ClientNotFound("El cliente con id: " + id + " no encontrado"));
     }
 }

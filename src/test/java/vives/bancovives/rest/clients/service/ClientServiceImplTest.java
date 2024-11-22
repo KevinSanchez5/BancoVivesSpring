@@ -20,6 +20,7 @@ import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
+import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +35,8 @@ import static org.mockito.Mockito.*;
 class ClientServiceImplTest {
 
     Address address = new Address("streetTest","123", "CITYTEST", "ESPAÑA");
-    UUID id = UUID.randomUUID();
+    String id = IdGenerator.generateId();
+    UUID uuid = UUID.randomUUID();
     Client client ;
     ClientCreateDto createDto;
     ClientUpdateDto updateDto;
@@ -53,7 +55,7 @@ class ClientServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        client = new Client(id, null, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, true, false, LocalDateTime.now(), LocalDateTime.now());
+        client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
         responseDto = clientMapper.fromEntityToResponse(client);
@@ -78,7 +80,7 @@ class ClientServiceImplTest {
 
     @Test
     void findById_Success() {
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
 
         ClientResponseDto result = clientService.findById(id);
 
@@ -89,18 +91,18 @@ class ClientServiceImplTest {
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
 
-        verify(clientRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
     }
 
     @Test
     void findById_NotFound() {
-        when(clientRepository.findById(id)).thenReturn(Optional.empty());
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.empty());
 
         ClientNotFound exception = assertThrows(ClientNotFound.class, () -> clientService.findById(id));
 
         assertEquals("El cliente con id: " + id + " no encontrado", exception.getMessage());;
 
-        verify(clientRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
     }
 
     @Test
@@ -114,7 +116,6 @@ class ClientServiceImplTest {
 
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(client, result),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
@@ -154,21 +155,22 @@ class ClientServiceImplTest {
 
     @Test
     void update_Success() {
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
         doNothing().when(updateValidator).validateUpdateDto(updateDto);
         when(clientMapper.fromUpdateDtoToEntity(client, updateDto)).thenReturn(client);
         when(clientRepository.save(client)).thenReturn(client);
+        when(clientMapper.fromEntityToResponse(client)).thenReturn(responseDto);
 
         ClientResponseDto result = clientService.update(id, updateDto);
 
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(client, result),
+                () -> assertEquals(client.getCompleteName(), result.getCompleteName()),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
 
-        verify(clientRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
         verify(updateValidator, times(1)).validateUpdateDto(updateDto);
         verify(clientMapper, times(1)).fromUpdateDtoToEntity(client, updateDto);
         verify(clientRepository, times(1)).save(client);
@@ -193,26 +195,26 @@ class ClientServiceImplTest {
 
     @Test
     void deleteByIdLogically_NotFound() {
-        when(clientRepository.findById(id)).thenReturn(Optional.empty());
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.empty());
 
         ClientNotFound exception = assertThrows(ClientNotFound.class, () -> clientService.deleteByIdLogically(id, Optional.empty()));
 
         assertEquals("El cliente con id: " + id + " no encontrado", exception.getMessage());
 
-        verify(clientRepository, times(1)).findById(id);
-        verify(clientRepository, never()).deleteById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
+        verify(clientRepository, never()).save(any());
     }
 
     @Test
     void deleteDataOfClient() {
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
         when(clientRepository.save(client)).thenReturn(client);
 
         ClientResponseDto result = clientService.deleteDataOfClient(client);
 
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(client, result),
+                () -> assertInstanceOf(ClientResponseDto.class, result),
                 () -> assertNull(result.getDni()),
                 () -> assertNull(result.getCompleteName()),
                 () -> assertNull(result.getEmail()),
@@ -222,7 +224,7 @@ class ClientServiceImplTest {
                 () -> assertNull(result.getAddress())
         );
 
-        verify(clientRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
         verify(clientRepository, times(1)).save(client);
     }
 
@@ -265,33 +267,33 @@ class ClientServiceImplTest {
 
     @Test
     void validateClient_Success() {
-        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
         client.setValidated(true);
         when(clientRepository.save(any())).thenReturn(client);
 
         ClientResponseDto result = clientService.validateClient(id);
 
+        //TODO COMPARAR RESULTADO CON ENTIDAD CLIENTE
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(client, result),
                 () -> assertTrue(result.getValidated()),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
 
-        verify(clientRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
         verify(clientRepository, times(1)).save(any());
     }
 
     @Test
     void validateClient_NotFound() {
-        when(clientRepository.findById(id)).thenReturn(Optional.empty());
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.empty());
 
         ClientNotFound exception = assertThrows(ClientNotFound.class, () -> clientService.validateClient(id));
 
         assertEquals("El cliente con id: " + id + " no encontrado", exception.getMessage());
 
-        verify(clientRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findByPublicId(id);
         verify(clientRepository, never()).save(any());
     }
 }
