@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import vives.bancovives.rest.clients.model.Address;
 
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor

@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.exceptions.ClientNotFound;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
@@ -40,6 +41,7 @@ class ClientControllerTest {
     Client client = new Client(id, null, "12345678Z", "nameTest",address, "email@test.com", "654321987", null, null, true, false,LocalDateTime.now(), LocalDateTime.now());
     ClientCreateDto createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "PORTUGAL");
     ClientUpdateDto updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
+    ClientResponseDto responseDto = new ClientResponseDto(null, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
 
     ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -64,7 +66,7 @@ class ClientControllerTest {
 
     @Test
     void getClientById_Success() throws Exception {
-        when(clientService.findById(id)).thenReturn(client);
+        when(clientService.findById(id)).thenReturn(responseDto);
         MockHttpServletResponse response = mockMvc.perform(
                 get(endpoint + "/" + id.toString())
                         .accept(MediaType.APPLICATION_JSON))
