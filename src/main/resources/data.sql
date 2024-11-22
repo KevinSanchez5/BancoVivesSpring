@@ -29,3 +29,7 @@ VALUES ('8c698f22-3ee4-11ee-89da-0242ac120002', 'PkJVMAzSSYgddnU5rEd', 'CUENTA F
 
 INSERT INTO account_type(id, public_id, name, description, interest, created_at, updated_at, is_deleted)
 VALUES ('64c283f0-bb2e-4c8f-bd2d-3b60c860ef79', 'QkKVVAzSSYhddoW6sFd', 'CUENTA ESTUDIANTIL', 'Descripción cuenta estudiantil', 0.75, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+
+/* Clientes */
+INSERT INTO clients(id, id_path, dni, complete_name, street, house_number, city, country , email, phone_number, photo, dni_picture, validated, is_deleted, created_at, updated_at)
+VALUES('fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', null, '87654321B', 'Cliente test', 'calle falsa', '123', 'Springfield', 'España','test@test.com', 654123789, null, null, true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
