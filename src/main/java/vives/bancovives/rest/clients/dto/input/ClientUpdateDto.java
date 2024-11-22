@@ -3,6 +3,7 @@ package vives.bancovives.rest.clients.dto.input;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -11,6 +12,7 @@ import vives.bancovives.rest.clients.validators.ValidDni;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ClientUpdateDto {
 
     @Pattern(regexp = "^[0-9]{8}[A-Za-z]$", message = "El dni debe de tener 8 digitos y una letra")

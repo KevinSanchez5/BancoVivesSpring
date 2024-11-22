@@ -126,7 +126,7 @@ public class ClientServiceImpl implements ClientService {
         client.setPhoneNumber(null);
         client.setPhoto(null);
         client.setDniPicture(null);
-        client.setAdress(null);
+        client.setAddress(null);
         client.setUpdatedAt(LocalDateTime.now());
         client.setDeleted(true);
         return clientRepository.save(client);
@@ -139,7 +139,6 @@ public class ClientServiceImpl implements ClientService {
         if (clientRepository.findByEmailIgnoreCase(email).isPresent()) {
             throw new ClientConflict("Ese email ya esta en uso");
         }
-
     }
 
     public Client validateClient(UUID id) {

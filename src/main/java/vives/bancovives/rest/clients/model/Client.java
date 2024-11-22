@@ -5,11 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vives.bancovives.rest.accounts.model.Account;
-import vives.bancovives.rest.users.models.User;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -27,21 +24,22 @@ public class Client {
     @Column(name = "id_path")
     private String idPath;
 
-    @Column(name = "dni")
+    @Column(name = "dni", unique = true)
     private String dni;
 
     @Column(name = "complete_name")
     private String completeName;
 
     @Embedded
-    private Adress adress;
+    private Address address;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
+//TODO : añadir el storage de las imagenes
     @Column(name = "photo")
     private String photo;
 
@@ -72,7 +70,7 @@ public class Client {
         this.id = UUID.randomUUID();
         this.idPath = null;
         this.dni = dni;
-        this.adress = new Adress();
+        this.address = new Address();
         this.completeName = completeName;
         this.email = email;
         this.phoneNumber = phoneNumber;
