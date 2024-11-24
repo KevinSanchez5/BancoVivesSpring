@@ -13,7 +13,7 @@ import vives.bancovives.rest.clients.model.Address;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientResponseDto {
 
-    private String idPath;
+    private String publicId;
     private String dni;
     private String completeName;
     private String email;

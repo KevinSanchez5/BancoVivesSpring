@@ -61,7 +61,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponseDto> getClientById(@PathVariable UUID id) {
+    public ResponseEntity<ClientResponseDto> getClientById(@PathVariable String id) {
         log.info("Recuperando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.findById(id));
     }
@@ -73,19 +73,19 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponseDto> updateClient(@PathVariable UUID id, @RequestBody ClientUpdateDto updateDto) {
+    public ResponseEntity<ClientResponseDto> updateClient(@PathVariable String id, @RequestBody ClientUpdateDto updateDto) {
         log.info("Actualizando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.update(id, updateDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ClientResponseDto> deleteClient(@PathVariable UUID id, @RequestParam(defaultValue = "false") Optional<Boolean> deleteData) {
+    public ResponseEntity<ClientResponseDto> deleteClient(@PathVariable String id, @RequestParam(defaultValue = "false") Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.deleteByIdLogically(id, deleteData));
     }
 
     @PutMapping("/{id}/validate")
-    public ResponseEntity<ClientResponseDto> validateClient(@PathVariable UUID id) {
+    public ResponseEntity<ClientResponseDto> validateClient(@PathVariable String id) {
         log.info("Validando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.validateClient(id));
     }

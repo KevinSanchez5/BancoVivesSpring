@@ -23,11 +23,11 @@ public interface ClientService {
             Pageable pageable
     );
 
-    ClientResponseDto findById(UUID id);
+    ClientResponseDto findById(String id);
     ClientResponseDto save(ClientCreateDto createDto);
-    ClientResponseDto update(UUID id, ClientUpdateDto updateDto);
-    ClientResponseDto deleteByIdLogically(UUID id, Optional<Boolean> deleteData);
+    ClientResponseDto update(String id, ClientUpdateDto updateDto);
+    ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData);
     ClientResponseDto deleteDataOfClient(Client client);
-    ClientResponseDto validateClient(UUID id);
+    ClientResponseDto validateClient(String id);
 
 }

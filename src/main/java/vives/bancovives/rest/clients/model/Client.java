@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,8 +22,8 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "id_path")
-    private String idPath;
+    @Column(name = "public_id")
+    private String publicId;
 
     @Column(name = "dni", unique = true)
     private String dni;
@@ -68,7 +69,7 @@ public class Client {
 
     public Client(String dni, String completeName, String email, String phoneNumber, String photo, String dniPicture) {
         this.id = UUID.randomUUID();
-        this.idPath = null;
+        this.publicId = IdGenerator.generateId();
         this.dni = dni;
         this.address = new Address();
         this.completeName = completeName;
