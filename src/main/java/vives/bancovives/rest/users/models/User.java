@@ -11,9 +11,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
@@ -25,35 +25,29 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "USERS")
+@Table(name = "users")
 @EntityListeners(AuditingEntityListener.class) // Para que sea auditada y se autorellene
-public class User implements UserDetails {
+public class User /*implements UserDetails*/ {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "id", updatable = false, nullable = false)
         private UUID id;
 
-        @NotBlank(message = "nombre no puede estar vacío")
-        @Column(nullable = false)
-        private String nombre;
-
-        @Column(nullable = false)
-        @NotBlank(message = "apellidos no puede estar vacío")
-        private String apellidos;
+        @Column(name = "public_id", unique = true, nullable = false)
+        private String publicId;
 
         @Column(unique = true, nullable = false)
         @NotBlank(message = "Username no puede estar vacío")
         private String username;
 
-        @Column(unique = true, nullable = false)
-        @Email(regexp = ".*@.*\\..*", message = "Email debe ser válido")
-        @NotBlank(message = "Email no puede estar vacío")
-        private String email;
-
         @NotBlank(message = "Password no puede estar vacío")
         @Length(min = 5, message = "Password debe tener al menos 5 caracteres")
         @Column(nullable = false)
         private String password;
+
+        @ElementCollection(fetch = FetchType.EAGER)
+        @Enumerated(EnumType.STRING)
+        private Set<Role> roles;
 
         @CreationTimestamp
         @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -69,21 +63,15 @@ public class User implements UserDetails {
         @Builder.Default
         private Boolean isDeleted = false;
 
-        @ElementCollection(fetch = FetchType.EAGER)
-        @Enumerated(EnumType.STRING)
-        private Set<Role> roles;
 
-        @Override
+
+      /*  @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
                 return roles.stream()
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                         .collect(Collectors.toSet());
         }
 
-        @Override
-        public String getUsername() {
-                return username;
-        }
 
         @Override
         public boolean isAccountNonExpired() {
@@ -103,5 +91,5 @@ public class User implements UserDetails {
         @Override
         public boolean isEnabled() {
                 return !isDeleted;
-        }
+        }*/
 }

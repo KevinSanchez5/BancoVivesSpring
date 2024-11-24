@@ -16,17 +16,12 @@ public interface UsersRepository extends JpaRepository<User, UUID>, JpaSpecifica
 
     Optional<User> findByUsername(String username);
 
-    Optional<User> findByEmail(String email);
-
     Optional<User> findByUsernameEqualsIgnoreCase(String username);
 
-    Optional<User> findByUsernameEqualsIgnoreCaseOrEmailEqualsIgnoreCase(String username, String email);
-
-    // Usuarios por nombre
-    List<User> findAllByUsernameContainingIgnoreCase(String username);
+    Optional<User> findByPublicId(String publicId);
 
     @Modifying // Para indicar que es una consulta de actualización
-    @Query("UPDATE User u SET u.isDeleted = true WHERE u.id = :id")
+    @Query("UPDATE User u SET u.isDeleted = true WHERE u.publicId = :publicId")
         // Consulta de actualización
-    void updateIsDeletedToTrueById(UUID id);
+    void updateIsDeletedToTrueByPublicId(String publicId);
 }

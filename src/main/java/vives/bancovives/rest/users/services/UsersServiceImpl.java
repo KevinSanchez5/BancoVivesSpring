@@ -1,15 +1,12 @@
 package vives.bancovives.rest.users.services;
 
-import vives.bancovives.rest.users.dto.UserInfoResponse;
-import vives.bancovives.rest.users.dto.UserRequest;
-import vives.bancovives.rest.users.dto.UserResponse;
-import vives.bancovives.rest.users.exceptions.UserNameOrEmailExists;
+import vives.bancovives.rest.users.dto.input.UserRequest;
+import vives.bancovives.rest.users.dto.output.UserResponse;
+import vives.bancovives.rest.users.exceptions.UserConflict;
 import vives.bancovives.rest.users.exceptions.UserNotFound;
 import vives.bancovives.rest.users.mappers.UsersMapper;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.repositories.UsersRepository;
-import vives.bancovives.rest.products.accounttype.repositories.AccountTypeRepository;
-import vives.bancovives.rest.products.cardtype.repositories.CardTypeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -30,29 +26,21 @@ import java.util.UUID;
 public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
-    private final AccountTypeRepository accountTypeRepository;
-    private final CardTypeRepository cardTypeRepository;
     private final UsersMapper usersMapper;
 
-    public UsersServiceImpl(UsersRepository usersRepository, AccountTypeRepository accountTypeRepository, CardTypeRepository cardTypeRepository, UsersMapper usersMapper) {
+    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper usersMapper) {
         this.usersRepository = usersRepository;
-        this.accountTypeRepository = accountTypeRepository;
-        this.cardTypeRepository = cardTypeRepository;
         this.usersMapper = usersMapper;
     }
 
     @Override
-    public Page<UserResponse> findAll(Optional<String> username, Optional<String> email, Optional<Boolean> isDeleted, Pageable pageable) {
+    public Page<UserResponse> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable) {
         log.info("Buscando todos los usuarios con username: " + username + " y borrados: " + isDeleted);
         // Criterio de búsqueda por nombre
         Specification<User> specUsernameUser = (root, query, criteriaBuilder) ->
                 username.map(m -> criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), "%" + m.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        // Criterio de búsqueda por email
-        Specification<User> specEmailUser = (root, query, criteriaBuilder) ->
-                email.map(m -> criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + m.toLowerCase() + "%"))
-                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
         // Criterio de búsqueda por borrado
         Specification<User> specIsDeleted = (root, query, criteriaBuilder) ->
@@ -61,63 +49,55 @@ public class UsersServiceImpl implements UsersService {
 
         // Combinamos las especificaciones
         Specification<User> criterio = Specification.where(specUsernameUser)
-                .and(specEmailUser)
                 .and(specIsDeleted);
 
         // Debe devolver un Page, por eso usamos el findAll de JPA
-        return usersRepository.findAll(criterio, pageable).map(usersMapper::toUserResponse);
+        return usersRepository.findAll(criterio, pageable).map(usersMapper::fromEntityToResponseDto);
     }
 
     @Override
-    @Cacheable(key = "#id")
-    public UserInfoResponse findById(UUID id) {
-        log.info("Buscando usuario por id: " + id);
-        var user = usersRepository.findById(id).orElseThrow(() -> new UserNotFound(id));
-        var accounts = accountTypeRepository.findAccountIdsByUserId(id).stream().map(UUID::toString).toList();
-        var cards = cardTypeRepository.findCardIdsByUserId(id).stream().map(UUID::toString).toList();
-        return usersMapper.toUserInfoResponse(user, accounts, cards);
+    @Cacheable(key = "#publicId")
+    public UserResponse findById(String publicId) {
+        log.info("Buscando usuario por id: " + publicId);
+        var user = usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
+        return usersMapper.fromEntityToResponseDto(user);
     }
 
     @Override
-    @CachePut(key = "#result.id")
+    @CachePut(key = "#result.publicId")
     public UserResponse save(UserRequest userRequest) {
         log.info("Guardando usuario: " + userRequest);
         // No debe existir otro con el mismo username o email
-        usersRepository.findByUsernameEqualsIgnoreCaseOrEmailEqualsIgnoreCase(userRequest.getUsername(), userRequest.getEmail())
+        usersRepository.findByUsernameEqualsIgnoreCase(userRequest.getUsername())
                 .ifPresent(u -> {
-                    throw new UserNameOrEmailExists("Ya existe un usuario con ese username o email");
+                    throw new UserConflict("Ya existe un usuario con ese username");
                 });
-        return usersMapper.toUserResponse(usersRepository.save(usersMapper.toUser(userRequest)));
+        return usersMapper.fromEntityToResponseDto(usersRepository.save(usersMapper.fromUpdateDtotoUser(userRequest)));
     }
 
     @Override
-    @CachePut(key = "#result.id")
-    public UserResponse update(UUID id, UserRequest userRequest) {
+    @CachePut(key = "#result.publicId")
+    public UserResponse update(String publicId, UserRequest userRequest) {
         log.info("Actualizando usuario: " + userRequest);
-        usersRepository.findById(id).orElseThrow(() -> new UserNotFound(id));
+        User oldUser = usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
         // No debe existir otro con el mismo username o email, y si existe soy yo mismo
-        usersRepository.findByUsernameEqualsIgnoreCaseOrEmailEqualsIgnoreCase(userRequest.getUsername(), userRequest.getEmail())
+        usersRepository.findByUsernameEqualsIgnoreCase(userRequest.getUsername())
                 .ifPresent(u -> {
-                    if (!u.getId().equals(id)) {
-                        throw new UserNameOrEmailExists("Ya existe un usuario con ese username o email");
+                    if (!u.getPublicId().equals(publicId)) {
+                        throw new UserConflict("Ya existe un usuario con ese username");
                     }
                 });
-        return usersMapper.toUserResponse(usersRepository.save(usersMapper.toUser(userRequest, id)));
+        User updatedUser = usersMapper.fromUpdateDtotoUser(oldUser, userRequest);
+        return usersMapper.fromEntityToResponseDto(usersRepository.save(updatedUser));
     }
 
     @Override
     @Transactional
-    @CacheEvict(key = "#id")
-    public void deleteById(UUID id) {
-        log.info("Borrando usuario por id: " + id);
-        User user = usersRepository.findById(id).orElseThrow(() -> new UserNotFound(id));
-        // Hacemos el borrado físico si no hay cuentas o tarjetas
-        if (accountTypeRepository.existsByUserId(id) || cardTypeRepository.existsByUserId(id)) {
-            log.info("Borrado lógico de usuario por id: " + id);
-            usersRepository.updateIsDeletedToTrueById(id);
-        } else {
-            log.info("Borrado físico de usuario por id: " + id);
-            usersRepository.delete(user);
-        }
+    @CacheEvict(key = "#publicId")
+    public void deleteById(String publicId) {
+        log.info("Borrando usuario por id: " + publicId);
+        User user = usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
+        usersRepository.updateIsDeletedToTrueByPublicId(publicId);
     }
+
 }

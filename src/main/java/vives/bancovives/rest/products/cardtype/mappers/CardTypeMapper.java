@@ -5,7 +5,6 @@ import vives.bancovives.rest.products.cardtype.dto.input.UpdatedCardType;
 import vives.bancovives.rest.products.cardtype.dto.output.OutputCardType;
 import vives.bancovives.rest.products.cardtype.model.CardType;
 
-import javax.smartcardio.Card;
 import java.time.LocalDateTime;
 
 /**

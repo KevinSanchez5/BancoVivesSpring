@@ -1,4 +1,4 @@
-package vives.bancovives.rest.users.dto;
+package vives.bancovives.rest.users.dto.output;
 
 import vives.bancovives.rest.users.models.Role;
 import lombok.AllArgsConstructor;
@@ -14,13 +14,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private UUID id;
-    private String nombre;
-    private String apellidos;
+    private String publicId;
     private String username;
-    private String email;
     @Builder.Default
     private Set<Role> roles = Set.of(Role.USER);
-    @Builder.Default
-    private Boolean isDeleted = false;
+    private Boolean isDeleted;
 }
