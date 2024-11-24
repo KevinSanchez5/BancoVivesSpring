@@ -1,0 +1,276 @@
+{
+	"info": {
+		"_postman_id": "7a72b0da-ea1c-4854-b1ce-e99bf1b5e6ab",
+		"name": "Banco Vives",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "29759773"
+	},
+	"item": [
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "getAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "localhost:8080/v1/products"
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdProducts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "localhost:8080/v1/products/3a5ce050-dcd4-456b-854f-534459946733"
+					},
+					"response": []
+				},
+				{
+					"name": "saveProduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"cuenta ahoRrqweo    \",\r\n    \"productType\": \"cuenta\",\r\n    \"description\": \"esta es una cuenta\",\r\n    \"interest\":0\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:8080/v1/products"
+					},
+					"response": []
+				},
+				{
+					"name": "updateProduct",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"interest\": 1.2,\r\n    \"name\": \"null\",\r\n    \"description\":\" null\",\r\n    \"productType\": \"null\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:8080/v1/products/3a5ce050-dcd4-456b-854f-534459946733"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProduct",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "localhost:8080/v1/products/3a5ce050-dcd4-456b-854f-534459946733"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "getAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "localhost:8080/v1/clients"
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdClient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+					},
+					"response": []
+				},
+				{
+					"name": "saveClient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{     \r\n    \"dni\": \"12345678z\",\r\n    \"completeName\": \"Eustaquio Habichuela\",\r\n    \"email\": \"email@email.com\",\r\n    \"phoneNumber\": \"623456789\",\r\n    \"street\": \"Calle Madrid\",\r\n    \"houseNumber\": \"1\",\r\n    \"city\": \"Madrid\",\r\n    \"country\": \"España\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:8080/v1/clients"
+					},
+					"response": []
+				},
+				{
+					"name": "updateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"completeName\": \"cliente\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteClient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd?deleteData=true",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							],
+							"query": [
+								{
+									"key": "deleteData",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd/validate"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "getAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "localhost:8080/v1/users"
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+					},
+					"response": []
+				},
+				{
+					"name": "saveUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{     \r\n    \"dni\": \"12345678z\",\r\n    \"completeName\": \"Eustaquio Habichuela\",\r\n    \"email\": \"email@email.com\",\r\n    \"phoneNumber\": \"623456789\",\r\n    \"street\": \"Calle Madrid\",\r\n    \"houseNumber\": \"1\",\r\n    \"city\": \"Madrid\",\r\n    \"country\": \"España\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:8080/v1/clients"
+					},
+					"response": []
+				},
+				{
+					"name": "updateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"completeName\": \"cliente\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:8080/v1/users/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteClient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/users/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							],
+							"query": [
+								{
+									"key": "deleteData",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
