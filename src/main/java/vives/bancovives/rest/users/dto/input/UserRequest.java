@@ -2,7 +2,6 @@ package vives.bancovives.rest.users.dto.input;
 
 import jakarta.validation.constraints.NotNull;
 import vives.bancovives.rest.users.models.Role;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

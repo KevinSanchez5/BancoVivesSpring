@@ -1,7 +1,6 @@
 package vives.bancovives.rest.users.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +14,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -55,7 +52,7 @@ public class User /*implements UserDetails*/ {
         private LocalDateTime createdAt = LocalDateTime.now();
 
         @UpdateTimestamp
-        @Column(updatable = true, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+        @Column( nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
         @Builder.Default
         private LocalDateTime updatedAt = LocalDateTime.now();
 

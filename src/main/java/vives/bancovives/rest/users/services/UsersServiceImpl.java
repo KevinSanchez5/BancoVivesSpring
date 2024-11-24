@@ -96,7 +96,7 @@ public class UsersServiceImpl implements UsersService {
     @CacheEvict(key = "#publicId")
     public void deleteById(String publicId) {
         log.info("Borrando usuario por id: " + publicId);
-        User user = usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
+        usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
         usersRepository.updateIsDeletedToTrueByPublicId(publicId);
     }
 
