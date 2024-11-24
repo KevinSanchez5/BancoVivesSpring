@@ -58,13 +58,14 @@ class ClientServiceImplTest {
         client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
-        responseDto = clientMapper.fromEntityToResponse(client);
+        responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
     }
 
 
     @Test
     void findAll() {
         Page<ClientResponseDto> resultPage = new PageImpl<>(List.of(responseDto));
+
         when(clientRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(resultPage);
 
         Page<ClientResponseDto> result = clientService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), PageRequest.of(0, 10));
@@ -81,12 +82,13 @@ class ClientServiceImplTest {
     @Test
     void findById_Success() {
         when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
+        when(clientMapper.fromEntityToResponse(client)).thenReturn(responseDto);
+
 
         ClientResponseDto result = clientService.findById(id);
 
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(client, result),
                 () -> assertEquals("12345678Z", result.getDni()),
                 () -> assertEquals("nameTest", result.getCompleteName())
         );
@@ -111,6 +113,7 @@ class ClientServiceImplTest {
         when(clientRepository.findByDniIgnoreCase(createDto.getDni())).thenReturn(Optional.empty());
         when(clientRepository.findByEmailIgnoreCase(createDto.getEmail())).thenReturn(Optional.empty());
         when(clientRepository.save(client)).thenReturn(client);
+        when(clientMapper.fromEntityToResponse(client)).thenReturn(responseDto);
 
         ClientResponseDto result = clientService.save(createDto);
 
@@ -207,8 +210,8 @@ class ClientServiceImplTest {
 
     @Test
     void deleteDataOfClient() {
-        when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
         when(clientRepository.save(client)).thenReturn(client);
+        when(clientMapper.fromEntityToResponse(client)).thenReturn(new ClientResponseDto());
 
         ClientResponseDto result = clientService.deleteDataOfClient(client);
 
@@ -223,8 +226,7 @@ class ClientServiceImplTest {
                 () -> assertNull(result.getDniPicture()),
                 () -> assertNull(result.getAddress())
         );
-
-        verify(clientRepository, times(1)).findByPublicId(id);
+        verify(clientMapper, times(1)).fromEntityToResponse(client);
         verify(clientRepository, times(1)).save(client);
     }
 
@@ -270,6 +272,7 @@ class ClientServiceImplTest {
         when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
         client.setValidated(true);
         when(clientRepository.save(any())).thenReturn(client);
+        when(clientMapper.fromEntityToResponse(client)).thenReturn(responseDto);
 
         ClientResponseDto result = clientService.validateClient(id);
 

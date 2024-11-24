@@ -70,60 +70,48 @@ class ClientControllerTest {
     void getClientById_Success() throws Exception {
         when(clientService.findById(publicId)).thenReturn(responseDto);
         MockHttpServletResponse response = mockMvc.perform(
-                get(endpoint + "/" + id.toString())
+                get(endpoint + "/" + publicId)
                         .accept(MediaType.APPLICATION_JSON))
                         .andReturn().getResponse();
 
-        Client responseClient = jsonMapper.readValue(response.getContentAsString(), Client.class);
+        ClientResponseDto responseClient = jsonMapper.readValue(response.getContentAsString(), ClientResponseDto.class);
 
         assertAll(
                 () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
-                () -> assertEquals(client, responseClient),
-                () -> assertEquals(client.getId(), responseClient.getId())
+                () -> assertEquals(responseDto, responseClient),
+                () -> assertEquals(client.getPublicId(), responseClient.getPublicId())
         );
         verify(clientService, times(1)).findById(publicId);
     }
 
     @Test
     void getClientById_NotFound() throws Exception {
-        when(clientService.findById(publicId)).thenThrow(new ClientNotFound(id.toString()));
+        when(clientService.findById("123")).thenThrow(new ClientNotFound("123"));
         MockHttpServletResponse response = mockMvc.perform(
-                get(endpoint + "/" + id.toString())
+                get(endpoint + "/" + "123")
                         .accept(MediaType.APPLICATION_JSON))
                         .andReturn().getResponse();
 
         assertAll(
                 () -> assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus())
         );
-        verify(clientService, times(1)).findById(publicId);
+        verify(clientService, times(1)).findById("123");
     }
 
-    @Test
-    void getClientById_NotValidUUID() throws Exception {
-        MockHttpServletResponse response = mockMvc.perform(
-                get(endpoint + "/notValidUUID")
-                        .accept(MediaType.APPLICATION_JSON))
-                        .andReturn().getResponse();
 
-        assertAll(
-                () -> assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus())
-        );
-        verify(clientService, times(0)).findById(publicId);
-    }
-
-    @Test
-    void createClient() {
-    }
-
-    @Test
-    void updateClient() {
-    }
-
-    @Test
-    void deleteClient() {
-    }
-
-    @Test
-    void validateClient() {
-    }
+//    @Test
+//    void createClient() {
+//    }
+//
+//    @Test
+//    void updateClient() {
+//    }
+//
+//    @Test
+//    void deleteClient() {
+//    }
+//
+//    @Test
+//    void validateClient() {
+//    }
 }
