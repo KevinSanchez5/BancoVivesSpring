@@ -2,9 +2,9 @@ package vives.bancovives.rest.accounts.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import vives.bancovives.rest.products.accounttype.model.AccountType;
 import vives.bancovives.utils.account.IbanGenerator;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -31,12 +31,16 @@ public class Account {
     private String iban;
 
     @Column(nullable = false)
-    @DecimalMin(value = "0.0", message = "El saldo no puede ser negativo")
-    private double balance;
+    private double balance = 0.0;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
+
+
+    @ManyToOne
+    @JoinColumn(name = "account_type", nullable = false)
+    private AccountType accountType;
 
     @Builder.Default
     @NotNull

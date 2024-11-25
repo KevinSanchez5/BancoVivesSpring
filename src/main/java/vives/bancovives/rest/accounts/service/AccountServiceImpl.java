@@ -16,6 +16,8 @@ import vives.bancovives.rest.accounts.exception.AccountNotFoundException;
 import vives.bancovives.rest.accounts.mapper.AccountMapper;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.repositories.AccountRepository;
+import vives.bancovives.rest.products.accounttype.model.AccountType;
+import vives.bancovives.rest.products.accounttype.repositories.AccountTypeRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,10 +29,15 @@ import java.util.UUID;
 
 public class AccountServiceImpl  implements AccountService{
     private final AccountRepository repository;
+    private final AccountTypeRepository accountTypeRepository;
+    private final AccountRepository accountRepository;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository repository) {
+    public AccountServiceImpl(AccountRepository repository , AccountTypeRepository accountTypeRepository, AccountRepository accountRepository) {
+
         this.repository = repository;
+        this.accountTypeRepository = accountTypeRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -57,28 +64,32 @@ public class AccountServiceImpl  implements AccountService{
     @Override
     @Cacheable(key = "#id")
     public Account findById(UUID id) {
-        log.info("Buscando cuenta por id: " + id);
+        log.info("Buscando cuenta por id: {}", id);
         return repository.findById(id).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con id " + id));
     }
 
     @Override
     public Account findByIban(String iban) {
-        log.info("Buscando cuenta por iban: " + iban);
+        log.info("Buscando cuenta por iban: {}", iban);
         return repository.findByIban(iban).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con iban " + iban));
     }
     @Override
     @CachePut(key = "#result.id")
-    public Account save (InputAccount account){
-        log.info("Guardando cuenta"+ account);
-        Account mappedAccount = AccountMapper.toAccount(account);
-        if(repository.findByIban(mappedAccount.getIban()).isPresent()) throw new AccountConflictException("La cuenta con iban " + mappedAccount.getIban() + " ya existe");
-        return repository.save(mappedAccount);
+   public Account save (InputAccount inputAccount){
+        log.info("Creando nueva cuenta");
+        AccountType accountType= accountTypeRepository.findByName(inputAccount.getAccountType())
+                .orElseThrow(()-> new AccountNotFoundException("Tipo de cuenta no encontrado"));
+        Account mappedAccount= AccountMapper.toAccount(inputAccount, accountType);
+        if(accountRepository.findByIban(mappedAccount.getIban()).isPresent()){
+            throw new AccountConflictException("Cuenta con iban " + mappedAccount.getIban() + " ya existe");
+        }
+        return accountRepository.save(mappedAccount);
     }
 
     @Override
     @CacheEvict(key = "#id")
     public Account deleteById(UUID id){
-        log.info("Eliminando cuenta con el id" + id );
+        log.info("Eliminando cuenta con el id{}", id);
         Optional <Account> account = repository.findById(id);
         if(account.isPresent()){
             Account accountToDelete = account.get();
@@ -93,22 +104,20 @@ public class AccountServiceImpl  implements AccountService{
     @CachePut(key = "#id")
     @Override
     public Account updateById(UUID id, InputAccount updatedAccount) {
-        log.info("Actualizando la cuenta con id " + id);
+        log.info("Actualizando la cuenta con id {}", id);
 
-        Optional<Account> accountOptional = repository.findById(id);
-
-        if (accountOptional.isPresent()) {
-            Account existingAccount = accountOptional.get();
-
-            // Actualizamos solo los campos que pueden modificarse
-            existingAccount.setBalance(updatedAccount.getBalance());
-            existingAccount.setUpdatedAt(LocalDateTime.now());
-
-            // Guardamos los cambios
-            return repository.save(existingAccount);
-        } else {
-            throw new AccountNotFoundException("Cuenta no encontrada con id " + id);
+        Account existingAccount = accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con id " + id));
+        if(updatedAccount.getPassword() != null){
+            existingAccount.setPassword(updatedAccount.getPassword());
         }
+        if(updatedAccount.getAccountType() !=null){
+            AccountType accountType = accountTypeRepository.findByName(updatedAccount.getAccountType())
+                    .orElseThrow(() -> new RuntimeException("Account type not found"));
+            existingAccount.setAccountType(accountType);
+        }
+        existingAccount.setUpdatedAt(LocalDateTime.now());
+        return accountRepository.save(existingAccount);
     }
 
 

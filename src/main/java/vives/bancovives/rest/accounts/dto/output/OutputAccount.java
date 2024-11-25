@@ -16,6 +16,7 @@ public class OutputAccount {
     private UUID id;
     private String iban;
     private double balance;
+    private String accountType;
     private String createdAt;
     private String updatedAt;
     private boolean isDeleted;
