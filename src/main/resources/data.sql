@@ -1,3 +1,12 @@
+ALTER TABLE clients
+    DROP CONSTRAINT FKTIUQDLEDQ2LYBRDS2K3RFQRV4;
+
+ALTER TABLE clients
+    ADD CONSTRAINT FKTIUQDLEDQ2LYBRDS2K3RFQRV4
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL;
+
+
+
 /* Tipos de tarjetas */
 INSERT INTO card_type(id, public_id, name, description, created_at, updated_at, is_deleted)
 VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'BgKVWAzSSYcddqW8rRd', 'TARJETA DE CRÉDITO', 'Descripción de tarjeta de crédito', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
