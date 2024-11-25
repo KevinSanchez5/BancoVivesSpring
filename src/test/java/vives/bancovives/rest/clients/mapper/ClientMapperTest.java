@@ -7,9 +7,12 @@ import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
+import vives.bancovives.rest.users.models.Role;
+import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,8 +32,9 @@ class ClientMapperTest {
     void setUp() {
         clientMapper = new ClientMapper();
         address = new Address("streetTest","123", "CITYTEST", "ESPAÑA");
-        client = new Client(id, publicId, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, true, false, LocalDateTime.now(), LocalDateTime.now());
-        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA");
+        User user = new User(id, publicId, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
+        client = new Client(id, publicId, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, true, false, LocalDateTime.now(), LocalDateTime.now());
+        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
     }
 

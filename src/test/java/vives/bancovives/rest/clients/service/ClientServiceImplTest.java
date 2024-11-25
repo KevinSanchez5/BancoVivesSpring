@@ -20,9 +20,13 @@ import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
+import vives.bancovives.rest.users.dto.output.UserResponse;
+import vives.bancovives.rest.users.models.Role;
+import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,6 +45,7 @@ class ClientServiceImplTest {
     ClientCreateDto createDto;
     ClientUpdateDto updateDto;
     ClientResponseDto responseDto;
+    UserResponse userResponse;
 
 
     @Mock
@@ -55,10 +60,12 @@ class ClientServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, true, false, LocalDateTime.now(), LocalDateTime.now());
-        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA");
+        User user = new User(uuid, id, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
+        client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, true, false, LocalDateTime.now(), LocalDateTime.now());
+        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
-        responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
+        userResponse = new UserResponse(id, "usernameTest", Collections.singleton(Role.USER), false);
+        responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
     }
 
 
