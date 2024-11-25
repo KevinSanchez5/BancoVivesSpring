@@ -18,7 +18,6 @@ import java.util.Set;
 public class UserUpdateDto {
     private String username;
 
-    @Length(min = 5, message = "Password debe tener al menos 5 caracteres")
     private String password;
 
     @Builder.Default

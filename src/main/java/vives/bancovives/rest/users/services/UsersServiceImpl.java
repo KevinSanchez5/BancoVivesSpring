@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vives.bancovives.rest.users.validator.UserUpdateValidator;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j

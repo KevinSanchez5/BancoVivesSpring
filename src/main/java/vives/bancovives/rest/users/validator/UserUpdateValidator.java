@@ -8,9 +8,14 @@ import vives.bancovives.rest.users.exceptions.UserBadRequest;
 public class UserUpdateValidator {
 
     public void validateUpdate(UserUpdateDto dto) {
-        if (dto.getUsername() == null || dto.getUsername().isEmpty() && dto.getPassword() == null || dto.getPassword().isEmpty()
-                && dto.getRoles() == null || dto.getRoles().isEmpty()) {
+        if (dto.getUsername() == null  && dto.getPassword() == null && dto.getRoles() == null) {
             throw new UserBadRequest("Username y password no pueden estar vacíos");
+        }
+        if(dto.getPassword()!= null && dto.getPassword().length() < 5 && dto.getPassword().isBlank()){
+            throw new UserBadRequest("La contraseña debe tener al menos 5 caracteres");
+        }
+        if(dto.getUsername()!= null && dto.getUsername().trim().isBlank()){
+            throw new UserBadRequest("El nombre de usuario no puede estar en blanco");
         }
     }
 }

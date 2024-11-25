@@ -51,7 +51,7 @@ public class UsersMapper {
                 oldUser.getPublicId(),
                 newUser.getUsername() !=null ? newUser.getUsername() : oldUser.getUsername(),
                 newUser.getPassword() !=null ? newUser.getPassword() : oldUser.getPassword(),
-                oldUser.getRoles(),
+                newUser.getRoles() !=null ? newUser.getRoles() : oldUser.getRoles(),
                 oldUser.getClient(),
                 oldUser.getCreatedAt(),
                 LocalDateTime.now(),
