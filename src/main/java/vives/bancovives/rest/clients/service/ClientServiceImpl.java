@@ -112,15 +112,15 @@ public class ClientServiceImpl implements ClientService {
     public ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: " + id);
         Client client = existClientByPublicId(id);
-        String userPublicId = client.getUser().getPublicId();
-        client.setUser(null);
+        if(client.getUser()!=null){
+            String userPublicId = client.getUser().getPublicId();
+            client.setUser(null);
+            userService.deleteById(userPublicId);
+        }
         clientRepository.save(client);
         if (deleteData.isPresent() && deleteData.get()) {
-            userService.deleteById(userPublicId);
             return deleteDataOfClient(client);
         }
-
-        userService.deleteById(userPublicId);
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
@@ -135,6 +135,7 @@ public class ClientServiceImpl implements ClientService {
         client.setPhoto(null);
         client.setDniPicture(null);
         client.setAddress(null);
+        client.setValidated(false);
         client.setUpdatedAt(LocalDateTime.now());
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
