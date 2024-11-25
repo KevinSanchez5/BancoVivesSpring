@@ -16,10 +16,12 @@ import vives.bancovives.rest.clients.mapper.ClientMapper;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
+import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 
 @Service
 @CacheConfig(cacheNames = {"clients"})
@@ -87,7 +89,8 @@ public class ClientServiceImpl implements ClientService {
         log.info("Guardando un nuevo cliente");
         Client clientToSave = clientMapper.fromCreateDtoToEntity(createDto);
         existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail());
-        userService.saveUserFromClient(clientToSave.getUser());
+        User user = userService.saveUserFromClient(clientToSave.getUser());
+        clientToSave.setUser(user);
         return clientMapper.fromEntityToResponse(clientRepository.save(clientToSave));
     }
 
@@ -99,7 +102,8 @@ public class ClientServiceImpl implements ClientService {
         Client client = existClientByPublicId(id);
         Client updatedClient = clientMapper.fromUpdateDtoToEntity(client, updateDto);
         if(updateDto.getUsername() != null || updateDto.getPassword() != null) {
-            userService.updateUserFromClient(client.getUser().getPublicId(), updatedClient.getUser());
+            User userUpdated = userService.updateUserFromClient(client.getUser().getPublicId(), updatedClient.getUser());
+            updatedClient.setUser(userUpdated);
         }
         return clientMapper.fromEntityToResponse(clientRepository.save(updatedClient));
     }
@@ -108,11 +112,15 @@ public class ClientServiceImpl implements ClientService {
     public ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: " + id);
         Client client = existClientByPublicId(id);
+        String userPublicId = client.getUser().getPublicId();
+        client.setUser(null);
+        clientRepository.save(client);
         if (deleteData.isPresent() && deleteData.get()) {
-            userService.deleteById(client.getUser().getPublicId());
+            userService.deleteById(userPublicId);
             return deleteDataOfClient(client);
         }
-        userService.deleteById(client.getUser().getPublicId());
+
+        userService.deleteById(userPublicId);
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }

@@ -21,7 +21,7 @@ public interface UsersService {
 
     void deleteById(String id);
 
-    void saveUserFromClient(User user);
+    User saveUserFromClient(User user);
 
-    void updateUserFromClient(String publicId, User user);
+    User updateUserFromClient(String publicId, User user);
 }

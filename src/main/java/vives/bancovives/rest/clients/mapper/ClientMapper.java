@@ -81,12 +81,14 @@ public class ClientMapper {
     }
 
     public ClientResponseDto fromEntityToResponse(Client client){
-        UserResponse userResponse = new UserResponse(
+        UserResponse userResponse = null;
+        if(client.getUser()!=null){
+            userResponse = new UserResponse(
                 client.getUser().getPublicId(),
                 client.getUser().getUsername(),
                 client.getUser().getRoles(),
                 client.getUser().getIsDeleted()
-        );
+        );}
         return new ClientResponseDto(
                 client.getPublicId(),
                 client.getDni(),

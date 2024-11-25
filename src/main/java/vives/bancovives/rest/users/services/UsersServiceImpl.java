@@ -106,19 +106,19 @@ public class UsersServiceImpl implements UsersService {
         return usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
     }
 
-    public void saveUserFromClient(User user) {
+    public User saveUserFromClient(User user) {
         log.info("Guardando usuario desde cliente");
         existsUserByUsername(user.getUsername());
-        usersRepository.save(user);
+        return usersRepository.save(user);
     }
 
-    public void updateUserFromClient(String publicId, User updateUser) {
+    public User updateUserFromClient(String publicId, User updateUser) {
         log.info("Actualizando usuario desde cliente");
         User oldUser = existsUserByPublicId(publicId);
         if(updateUser.getUpdatedAt()!=null){
             existsUserByUsername(updateUser.getUsername());
         }
         User updatedUser = usersMapper.updateUserFromClient(oldUser, updateUser);
-        usersRepository.save(updatedUser);
+        return usersRepository.save(updatedUser);
     }
 }

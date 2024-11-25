@@ -55,7 +55,7 @@ public class Client {
 //    private List<Account> accounts;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = true)
     @JsonIgnoreProperties("client")
     private User user;
 
