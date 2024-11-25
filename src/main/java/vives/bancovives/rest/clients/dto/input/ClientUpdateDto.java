@@ -40,5 +40,8 @@ public class ClientUpdateDto {
     @Length(min = 5, max = 90 , message = "El pais tiene que tener entre 5 y 90 caracteres")
     private String country;
 
+    private String username;
+    private String password;
+
 
 }

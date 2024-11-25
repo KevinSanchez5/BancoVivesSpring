@@ -1,10 +1,12 @@
 package vives.bancovives.rest.clients.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
@@ -51,9 +53,11 @@ public class Client {
 // TODO : Añadir relaciones con otras entidades
 //    @OneToMany(mappedBy = "client", orphanRemoval = false)
 //    private List<Account> accounts;
-//    @OneToOne(mappedBy = "client", orphanRemoval = false)
-//    private User user;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("client")
+    private User user;
 
     @Column(name= "validated")
     private boolean validated;
@@ -77,6 +81,8 @@ public class Client {
         this.phoneNumber = phoneNumber;
         this.photo = null;
         this.dniPicture = null;
+        this.user = null;
+        this.validated = false;
         this.isDeleted = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();

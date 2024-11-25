@@ -6,8 +6,14 @@ import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.clients.model.Client;
+import vives.bancovives.rest.users.dto.output.UserResponse;
+import vives.bancovives.rest.users.models.Role;
+import vives.bancovives.rest.users.models.User;
+import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.UUID;
 
 @Component
 public class ClientMapper {
@@ -21,6 +27,17 @@ public class ClientMapper {
                 createDto.getPhoto(),
                 createDto.getDniPicture()
         );
+        User newUser = new User(
+                UUID.randomUUID(),
+                IdGenerator.generateId(),
+                createDto.getUsername(),
+                createDto.getPassword(),
+                Collections.singleton(Role.USER),
+                newClient,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                false
+        );
         newClient.setAddress(new Address(
                 createDto.getStreet().trim(),
                 createDto.getHouseNumber().trim(),
@@ -28,6 +45,7 @@ public class ClientMapper {
                 createDto.getCountry().trim().toUpperCase()
         ));
         newClient.setValidated(false);
+        newClient.setUser(newUser);
         return newClient;
     }
 
@@ -38,7 +56,7 @@ public class ClientMapper {
                 updateDto.getCity() != null ? updateDto.getCity().trim().toUpperCase() : client.getAddress().getCity(),
                 updateDto.getCountry() != null ? updateDto.getCountry().trim().toUpperCase() : client.getAddress().getCountry()
         );
-        return new Client (
+        Client updatedClient = new Client (
                 client.getId(),
                 client.getPublicId(),
                 updateDto.getDni() != null ? updateDto.getDni().toUpperCase() : client.getDni(),
@@ -48,14 +66,27 @@ public class ClientMapper {
                 updateDto.getPhoneNumber() != null ? updateDto.getPhoneNumber() : client.getPhoneNumber(),
                 updateDto.getPhoto() != null ? updateDto.getPhoto() : client.getPhoto(),
                 updateDto.getDniPicture() != null ? updateDto.getDniPicture() : client.getDniPicture(),
+                client.getUser(),
                 false,
                 false,
                 client.getCreatedAt(),
                 LocalDateTime.now()
         );
+        if(updateDto.getUsername() != null || updateDto.getPassword() != null) {
+            updatedClient.getUser().setUsername(updateDto.getUsername() != null ? updateDto.getUsername().trim() : client.getUser().getUsername());
+            updatedClient.getUser().setPassword(updateDto.getPassword() != null ? updateDto.getPassword().trim() : client.getUser().getPassword());
+            updatedClient.getUser().setUpdatedAt(LocalDateTime.now());
+        }
+        return updatedClient;
     }
 
     public ClientResponseDto fromEntityToResponse(Client client){
+        UserResponse userResponse = new UserResponse(
+                client.getUser().getPublicId(),
+                client.getUser().getUsername(),
+                client.getUser().getRoles(),
+                client.getUser().getIsDeleted()
+        );
         return new ClientResponseDto(
                 client.getPublicId(),
                 client.getDni(),
@@ -65,6 +96,7 @@ public class ClientMapper {
                 client.getPhoto(),
                 client.getDniPicture(),
                 client.getAddress(),
+                userResponse,
                 client.isValidated(),
                 client.isDeleted(),
                 client.getCreatedAt().toString(),

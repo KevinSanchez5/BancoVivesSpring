@@ -1,6 +1,7 @@
 package vives.bancovives.rest.users.controllers;
 
 import vives.bancovives.rest.users.dto.input.UserRequest;
+import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.exceptions.UserConflict;
 import vives.bancovives.rest.users.exceptions.UserNotFound;
@@ -110,7 +111,7 @@ public class UsersRestController {
      * Actualiza un usuario
      *
      * @param id          id del usuario
-     * @param userRequest usuario a actualizar
+     * @param userUpdate usuario a actualizar
      * @return Usuario actualizado
      * @throws UserNotFound                        si no existe el usuario (404)
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
@@ -118,9 +119,9 @@ public class UsersRestController {
      */
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
-    public ResponseEntity<UserResponse> updateUser(@PathVariable String id, @Valid @RequestBody UserRequest userRequest) {
-        log.info("update: id: {}, userRequest: {}", id, userRequest);
-        return ResponseEntity.ok(usersService.update(id, userRequest));
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String id, @Valid @RequestBody UserUpdateDto userUpdate) {
+        log.info("update: id: {}, userRequest: {}", id, userUpdate);
+        return ResponseEntity.ok(usersService.update(id, userUpdate));
     }
 
     /**

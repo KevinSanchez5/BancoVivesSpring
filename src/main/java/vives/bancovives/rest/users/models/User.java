@@ -1,5 +1,6 @@
 package vives.bancovives.rest.users.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import vives.bancovives.rest.clients.model.Client;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -45,6 +47,12 @@ public class User /*implements UserDetails*/ {
         @ElementCollection(fetch = FetchType.EAGER)
         @Enumerated(EnumType.STRING)
         private Set<Role> roles;
+
+
+        @OneToOne(mappedBy = "user")
+        @JsonIgnoreProperties("user")
+        private Client client;
+
 
         @CreationTimestamp
         @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

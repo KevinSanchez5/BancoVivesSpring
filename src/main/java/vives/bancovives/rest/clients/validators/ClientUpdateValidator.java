@@ -8,7 +8,7 @@ import vives.bancovives.rest.clients.exceptions.ClientBadRequest;
 public class ClientUpdateValidator {
 
     public void validateUpdateDto(ClientUpdateDto dto) {
-        if (dto.getDni() == null && dto.getCompleteName() == null && dto.getEmail() == null && dto.getPhoneNumber() == null && dto.getPhoto() == null && dto.getDniPicture() == null && dto.getStreet() == null && dto.getHouseNumber() == null && dto.getCity() == null && dto.getCountry() == null) {
+        if (dto.getDni() == null && dto.getCompleteName() == null && dto.getEmail() == null && dto.getPhoneNumber() == null && dto.getPhoto() == null && dto.getDniPicture() == null && dto.getStreet() == null && dto.getHouseNumber() == null && dto.getCity() == null && dto.getCountry() == null && dto.getUsername() == null && dto.getPassword() == null) {
             throw new ClientBadRequest("Debes introducir al menos un campo para actualizar");
         }
         if (dto.getDni() != null && !dto.getDni().matches("^[0-9]{8}[A-Za-z]$")) {
@@ -40,6 +40,12 @@ public class ClientUpdateValidator {
         }
         if (dto.getPhoto() != null && dto.getPhoto().trim().isBlank()) {
             throw new ClientBadRequest("La imagen del cliente no puede estar vacia");
+        }
+        if (dto.getUsername()!= null && dto.getUsername().trim().isBlank()) {
+            throw new ClientBadRequest("El nombre de usuario no puede estar vacio");
+        }
+        if (dto.getPassword() != null && dto.getPassword().trim().isBlank() && (dto.getPassword().length() < 5 || dto.getPassword().length() > 255)) {
+            throw new ClientBadRequest("La contraseña tiene que tener entre 5 y 255 caracteres");
         }
     }
 }

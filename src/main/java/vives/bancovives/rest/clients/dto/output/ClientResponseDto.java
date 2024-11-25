@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vives.bancovives.rest.clients.model.Address;
+import vives.bancovives.rest.users.dto.output.UserResponse;
 
 
 @Data
@@ -21,6 +22,7 @@ public class ClientResponseDto {
     private String photo;
     private String dniPicture;
     private Address address;
+    private UserResponse userResponse;
     private Boolean validated;
     private Boolean isDeleted;
     private String createdAt;

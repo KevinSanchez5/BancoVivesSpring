@@ -1,6 +1,7 @@
 package vives.bancovives.rest.users.services;
 
 import vives.bancovives.rest.users.dto.input.UserRequest;
+import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.exceptions.UserConflict;
 import vives.bancovives.rest.users.exceptions.UserNotFound;
@@ -17,8 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vives.bancovives.rest.users.validator.UserUpdateValidator;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -27,10 +30,12 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
     private final UsersMapper usersMapper;
+    private final UserUpdateValidator userUpdateValidator;
 
-    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper usersMapper) {
+    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper usersMapper, UserUpdateValidator userUpdateValidator) {
         this.usersRepository = usersRepository;
         this.usersMapper = usersMapper;
+        this.userUpdateValidator = userUpdateValidator;
     }
 
     @Override
@@ -59,7 +64,7 @@ public class UsersServiceImpl implements UsersService {
     @Cacheable(key = "#publicId")
     public UserResponse findById(String publicId) {
         log.info("Buscando usuario por id: " + publicId);
-        var user = usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
+        User user = existsUserByPublicId(publicId);
         return usersMapper.fromEntityToResponseDto(user);
     }
 
@@ -67,27 +72,18 @@ public class UsersServiceImpl implements UsersService {
     @CachePut(key = "#result.publicId")
     public UserResponse save(UserRequest userRequest) {
         log.info("Guardando usuario: " + userRequest);
-        // No debe existir otro con el mismo username o email
-        usersRepository.findByUsernameEqualsIgnoreCase(userRequest.getUsername())
-                .ifPresent(u -> {
-                    throw new UserConflict("Ya existe un usuario con ese username");
-                });
+        existsUserByUsername(userRequest.getUsername());
         return usersMapper.fromEntityToResponseDto(usersRepository.save(usersMapper.fromUpdateDtotoUser(userRequest)));
     }
 
     @Override
     @CachePut(key = "#result.publicId")
-    public UserResponse update(String publicId, UserRequest userRequest) {
-        log.info("Actualizando usuario: " + userRequest);
-        User oldUser = usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
-        // No debe existir otro con el mismo username o email, y si existe soy yo mismo
-        usersRepository.findByUsernameEqualsIgnoreCase(userRequest.getUsername())
-                .ifPresent(u -> {
-                    if (!u.getPublicId().equals(publicId)) {
-                        throw new UserConflict("Ya existe un usuario con ese username");
-                    }
-                });
-        User updatedUser = usersMapper.fromUpdateDtotoUser(oldUser, userRequest);
+    public UserResponse update(String publicId, UserUpdateDto updateDto) {
+        log.info("Actualizando usuario: " + updateDto);
+        User oldUser = existsUserByPublicId(publicId);
+        userUpdateValidator.validateUpdate(updateDto);
+        existsUserByUsername(updateDto.getUsername());
+        User updatedUser = usersMapper.fromUpdateDtotoUser(oldUser, updateDto);
         return usersMapper.fromEntityToResponseDto(usersRepository.save(updatedUser));
     }
 
@@ -96,8 +92,33 @@ public class UsersServiceImpl implements UsersService {
     @CacheEvict(key = "#publicId")
     public void deleteById(String publicId) {
         log.info("Borrando usuario por id: " + publicId);
-        usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
-        usersRepository.updateIsDeletedToTrueByPublicId(publicId);
+        User userToDelete = existsUserByPublicId(publicId);
+        usersRepository.deleteById(userToDelete.getId());
     }
 
+    public void existsUserByUsername(String username) {
+        if (usersRepository.findByUsernameEqualsIgnoreCase(username).isPresent()) {
+            throw new UserConflict("Ya existe un usuario con ese username");
+        }
+    }
+
+    public User existsUserByPublicId(String publicId) {
+        return usersRepository.findByPublicId(publicId).orElseThrow(() -> new UserNotFound(publicId));
+    }
+
+    public void saveUserFromClient(User user) {
+        log.info("Guardando usuario desde cliente");
+        existsUserByUsername(user.getUsername());
+        usersRepository.save(user);
+    }
+
+    public void updateUserFromClient(String publicId, User updateUser) {
+        log.info("Actualizando usuario desde cliente");
+        User oldUser = existsUserByPublicId(publicId);
+        if(updateUser.getUpdatedAt()!=null){
+            existsUserByUsername(updateUser.getUsername());
+        }
+        User updatedUser = usersMapper.updateUserFromClient(oldUser, updateUser);
+        usersRepository.save(updatedUser);
+    }
 }

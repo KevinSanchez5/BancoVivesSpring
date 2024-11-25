@@ -1,9 +1,11 @@
 package vives.bancovives.rest.users.services;
 
 import vives.bancovives.rest.users.dto.input.UserRequest;
+import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import vives.bancovives.rest.users.models.User;
 
 import java.util.Optional;
 
@@ -15,8 +17,11 @@ public interface UsersService {
 
     UserResponse save(UserRequest userRequest);
 
-    UserResponse update(String id, UserRequest userRequest);
+    UserResponse update(String id, UserUpdateDto updateDto);
 
     void deleteById(String id);
 
+    void saveUserFromClient(User user);
+
+    void updateUserFromClient(String publicId, User user);
 }

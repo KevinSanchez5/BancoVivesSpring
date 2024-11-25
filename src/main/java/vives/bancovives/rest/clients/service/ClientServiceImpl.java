@@ -16,6 +16,7 @@ import vives.bancovives.rest.clients.mapper.ClientMapper;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
+import vives.bancovives.rest.users.services.UsersService;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -26,12 +27,14 @@ import java.util.Optional;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final UsersService userService;
     private final ClientMapper clientMapper;
     private final ClientUpdateValidator updateValidator;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, ClientUpdateValidator updateValidator) {
+    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, ClientMapper clientMapper, ClientUpdateValidator updateValidator) {
         this.clientRepository = clientRepository;
+        this.userService = userService;
         this.clientMapper = clientMapper;
         this.updateValidator = updateValidator;
     }
@@ -84,6 +87,7 @@ public class ClientServiceImpl implements ClientService {
         log.info("Guardando un nuevo cliente");
         Client clientToSave = clientMapper.fromCreateDtoToEntity(createDto);
         existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail());
+        userService.saveUserFromClient(clientToSave.getUser());
         return clientMapper.fromEntityToResponse(clientRepository.save(clientToSave));
     }
 
@@ -94,6 +98,9 @@ public class ClientServiceImpl implements ClientService {
         existsClientByDniAndEmail(updateDto.getDni(), updateDto.getEmail());
         Client client = existClientByPublicId(id);
         Client updatedClient = clientMapper.fromUpdateDtoToEntity(client, updateDto);
+        if(updateDto.getUsername() != null || updateDto.getPassword() != null) {
+            userService.updateUserFromClient(client.getUser().getPublicId(), updatedClient.getUser());
+        }
         return clientMapper.fromEntityToResponse(clientRepository.save(updatedClient));
     }
 
@@ -102,8 +109,10 @@ public class ClientServiceImpl implements ClientService {
         log.info("Borrando cliente con id: " + id);
         Client client = existClientByPublicId(id);
         if (deleteData.isPresent() && deleteData.get()) {
+            userService.deleteById(client.getUser().getPublicId());
             return deleteDataOfClient(client);
         }
+        userService.deleteById(client.getUser().getPublicId());
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }

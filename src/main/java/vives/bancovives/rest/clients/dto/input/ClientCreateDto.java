@@ -53,4 +53,13 @@ public class ClientCreateDto {
     @NotBlank(message = "El pais no puede estar vacio")
     @Length(min = 5, max = 90 , message = "El pais tiene que tener entre 5 y 90 caracteres")
     private String country;
+
+    @NotNull(message ="Debe ingresar un nombre de usuario")
+    @NotBlank(message ="El nombre de usuario no puede estar vacio")
+    private String username;
+
+    @NotNull(message = "Debe ingresar una contraseña")
+    @NotBlank(message = "La contraseña no puede estar en blanco")
+    @Length(min = 5 , message = "Debe tener como minimo 5 caracteres")
+    private String password;
 }

@@ -1,6 +1,7 @@
 package vives.bancovives.rest.users.mappers;
 
 import vives.bancovives.rest.users.dto.input.UserRequest;
+import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.models.User;
 import org.springframework.stereotype.Component;
@@ -18,20 +19,20 @@ public class UsersMapper {
                 .username(request.getUsername())
                 .password(request.getPassword())
                 .roles(request.getRoles())
-                .isDeleted(request.getIsDeleted())
                 .build();
     }
 
-    public User fromUpdateDtotoUser(User oldUser, UserRequest request) {
+    public User fromUpdateDtotoUser(User oldUser, UserUpdateDto updateDto) {
         return new User(
                 oldUser.getId(),
                 oldUser.getPublicId(),
-                request.getUsername() !=null ? request.getUsername() : oldUser.getUsername(),
-                request.getPassword() !=null ? request.getPassword() : oldUser.getPassword(),
-                request.getRoles() !=null ? request.getRoles() : oldUser.getRoles(),
+                updateDto.getUsername() !=null ? updateDto.getUsername() : oldUser.getUsername(),
+                updateDto.getPassword() !=null ? updateDto.getPassword() : oldUser.getPassword(),
+                updateDto.getRoles() !=null ? updateDto.getRoles() : oldUser.getRoles(),
+                oldUser.getClient(),
                 oldUser.getCreatedAt(),
                 LocalDateTime.now(),
-                request.getIsDeleted() !=null ? request.getIsDeleted() : oldUser.getIsDeleted()
+                oldUser.getIsDeleted()
                 );
     }
 
@@ -42,6 +43,20 @@ public class UsersMapper {
                 .roles(user.getRoles())
                 .isDeleted(user.getIsDeleted())
                 .build();
+    }
+
+    public User updateUserFromClient(User oldUser, User newUser){
+        return new User(
+                oldUser.getId(),
+                oldUser.getPublicId(),
+                newUser.getUsername() !=null ? newUser.getUsername() : oldUser.getUsername(),
+                newUser.getPassword() !=null ? newUser.getPassword() : oldUser.getPassword(),
+                oldUser.getRoles(),
+                oldUser.getClient(),
+                oldUser.getCreatedAt(),
+                LocalDateTime.now(),
+                oldUser.getIsDeleted()
+        );
     }
 
 }
