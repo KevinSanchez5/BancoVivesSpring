@@ -18,12 +18,10 @@ public class InputCard {
     private String cardOwner;
 
     @Column(nullable = false)
-    private Integer pin;
+    private String pin;
 
-/*    @NotNull(message = "El tipo de tarjeta no puede estar vacío")
-    @ManyToOne
-    @JoinColumn(name = "products_id", nullable = false)
-    private Product cardType;*/
+    @NotBlank(message = "El tipo de tarjeta no puede estar vacío")
+    private String cardTypeName;
 
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")
     @Column(nullable = false)
@@ -34,7 +32,7 @@ public class InputCard {
     @Column(nullable = false)
     @Builder.Default
     private double weeklyLimit = 5000;
-    
+
     @DecimalMin(value = "0.0", message = "El límite mensual no puede ser negativo")
     @Column(nullable = false)
     @Builder.Default

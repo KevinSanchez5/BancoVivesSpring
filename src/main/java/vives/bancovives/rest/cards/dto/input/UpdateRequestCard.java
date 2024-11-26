@@ -1,26 +1,20 @@
 package vives.bancovives.rest.cards.dto.input;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateRequestCard {
-    @NotBlank(message = "El titular de la tarjeta no puede estar vacío")
-    private String cardOwner;
 
-    @NotNull(message = "El PIN no puede estar vacío")
-    private Integer pin;
-
- /*   @NotNull(message = "El tipo de tarjeta no puede estar vacío")
-    private Product cardType;*/
+    @Pattern(regexp = "^[0-9]{1,3}$", message = "El PIN debe estar entre 0 y 999")
+    private String pin;
 
     @Min(value = 0, message = "El límite diario no puede ser negativo")
     private Double dailyLimit;
