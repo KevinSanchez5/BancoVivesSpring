@@ -22,6 +22,7 @@ import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
 import vives.bancovives.rest.products.accounttype.repositories.AccountTypeRepository;
+import vives.bancovives.rest.products.exceptions.ProductDoesNotExistException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,13 +34,13 @@ import java.util.Optional;
 
 public class AccountServiceImpl  implements AccountService {
     
-    private final AccountRepository repository;
+    private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
     private final AccountTypeRepository accountTypeRepository;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository repository, ClientRepository clientRepository, AccountTypeRepository accountTypeRepository) {
-        this.repository = repository;
+    public AccountServiceImpl(AccountRepository accountRepository, ClientRepository clientRepository, AccountTypeRepository accountTypeRepository) {
+        this.accountRepository = accountRepository;
         this.clientRepository = clientRepository;
         this.accountTypeRepository = accountTypeRepository;
     }
@@ -62,7 +63,7 @@ public class AccountServiceImpl  implements AccountService {
 
         Specification<Account> criterio=Specification.where(ibanSpec)
                 .and(isDeletedSpec);
-        return repository.findAll(criterio, pageable);
+        return accountRepository.findAll(criterio, pageable);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class AccountServiceImpl  implements AccountService {
     @Override
     public Account findByIban(String iban) {
         log.info("Buscando cuenta por iban: {}", iban);
-        return repository.findByIban(iban).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con iban " + iban));
+        return accountRepository.findByIban(iban).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con iban " + iban));
     }
 
     @Override
@@ -83,13 +84,12 @@ public class AccountServiceImpl  implements AccountService {
     public Account save (InputAccount inputAccount){
         log.info("Guardando cuenta");
         Client client = existClientByDniAndValidated(inputAccount.getDni());
-        AccountType accountType= accountTypeRepository.findByName(inputAccount.getAccountType())
-                .orElseThrow(()-> new AccountNotFoundException("Tipo de cuenta no encontrado"));
+        AccountType accountType = existsAccountTypeByName(inputAccount.getDni());
         Account mappedAccount = AccountMapper.toAccount(inputAccount, accountType, client);
-        if(repository.findByIban(mappedAccount.getIban()).isPresent()) {
+        if(accountRepository.findByIban(mappedAccount.getIban()).isPresent()) {
             throw new AccountConflictException("La cuenta con iban " + mappedAccount.getIban() + " ya existe");
         }
-        return repository.save(mappedAccount);
+        return accountRepository.save(mappedAccount);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class AccountServiceImpl  implements AccountService {
         Account account = existsAccountByPublicId(id);
         account.setDeleted(true);
         account.setUpdatedAt(LocalDateTime.now());
-        return repository.save(account);
+        return accountRepository.save(account);
     }
 
     @CachePut(key = "#id")
@@ -117,15 +117,18 @@ public class AccountServiceImpl  implements AccountService {
         existingAccount.setUpdatedAt(LocalDateTime.now());
 
         if(updatedAccount.getAccountType() !=null){
-            AccountType accountType = accountTypeRepository.findByName(updatedAccount.getAccountType())
-                    .orElseThrow(() -> new RuntimeException("Account type not found"));
+            AccountType accountType = existsAccountTypeByName(updatedAccount.getAccountType());
             existingAccount.setAccountType(accountType);
         }
-        return repository.save(existingAccount);
+        return accountRepository.save(existingAccount);
     }
 
     public Account existsAccountByPublicId(String id){
-        return repository.findByPublicId(id).orElseThrow(()-> new AccountNotFoundException("Cuenta no encontrada con id " + id));
+        return accountRepository.findByPublicId(id).orElseThrow(()-> new AccountNotFoundException("Cuenta no encontrada con id " + id));
+    }
+
+    public AccountType existsAccountTypeByName(String name){
+        return accountTypeRepository.findByName(name.trim().toUpperCase()).orElseThrow(() -> new ProductDoesNotExistException("No existe cuenta con nombre " + name));
     }
 
     public Client existClientByDniAndValidated(String dni){
