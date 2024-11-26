@@ -63,3 +63,10 @@ INSERT INTO clients(id, public_id, dni, complete_name, street, house_number, cit
 VALUES('11b12967-5ffd-455a-aa35-65172f9b86fe', 'BgKW5qHKll4b2bcmCkV', '87654321X', 'Pepe uno', 'calle leganes', '123', 'LEGANES', 'ESPAÑA','pepeuno@test.com', 654123788, null, null, '3fa85f64-5717-4562-b3fc-2c963f66afa6', true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO clients(id, public_id, dni, complete_name, street, house_number, city, country , email, phone_number, photo, dni_picture,user_id, validated, is_deleted, created_at, updated_at)
 VALUES('f885418f-e1c0-4476-bd0e-acf1f65dbda2', 'BgKW6LJLOuU92YGkVkQ', '45678912L', 'Pepe dos', 'calle getafe', '123', 'GETAFE', 'ESPAÑA','pepedos@test.com', 654123700, null, null, 'd2886a1d-7b10-4f24-9a31-582542db0a4a', true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+
+/* Cuentas */
+INSERT INTO accounts(id, iban, balance, password, client_id, created_at, updated_at, is_deleted)
+VALUES ('96257eff-0484-4a87-9509-51a9f24daf64', 'ES71CU4N1759HNCGUNQSNXM6', 0.0, 'JAKARTA24', 'fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+
+INSERT INTO accounts(id, iban, balance, password, client_id, created_at, updated_at, is_deleted)
+VALUES ('a6f20974-a880-46b6-8b6d-069694eeaf60', 'ES51W8N4JVONAWK5B6ZA50OV', 0.0, 'JAKARTA26', '11b12967-5ffd-455a-aa35-65172f9b86fe',  CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(),false);

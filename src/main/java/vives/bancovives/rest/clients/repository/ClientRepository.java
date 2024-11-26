@@ -13,5 +13,4 @@ public interface ClientRepository extends JpaRepository<Client, UUID>, JpaSpecif
     Optional<Client> findByDniIgnoreCase(String dni);
     Optional<Client> findByEmailIgnoreCase(String email);
     Optional<Client> findByPublicId(String publicId);
-
 }
