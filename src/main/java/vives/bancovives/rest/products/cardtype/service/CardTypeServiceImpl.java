@@ -2,10 +2,7 @@ package vives.bancovives.rest.products.cardtype.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -85,7 +82,7 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductDoesNotExistException si no se encuentra
      */
     @Override
-    @Cacheable(key = "#id")
+    @Cacheable(key = "#id", unless = "#result == null")
     public CardType findById(String id) {
         log.info("Buscando el producto con id: " + id);
         return repository.findByPublicId(id).orElseThrow(
@@ -100,6 +97,7 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductDoesNotExistException si no se encuentra
      */
     @Override
+    @Cacheable(key = "#result.publicId", unless = "#result == null")
     public CardType findByName(String name) {
         log.info("Buscando el tipo de targeta con nombre: " + name);
         return repository.findByName(name.trim().toUpperCase()).orElseThrow(
@@ -132,7 +130,7 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductAlreadyExistsException si un tipo de tarjeta con el mismo nombre ya existe
      */
     @Override
-    @CachePut(key = "#result.id")
+    @CachePut(key = "#result.publicId", unless = "#result == null")
     public CardType save(NewCardType newAccountType) {
         log.info("Guardando el tipo de targeta: " + newAccountType);
         CardType mappedCardType = CardTypeMapper.toCardType(newAccountType);
@@ -148,7 +146,10 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductDoesNotExistException si no se encuentra
      */
     @Override
-    @CacheEvict(key = "#id")
+    @Caching(evict = {
+            @CacheEvict(key = "#id"),
+            @CacheEvict(key = "#result.name")
+    })
     public CardType delete(String id) {
         log.info("Eliminando el producto con id: " + id);
         CardType accountTypeToDelete = findById(id);
@@ -167,7 +168,10 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductAlreadyExistsException si un tipo de tarjeta con el mismo nombre ya existe y su ID es diferente
      */
     @Override
-    @CachePut(key = "#id")
+    @Caching(put = {
+            @CachePut(key = "#id", unless = "#result == null"),
+            @CachePut(key = "#result.name", unless = "#result == null")
+    })
     public CardType update(String id, UpdatedCardType updatedCardType) {
         log.info("Actualizando el producto con id: " + id);
         CardType existingCardType = findById(id);
