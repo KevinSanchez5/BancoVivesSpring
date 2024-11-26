@@ -8,7 +8,6 @@ import vives.bancovives.rest.clients.exceptions.ClientBadRequest;
 public class ClientUpdateValidator {
 
     public void validateUpdateDto(ClientUpdateDto dto) {
-        
         validateNotNullAtributes(dto.getDni(), dto.getCompleteName(),dto.getEmail(), dto.getPhoneNumber(),dto.getPhoto(), dto.getDniPicture(), dto.getStreet(), dto.getHouseNumber() ,dto.getCity(),dto.getCountry(),dto.getUsername(),dto.getPassword());
         validateDni(dto.getDni());
         validateCompleteName(dto.getCompleteName());
