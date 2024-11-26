@@ -1,6 +1,7 @@
 package vives.bancovives.rest.clients.mapper;
 
 import org.springframework.stereotype.Component;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
@@ -13,7 +14,10 @@ import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class ClientMapper {
@@ -67,6 +71,7 @@ public class ClientMapper {
                 updateDto.getPhoto() != null ? updateDto.getPhoto() : client.getPhoto(),
                 updateDto.getDniPicture() != null ? updateDto.getDniPicture() : client.getDniPicture(),
                 client.getUser(),
+                client.getAccounts(),
                 false,
                 false,
                 client.getCreatedAt(),
@@ -89,6 +94,7 @@ public class ClientMapper {
                 client.getUser().getRoles(),
                 client.getUser().getIsDeleted()
         );}
+        List<AccountResponseForClient> accounts = client.getAccounts().stream().map(account -> new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance())).collect(toList());
         return new ClientResponseDto(
                 client.getPublicId(),
                 client.getDni(),
@@ -99,6 +105,7 @@ public class ClientMapper {
                 client.getDniPicture(),
                 client.getAddress(),
                 userResponse,
+                accounts,
                 client.isValidated(),
                 client.isDeleted(),
                 client.getCreatedAt().toString(),

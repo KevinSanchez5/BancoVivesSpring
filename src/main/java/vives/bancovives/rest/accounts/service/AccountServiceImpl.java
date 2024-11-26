@@ -70,7 +70,7 @@ public class AccountServiceImpl  implements AccountService{
     @CachePut(key = "#result.id")
     public Account save (InputAccount account){
         log.info("Guardando cuenta"+ account);
-        Account mappedAccount = AccountMapper.toAccount(account);
+        Account mappedAccount = AccountMapper.toAccount(account, null);
         if(repository.findByIban(mappedAccount.getIban()).isPresent()) throw new AccountConflictException("La cuenta con iban " + mappedAccount.getIban() + " ya existe");
         return repository.save(mappedAccount);
     }

@@ -1,10 +1,12 @@
 package vives.bancovives.rest.accounts.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.utils.account.IbanGenerator;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -27,6 +29,8 @@ public class Account {
     @Builder.Default
     private UUID id = UUID.randomUUID();
 
+    private String publicId;
+
     @Column(nullable = false, unique = true)
     private String iban;
 
@@ -38,18 +42,26 @@ public class Account {
     @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    @JsonIgnoreProperties("accounts")
+    private Client client;
+
     @Builder.Default
     @NotNull
     @CreatedBy
+    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder.Default
     @NotNull
     @LastModifiedBy
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Builder.Default
     @NotNull
+    @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
     // Método para generar el IBAN automáticamente

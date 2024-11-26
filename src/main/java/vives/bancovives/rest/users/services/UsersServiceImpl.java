@@ -1,6 +1,5 @@
 package vives.bancovives.rest.users.services;
 
-import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.users.dto.input.UserRequest;
 import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.dto.output.UserResponse;
@@ -29,13 +28,11 @@ import java.util.Optional;
 public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
-    private final ClientRepository clientRepository;
     private final UsersMapper usersMapper;
     private final UserUpdateValidator userUpdateValidator;
 
-    public UsersServiceImpl(UsersRepository usersRepository, ClientRepository clientRepository, UsersMapper usersMapper, UserUpdateValidator userUpdateValidator) {
+    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper usersMapper, UserUpdateValidator userUpdateValidator) {
         this.usersRepository = usersRepository;
-        this.clientRepository = clientRepository;
         this.usersMapper = usersMapper;
         this.userUpdateValidator = userUpdateValidator;
     }

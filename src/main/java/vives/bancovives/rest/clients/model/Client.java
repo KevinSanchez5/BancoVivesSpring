@@ -6,10 +6,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -42,22 +44,21 @@ public class Client {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-//TODO : añadir el storage de las imagenes
+    //TODO : añadir el storage de las imagenes
     @Column(name = "photo")
     private String photo;
 
     @Column(name = "dni_picture")
     private String dniPicture;
 
-
-// TODO : Añadir relaciones con otras entidades
-//    @OneToMany(mappedBy = "client", orphanRemoval = false)
-//    private List<Account> accounts;
-
     @OneToOne
     @JoinColumn(name = "user_id", nullable = true)
     @JsonIgnoreProperties("client")
     private User user;
+
+    @OneToMany(mappedBy = "client", orphanRemoval = false)
+    @JsonIgnoreProperties("client")
+    private List<Account> accounts;
 
     @Column(name= "validated")
     private boolean validated;
