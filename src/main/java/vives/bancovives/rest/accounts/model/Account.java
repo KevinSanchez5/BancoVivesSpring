@@ -38,7 +38,7 @@ public class Account {
     @DecimalMin(value = "0.0", message = "El saldo no puede ser negativo")
     private double balance;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
 

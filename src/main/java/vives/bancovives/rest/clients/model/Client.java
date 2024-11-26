@@ -83,6 +83,7 @@ public class Client {
         this.photo = null;
         this.dniPicture = null;
         this.user = null;
+        this.accounts = null;
         this.validated = false;
         this.isDeleted = false;
         this.createdAt = LocalDateTime.now();

@@ -87,6 +87,7 @@ public class ClientMapper {
 
     public ClientResponseDto fromEntityToResponse(Client client){
         UserResponse userResponse = null;
+        List<AccountResponseForClient> accounts = null;
         if(client.getUser()!=null){
             userResponse = new UserResponse(
                 client.getUser().getPublicId(),
@@ -94,7 +95,9 @@ public class ClientMapper {
                 client.getUser().getRoles(),
                 client.getUser().getIsDeleted()
         );}
-        List<AccountResponseForClient> accounts = client.getAccounts().stream().map(account -> new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance())).collect(toList());
+        if (client.getAccounts()!=null) {
+            accounts = client.getAccounts().stream().map(account -> new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance())).collect(toList());
+        }
         return new ClientResponseDto(
                 client.getPublicId(),
                 client.getDni(),
