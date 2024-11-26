@@ -5,7 +5,6 @@ import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.exceptions.UserBadRequest;
 import vives.bancovives.rest.users.models.Role;
 
-import java.util.List;
 import java.util.Set;
 
 @Component
