@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 import vives.bancovives.rest.cards.dto.input.InputCard;
 import vives.bancovives.rest.cards.dto.input.UpdateRequestCard;
 import vives.bancovives.rest.cards.exceptions.CardDoesNotExistException;
+import vives.bancovives.rest.cards.exceptions.CardException;
 import vives.bancovives.rest.cards.mapper.CardMapper;
 import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.cards.repository.CardsRepository;
-import vives.bancovives.rest.cards.utile.CreditCardGenerator;
+import vives.bancovives.rest.products.cardtype.model.CardType;
+import vives.bancovives.rest.products.cardtype.service.CardTypeService;
+import vives.bancovives.utils.card.CreditCardGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -30,9 +33,12 @@ public class CardServiceImpl implements CardService {
 
     private final CardsRepository repository;
 
+    private final CardTypeService repositoryCardType;
+
     @Autowired
-    public CardServiceImpl(CardsRepository repository) {
+    public CardServiceImpl(CardsRepository repository, CardTypeService repositoryCardType) {
         this.repository = repository;
+        this.repositoryCardType = repositoryCardType;
     }
 
     @Override
@@ -83,14 +89,30 @@ public class CardServiceImpl implements CardService {
 
     }
 
+    public CardType existing(String name) {
+        return repositoryCardType.findByName(name);
+    }
+
+    public CardType notDelete(CardType cardType) {
+        if (cardType.getIsDeleted()) {
+            throw new CardException("El tipo de tarjeta esta borrado");
+        }
+        return cardType;
+    }
+
+    public CardType validation(String id) {
+        CardType c = existing(id);
+        notDelete(c);
+        return c;
+    }
+
     @Override
     @CachePut(key = "#result.id")
     public Card save(InputCard card) {
         log.info("Guardando tarjeta: " + card);
-        Card result = CardMapper.toCard(card);
-        result.setCardNumber(CreditCardGenerator.generateCardNumber());
-        result.setExpirationDate(CreditCardGenerator.generateExpirationDate());
-        result.setCvv(CreditCardGenerator.generateCVV());
+        CardType type = validation(card.getCardTypeName());
+        Card result = CardMapper.toCard(card, type);
+        CreditCardGenerator.generateCardDetails(result);
         return repository.save(result);
     }
 
