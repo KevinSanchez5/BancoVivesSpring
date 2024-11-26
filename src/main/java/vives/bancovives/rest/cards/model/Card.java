@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import vives.bancovives.rest.products.cardtype.model.CardType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -41,15 +42,15 @@ public class Card {
     private Integer cvv;
 
     @Column(nullable = false)
-    private Integer pin;
+    private String pin;
 
-/*
+
     @NotNull(message = "El tipo de tarjeta no puede estar vacío")
     @ManyToOne
-    @JoinColumn(name = "products_id", nullable = false)
-    private Product cardType;
-*/
-    
+    @JoinColumn(name = "card_type_id", referencedColumnName = "id", nullable = false)
+    private CardType cardType;
+
+
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")
     @Column(nullable = false)
     private double dailyLimit = 1000;

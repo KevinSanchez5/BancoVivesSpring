@@ -61,8 +61,8 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OutputAccount> getAccountById(@PathVariable UUID id){
-        log.info("Buscando una cuenta por id " + id);
+    public ResponseEntity<OutputAccount> getAccountById(@PathVariable String id){
+        log.info("Buscando cuenta con id {}", id);
         return ResponseEntity.ok(
                 AccountMapper.toOutputAccount(
                         accountService.findById(id)
@@ -92,7 +92,7 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OutputAccount>updateAccount(@PathVariable UUID id , @RequestBody @Valid InputAccount inputAccount){
+    public ResponseEntity<OutputAccount>updateAccount(@PathVariable String id , @RequestBody @Valid InputAccount inputAccount){
         log.info("Actualizando una cuenta com id {}", id);
         return ResponseEntity.ok(
                 AccountMapper.toOutputAccount(
@@ -102,7 +102,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OutputAccount> deleteAccount(@PathVariable UUID id){
+    public ResponseEntity<OutputAccount> deleteAccount(@PathVariable String id){
         log.info("Eliminando cuenta con id {}", id);
         return ResponseEntity.ok(
                 AccountMapper.toOutputAccount(

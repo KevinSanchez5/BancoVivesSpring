@@ -11,10 +11,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.utils.IdGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -40,6 +43,10 @@ public class AccountType implements Serializable {
     @Builder.Default
     @Min(value = 0, message = "El interés no puede ser negativo")
     private Double interest = null;
+
+    @OneToMany(mappedBy = "accountType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Account> accounts = new ArrayList<>();
+
     @CreatedBy
     @Builder.Default
     @NotNull

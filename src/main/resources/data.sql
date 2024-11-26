@@ -1,3 +1,12 @@
+ALTER TABLE clients
+    DROP CONSTRAINT FKTIUQDLEDQ2LYBRDS2K3RFQRV4;
+
+ALTER TABLE clients
+    ADD CONSTRAINT FKTIUQDLEDQ2LYBRDS2K3RFQRV4
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL;
+
+
+
 /* Tipos de tarjetas */
 INSERT INTO card_type(id, public_id, name, description, created_at, updated_at, is_deleted)
 VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'BgKVWAzSSYcddqW8rRd', 'TARJETA DE CRÉDITO', 'Descripción de tarjeta de crédito', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
@@ -54,3 +63,10 @@ INSERT INTO clients(id, public_id, dni, complete_name, street, house_number, cit
 VALUES('11b12967-5ffd-455a-aa35-65172f9b86fe', 'BgKW5qHKll4b2bcmCkV', '87654321X', 'Pepe uno', 'calle leganes', '123', 'LEGANES', 'ESPAÑA','pepeuno@test.com', 654123788, null, null, '3fa85f64-5717-4562-b3fc-2c963f66afa6', true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO clients(id, public_id, dni, complete_name, street, house_number, city, country , email, phone_number, photo, dni_picture,user_id, validated, is_deleted, created_at, updated_at)
 VALUES('f885418f-e1c0-4476-bd0e-acf1f65dbda2', 'BgKW6LJLOuU92YGkVkQ', '45678912L', 'Pepe dos', 'calle getafe', '123', 'GETAFE', 'ESPAÑA','pepedos@test.com', 654123700, null, null, 'd2886a1d-7b10-4f24-9a31-582542db0a4a', true, false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+
+/* Cuentas */
+INSERT INTO accounts(id, public_id, iban, balance, password, account_type, client_id, created_at, updated_at, is_deleted)
+VALUES ('96257eff-0484-4a87-9509-51a9f24daf64', 'BgLi9HNRv_UnWaC0Kkw', 'ES71CU4N1759HNCGUNQSNXM6', 0.0, 'JAKARTA24', '1e4b41d8-9d4c-4321-ade7-3c8a843626e2','fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+
+INSERT INTO accounts(id, public_id, iban, balance, password, account_type, client_id, created_at, updated_at, is_deleted)
+VALUES ('a6f20974-a880-46b6-8b6d-069694eeaf60', 'BgLi9quF_BMyN0F8Nxs', 'ES51W8N4JVONAWK5B6ZA50OV', 0.0, 'JAKARTA26', '1e4b41d8-9d4c-4321-ade7-3c8a843626e2','11b12967-5ffd-455a-aa35-65172f9b86fe',  CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(),false);

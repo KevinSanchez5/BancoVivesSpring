@@ -1,0 +1,10 @@
+Que el cliente tenga los datos validados: cuentas
+
+que los tipos de tarjetas no esten borrados: Tarjetas
+que los tipos de cuentas no esten borradas: Cuentas
+
+
+que el cliente no este borrado: cuentas y usuarios
+
+que la cuenta no este borrada: tarjetas
+
