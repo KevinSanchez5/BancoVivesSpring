@@ -96,7 +96,10 @@ public class ClientMapper {
                 client.getUser().getIsDeleted()
         );}
         if (client.getAccounts()!=null) {
-            accounts = client.getAccounts().stream().map(account -> new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance())).collect(toList());
+            accounts = client.getAccounts().stream()
+                    .filter(account -> !account.isDeleted())
+                    .map(account -> new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance())
+            ).collect(toList());
         }
         return new ClientResponseDto(
                 client.getPublicId(),
