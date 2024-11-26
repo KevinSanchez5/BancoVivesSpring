@@ -1,6 +1,5 @@
 package vives.bancovives.rest.accounts.service;
 
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vives.bancovives.rest.accounts.model.Account;
@@ -8,7 +7,6 @@ import vives.bancovives.rest.accounts.dto.input.InputAccount;
 
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface AccountService {
     Page<Account> findAll(
@@ -19,7 +17,7 @@ public interface AccountService {
     Account findById(String id);
     Account findByIban(String iban);
     Account save(InputAccount account);
-    Account deleteById(UUID id);
-    Account updateById(UUID id, InputAccount updatedAccount);
+    Account deleteById(String id);
+    Account updateById(String id, InputAccount updatedAccount);
 
 }
