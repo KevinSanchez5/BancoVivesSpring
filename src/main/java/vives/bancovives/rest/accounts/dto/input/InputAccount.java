@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InputAccount {
-    @DecimalMin(value = "0.0", message = "El saldo no puede ser negativo")
-    private double balance;
     @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
+    @NotBlank(message = "El tipo de cuenta no puede estar vacío")
+    private String accountType;
 }

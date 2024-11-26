@@ -61,8 +61,8 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OutputAccount> getAccountById(@PathVariable UUID id){
-        log.info("Buscando una cuenta por id " + id);
+    public ResponseEntity<OutputAccount> getAccountById(@PathVariable String id){
+        log.info("Buscando cuenta con id {}", id);
         return ResponseEntity.ok(
                 AccountMapper.toOutputAccount(
                         accountService.findById(id)
