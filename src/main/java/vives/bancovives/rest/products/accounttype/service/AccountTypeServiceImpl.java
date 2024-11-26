@@ -104,7 +104,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @throws ProductDoesNotExistException si no existe un tipo de cuenta con ese nombre
      */
     @Override
-    @Cacheable(key = "#result.publicId", unless = "#result == null")
+    @Cacheable(key = "#name", unless = "#result == null")
     public AccountType findByName(String name) {
         log.info("Buscando el producto con nombre: " + name);
         return repository.findByName(name.trim().toUpperCase()).orElseThrow(

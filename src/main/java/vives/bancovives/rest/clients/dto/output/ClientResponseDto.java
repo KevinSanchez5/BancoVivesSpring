@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.users.dto.output.UserResponse;
+
+import java.util.List;
 
 
 @Data
@@ -23,6 +26,7 @@ public class ClientResponseDto {
     private String dniPicture;
     private Address address;
     private UserResponse userResponse;
+    private List<AccountResponseForClient> accounts;
     private Boolean validated;
     private Boolean isDeleted;
     private String createdAt;

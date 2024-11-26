@@ -97,7 +97,7 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductDoesNotExistException si no se encuentra
      */
     @Override
-    @Cacheable(key = "#result.publicId", unless = "#result == null")
+    @Cacheable(key = "#name", unless = "#result == null")
     public CardType findByName(String name) {
         log.info("Buscando el tipo de targeta con nombre: " + name);
         return repository.findByName(name.trim().toUpperCase()).orElseThrow(

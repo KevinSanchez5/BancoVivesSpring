@@ -13,13 +13,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
-import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.clients.service.ClientService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.version}/clients")

@@ -8,7 +8,6 @@ import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Client;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ClientService {
 
