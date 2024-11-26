@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
-import vives.bancovives.rest.accounts.dto.output.OutputAccount;
 import vives.bancovives.rest.clients.model.Address;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 

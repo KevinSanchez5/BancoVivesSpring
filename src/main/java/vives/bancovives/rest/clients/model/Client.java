@@ -52,11 +52,11 @@ public class Client {
     private String dniPicture;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("client")
     private User user;
 
-    @OneToMany(mappedBy = "client", orphanRemoval = false)
+    @OneToMany(mappedBy = "client")
     @JsonIgnoreProperties("client")
     private List<Account> accounts;
 
