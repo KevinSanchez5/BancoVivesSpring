@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
+import vives.bancovives.utils.IdGenerator;
 import vives.bancovives.utils.account.IbanGenerator;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -22,10 +23,13 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account {
-
     @Id
     @Builder.Default
     private UUID id = UUID.randomUUID();
+
+    @Column
+    @Builder.Default
+    private String publicId = IdGenerator.generateId();
 
     @Column(nullable = false, unique = true)
     private String iban;

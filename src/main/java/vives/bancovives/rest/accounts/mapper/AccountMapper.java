@@ -9,7 +9,7 @@ public class AccountMapper {
 
     public static OutputAccount toOutputAccount(Account account) {
         return OutputAccount.builder()
-                .id(account.getId())
+                .id(account.getPublicId())
                 .iban(account.getIban())
                 .balance(account.getBalance())
                 .createdAt(account.getCreatedAt().toString())

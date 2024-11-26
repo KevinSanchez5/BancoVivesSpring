@@ -63,9 +63,9 @@ public class AccountServiceImpl  implements AccountService{
 
     @Override
     @Cacheable(key = "#id")
-    public Account findById(UUID id) {
+    public Account findById(String id) {
         log.info("Buscando cuenta por id: {}", id);
-        return repository.findById(id).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con id " + id));
+        return repository.findByPublicId(id).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con id " + id));
     }
 
     @Override
