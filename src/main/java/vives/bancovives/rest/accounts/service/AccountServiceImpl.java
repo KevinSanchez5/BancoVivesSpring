@@ -24,7 +24,6 @@ import java.util.UUID;
 @Service
 @Slf4j
 @CacheConfig(cacheNames = {"accounts"})
-
 public class AccountServiceImpl  implements AccountService{
     private final AccountRepository repository;
 
@@ -110,7 +109,4 @@ public class AccountServiceImpl  implements AccountService{
             throw new AccountNotFoundException("Cuenta no encontrada con id " + id);
         }
     }
-
-
-
 }

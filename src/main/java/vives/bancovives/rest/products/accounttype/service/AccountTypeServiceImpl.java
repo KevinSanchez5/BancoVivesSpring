@@ -93,7 +93,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @throws ProductDoesNotExistException si no se encuentra un tipo de cuenta con el ID especificado
      */
     @Override
-    @Cacheable(key = "#id")
+    @Cacheable(key = "#id", unless = "#result == null")
     public AccountType findById(String id) {
         log.info("Recuperando tipo de cuenta con ID: {}", id);
         return repository.findByPublicId(id)
@@ -107,6 +107,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @throws ProductDoesNotExistException si no existe un tipo de cuenta con ese nombre
      */
     @Override
+    @Cacheable(key = "#name", unless = "#result == null")
     public AccountType findByName(String name) {
         log.info("Buscando el producto con nombre: " + name);
         return repository.findByName(name.trim().toUpperCase()).orElseThrow(
@@ -135,7 +136,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @return el {@link AccountType} creado
      */
     @Override
-    @CachePut(key = "#result.id")
+    @CachePut(key = "#result.publicId", unless = "#result == null")
     public AccountType save(NewAccountType newAccountType) {
         log.info("Creando un nuevo tipo de cuenta: {}", newAccountType);
         AccountType mappedAccountType = AccountTypeMapper.toAccountType(newAccountType);
@@ -167,7 +168,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @return el {@link AccountType} actualizado
      */
     @Override
-    @CachePut(key = "#id")
+    @CachePut(key = "#id", unless = "#result == null")
     public AccountType update(String id, UpdatedAccountType updatedAccountType) {
         log.info("Actualizando tipo de cuenta con ID: {}", id);
         AccountType existingAccountType = findById(id);
