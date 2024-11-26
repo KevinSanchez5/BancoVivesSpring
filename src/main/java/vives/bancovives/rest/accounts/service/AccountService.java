@@ -16,7 +16,7 @@ public interface AccountService {
         Optional<Boolean> isDeleted,
         Pageable pageable
     );
-    Account findById(UUID id);
+    Account findById(String id);
     Account findByIban(String iban);
     Account save(InputAccount account);
     Account deleteById(UUID id);

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpecificationExecutor<Account> {
+    Optional<Account> findByPublicId(String id);
     Optional<Account> findByIban(String iban);
 
 }
