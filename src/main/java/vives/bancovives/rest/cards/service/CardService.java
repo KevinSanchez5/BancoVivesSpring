@@ -2,6 +2,8 @@ package vives.bancovives.rest.cards.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import vives.bancovives.rest.accounts.model.Account;
+import vives.bancovives.rest.accounts.repositories.AccountRepository;
 import vives.bancovives.rest.cards.dto.input.InputCard;
 import vives.bancovives.rest.cards.dto.input.UpdateRequestCard;
 import vives.bancovives.rest.cards.model.Card;

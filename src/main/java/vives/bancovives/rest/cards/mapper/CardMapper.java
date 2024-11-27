@@ -1,5 +1,7 @@
 package vives.bancovives.rest.cards.mapper;
 
+import vives.bancovives.rest.accounts.mapper.AccountMapper;
+import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.cards.dto.input.InputCard;
 import vives.bancovives.rest.cards.dto.input.UpdateRequestCard;
 import vives.bancovives.rest.cards.dto.output.OutputCard;
@@ -11,11 +13,12 @@ import java.time.LocalDateTime;
 
 public class CardMapper {
 
-    public static Card toCard(InputCard inputCard, CardType cardType) {
+    public static Card toCard(InputCard inputCard, CardType cardType, Account account) {
         return Card.builder()
                 .cardOwner(inputCard.getCardOwner().trim().toUpperCase())
                 .pin(inputCard.getPin())
                 .cardType(cardType)
+                .account(account)
                 .dailyLimit(inputCard.getDailyLimit())
                 .weeklyLimit(inputCard.getWeeklyLimit())
                 .monthlyLimit(inputCard.getMonthlyLimit())
@@ -48,6 +51,7 @@ public class CardMapper {
                 .expirationDate(String.valueOf(card.getExpirationDate()))
                 .cvv(card.getCvv())
                 .pin(card.getPin())
+                .account(AccountMapper.toOutputAccount(card.getAccount()))
                 .cardType(CardTypeMapper.toOutputCardType(card.getCardType()))
                 .dailyLimit(card.getDailyLimit())
                 .weeklyLimit(card.getWeeklyLimit())

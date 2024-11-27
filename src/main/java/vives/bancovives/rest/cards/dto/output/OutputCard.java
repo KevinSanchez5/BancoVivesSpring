@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vives.bancovives.rest.accounts.dto.output.OutputAccount;
 import vives.bancovives.rest.products.cardtype.dto.output.OutputCardType;
-import vives.bancovives.rest.products.cardtype.model.CardType;
 
 import java.util.UUID;
 
@@ -22,6 +22,7 @@ public final class OutputCard {
     private String expirationDate;
     private Integer cvv;
     private String pin;
+    private OutputAccount account;
     private OutputCardType cardType;
     private double dailyLimit;
     private double weeklyLimit;

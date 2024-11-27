@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.products.cardtype.model.CardType;
 
 import java.time.LocalDateTime;
@@ -43,6 +44,10 @@ public class Card {
 
     @Column(nullable = false)
     private String pin;
+
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    private Account account;
 
 
     @NotNull(message = "El tipo de tarjeta no puede estar vacío")
