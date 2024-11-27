@@ -2,10 +2,7 @@ package vives.bancovives.rest.products.cardtype.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -149,7 +146,10 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductDoesNotExistException si no se encuentra
      */
     @Override
-    @CacheEvict(key = "#id")
+    @Caching(evict = {
+            @CacheEvict(key = "#id"),
+            @CacheEvict(key = "#result.name")
+    })
     public CardType delete(String id) {
         log.info("Eliminando el producto con id: " + id);
         CardType accountTypeToDelete = findById(id);
@@ -168,7 +168,10 @@ public class CardTypeServiceImpl implements CardTypeService {
      * @throws ProductAlreadyExistsException si un tipo de tarjeta con el mismo nombre ya existe y su ID es diferente
      */
     @Override
-    @CachePut(key = "#id", unless = "#result == null")
+    @Caching(put = {
+            @CachePut(key = "#id", unless = "#result == null"),
+            @CachePut(key = "#result.name", unless = "#result == null")
+    })
     public CardType update(String id, UpdatedCardType updatedCardType) {
         log.info("Actualizando el producto con id: " + id);
         CardType existingCardType = findById(id);
