@@ -66,10 +66,10 @@ public class ClientServiceImpl implements ClientService {
                 email.map(em -> criteriaBuilder.like(criteriaBuilder.upper(root.get("email")), "%" + em.toUpperCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Client> specStreet = (root, query, criteriaBuilder) ->
-                street.map(st -> criteriaBuilder.like(criteriaBuilder.upper(root.get("adress").get("street")), "%" + st.toUpperCase() + "%"))
+                street.map(st -> criteriaBuilder.like(criteriaBuilder.upper(root.get("address").get("street")), "%" + st.toUpperCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Client> specCity = (root, query, criteriaBuilder) ->
-                city.map(ci -> criteriaBuilder.like(criteriaBuilder.upper(root.get("adress").get("city")), "%" + ci.toUpperCase() + "%"))
+                city.map(ci -> criteriaBuilder.like(criteriaBuilder.upper(root.get("address").get("city")), "%" + ci.toUpperCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Client> specValidated = (root, query, criteriaBuilder) ->
                 validated.map(v -> criteriaBuilder.equal(root.get("validated"), v))

@@ -48,6 +48,8 @@ public class AccountServiceImpl  implements AccountService {
     @Override
     public Page<Account> findAll(
             Optional<String> iban,
+            Optional<String> clientDni,
+            Optional<String> accountTypeName,
             Optional<Boolean> isDeleted,
             Pageable pageable
 
@@ -57,11 +59,19 @@ public class AccountServiceImpl  implements AccountService {
                 iban.map(m->criteriaBuilder.like(criteriaBuilder.lower(root.get("iban")), "%" + m.toLowerCase() + "%"))
                         .orElseGet(()->criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
 
+        Specification<Account> clientDniSpec = ((root, query, criteriaBuilder) ->
+                clientDni.map(cli->criteriaBuilder.like(criteriaBuilder.lower(root.get("client").get("dni")), "%" + cli.toLowerCase() + "%"))
+                        .orElseGet(()->criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+
+        Specification<Account> accountTypeNameSpec = ((root, query, criteriaBuilder) ->
+                accountTypeName.map(m->criteriaBuilder.like(criteriaBuilder.lower(root.get("accountType").get("name")), "%" + m.toLowerCase() + "%"))
+                        .orElseGet(()->criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
+
         Specification<Account> isDeletedSpec= ((root, query, criteriaBuilder) ->
                 isDeleted.map(m->criteriaBuilder.equal(root.get("isDeleted"), m))
                         .orElseGet(()->criteriaBuilder.isTrue(criteriaBuilder.literal(true))));
 
-        Specification<Account> criterio=Specification.where(ibanSpec)
+        Specification<Account> criterio=Specification.where(ibanSpec).and(clientDniSpec).and(accountTypeNameSpec)
                 .and(isDeletedSpec);
         return accountRepository.findAll(criterio, pageable);
     }

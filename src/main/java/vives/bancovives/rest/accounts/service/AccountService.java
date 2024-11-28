@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface AccountService {
     Page<Account> findAll(
         Optional<String> iban,
+        Optional<String> clientDni,
+        Optional<String> accountTypeName,
         Optional<Boolean> isDeleted,
         Pageable pageable
     );
