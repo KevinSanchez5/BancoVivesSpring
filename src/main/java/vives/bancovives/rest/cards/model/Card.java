@@ -12,7 +12,9 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.products.cardtype.model.CardType;
+import vives.bancovives.utils.IdGenerator;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -24,10 +26,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Card {
+public class Card implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Builder.Default
+    String publicId = IdGenerator.generateId();
 
     @Column(nullable = false, unique = true)
     private String cardNumber;
@@ -45,15 +50,16 @@ public class Card {
     @Column(nullable = false)
     private String pin;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
-    private Account account;
-
 
     @NotNull(message = "El tipo de tarjeta no puede estar vacío")
     @ManyToOne
     @JoinColumn(name = "card_type_id", referencedColumnName = "id", nullable = false)
     private CardType cardType;
+
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    private Account account;
+
 
 
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")

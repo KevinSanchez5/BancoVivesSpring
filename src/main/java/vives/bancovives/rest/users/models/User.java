@@ -15,6 +15,7 @@ import vives.bancovives.rest.clients.model.Client;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +27,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class) // Para que sea auditada y se autorellene
-public class User /*implements UserDetails*/ {
+public class User /*implements UserDetails*/  implements Serializable {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "id", updatable = false, nullable = false)

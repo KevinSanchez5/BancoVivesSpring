@@ -11,9 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vives.bancovives.rest.accounts.exception.AccountException;
-
 import vives.bancovives.rest.accounts.model.Account;
-import vives.bancovives.rest.accounts.repositories.AccountRepository;
 import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.cards.dto.input.InputCard;
 import vives.bancovives.rest.cards.dto.input.UpdateRequestCard;
@@ -28,8 +26,6 @@ import vives.bancovives.utils.card.CreditCardGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
-
 
 @Service
 @Slf4j
@@ -37,14 +33,14 @@ import java.util.UUID;
 public class CardServiceImpl implements CardService {
 
     private final CardsRepository repository;
-    private final AccountService accountRepository;
     private final CardTypeService repositoryCardType;
+    private final AccountService accountRepository;
 
     @Autowired
-    public CardServiceImpl(CardsRepository repository, AccountService accountRepository, CardTypeService repositoryCardType) {
+    public CardServiceImpl(CardsRepository repository, CardTypeService repositoryCardType, AccountService accountRepository) {
         this.repository = repository;
-        this.accountRepository = accountRepository;
         this.repositoryCardType = repositoryCardType;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -78,35 +74,33 @@ public class CardServiceImpl implements CardService {
         return repository.findAll(criteria, pageable);
     }
 
+
     @Override
     @Cacheable(key = "#id")
-    public Card findById(UUID id) {
-        log.info("Buscando la tarjeta con id: {}", id);
-        return repository.findById(id).orElseThrow(
+    public Card findById(String id) {
+        log.info("Buscando la tarjeta con id: " + id);
+        return repository.findByPublicId(id).orElseThrow(
                 () -> new CardDoesNotExistException("La tarjeta con id: " + id + " no existe"));
     }
-
 
     @Override
     public Card findByOwner(String nombre) {
         log.info("Buscando el producto con nombre: " + nombre);
         return repository.findByCardOwner(nombre.trim().toUpperCase()).orElseThrow(
                 () -> new CardDoesNotExistException("La tarjeta con nombre: " + nombre + " no existe"));
-
     }
 
     public CardType existing(String name) {
         return repositoryCardType.findByName(name);
     }
-
+    public Account existingAccount(String iban) {
+        return accountRepository.findByIban(iban);
+    }
     public Account notDeleteAccount(Account account) {
         if (account.isDeleted()) {
             throw new AccountException("Cuenta borrada");
         }
         return account;
-    }
-    public Account existingAccount(String iban) {
-        return accountRepository.findByIban(iban);
     }
 
     public CardType notDelete(CardType cardType) {
@@ -116,23 +110,23 @@ public class CardServiceImpl implements CardService {
         return cardType;
     }
 
-
     public CardType validation(String id) {
         CardType c = existing(id);
         notDelete(c);
         return c;
     }
-    public Account accountValidation(String iban){
-        Account a = existingAccount(iban);
-        notDeleteAccount(a);
-        return a;
+
+    public Account validationAccount(String iban) {
+        Account c = existingAccount(iban);
+        notDeleteAccount(c);
+        return c;
     }
 
     @Override
     @CachePut(key = "#result.id")
     public Card save(InputCard card) {
         log.info("Guardando tarjeta: " + card);
-        Account account = accountValidation(card.getAccount());
+        Account account = validationAccount(card.getAccount());
         CardType type = validation(card.getCardTypeName());
         Card result = CardMapper.toCard(card, type,account);
         CreditCardGenerator.generateCardDetails(result);
@@ -141,18 +135,18 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @CacheEvict(key = "#id")
-    public Card deleteById(UUID id) {
-        log.info("Eliminando la tarjeta con id: {}", id);
+    public Card deleteById(String id) {
+        log.info("Eliminando la tarjeta con id: " + id);
         Card result = findById(id);
         result.setIsDeleted(true);
         result.setLastUpdate(LocalDateTime.now());
-        return result;
+        return repository.save(result);
     }
 
     @Override
     @CachePut(key = "#id")
-    public Card updateById(UUID id, UpdateRequestCard updateCard) {
-        log.info("Actualizando la tarjeta con id: {}", id);
+    public Card updateById(String id, UpdateRequestCard updateCard) {
+        log.info("Actualizando la tarjeta con id: " + id);
         Card existingCard = findById(id);
         Card updatedCard = CardMapper.toCard(updateCard, existingCard);
         return repository.save(updatedCard);

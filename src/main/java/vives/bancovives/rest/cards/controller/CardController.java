@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,7 +23,6 @@ import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -66,11 +66,11 @@ public class CardController {
     public ResponseEntity<OutputCard> createCard(@RequestBody @Valid InputCard inputCard) {
         log.info("Creating a new card");
         Card card = cardService.save(inputCard);
-        return ResponseEntity.ok(CardMapper.toOutputCard(card));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CardMapper.toOutputCard(card));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OutputCard> getCardById(@PathVariable UUID id) {
+    public ResponseEntity<OutputCard> getCardById(@PathVariable String id) {
         log.info("Fetching card by ID: {}", id);
         Card card = cardService.findById(id);
         return ResponseEntity.ok(CardMapper.toOutputCard(card));
@@ -85,7 +85,7 @@ public class CardController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OutputCard> updateCard(
-            @PathVariable UUID id,
+            @PathVariable String id,
             @RequestBody @Valid UpdateRequestCard updateRequestCard
     ) {
         log.info("Updating card by ID: {}", id);
@@ -94,11 +94,9 @@ public class CardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OutputCard> deleteCard(@PathVariable UUID id) {
+    public ResponseEntity<OutputCard> deleteCard(@PathVariable String id) {
         log.info("Deleting card by ID: {}", id);
         Card deletedCard = cardService.deleteById(id);
         return ResponseEntity.ok(CardMapper.toOutputCard(deletedCard));
     }
-
-
 }

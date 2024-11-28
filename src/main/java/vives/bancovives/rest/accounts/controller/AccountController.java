@@ -3,10 +3,12 @@ package vives.bancovives.rest.accounts.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -74,10 +76,11 @@ public class AccountController {
     @PostMapping
     public ResponseEntity<OutputAccount> createAccount(@RequestBody @Valid InputAccount inputAccount){
         log.info("Creando cuenta");
-        return ResponseEntity.ok(
-                AccountMapper.toOutputAccount(
-                        accountService.save(inputAccount)
-                )
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(
+                        AccountMapper.toOutputAccount(
+                                accountService.save(inputAccount)
+                        )
         );
     }
 
