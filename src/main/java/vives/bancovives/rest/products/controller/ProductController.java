@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -107,10 +108,11 @@ public class ProductController {
     @PostMapping("/accounts")
     public ResponseEntity<OutputAccountType> createAccountType(@RequestBody @Valid NewAccountType newAccountType) {
         log.info("Creando un nuevo tipo de cuenta");
-        return ResponseEntity.ok(
-                AccountTypeMapper.toOutputAccountType(
-                        accountTypeService.save(newAccountType)
-                )
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(
+                        AccountTypeMapper.toOutputAccountType(
+                                accountTypeService.save(newAccountType)
+                        )
         );
     }
 
@@ -233,10 +235,11 @@ public class ProductController {
     @PostMapping("/cards")
     public ResponseEntity<OutputCardType> createCardType(@RequestBody @Valid NewCardType newCardType) {
         log.info("Creando un nuevo producto");
-        return ResponseEntity.ok(
-                CardTypeMapper.toOutputCardType(
-                        cardTypeService.save(newCardType)
-                )
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(
+                        CardTypeMapper.toOutputCardType(
+                                cardTypeService.save(newCardType)
+                        )
         );
     }
 

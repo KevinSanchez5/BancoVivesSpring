@@ -23,6 +23,10 @@ public class InputCard {
     @NotBlank(message = "El tipo de tarjeta no puede estar vacío")
     private String cardTypeName;
 
+
+    @NotBlank(message = "La cuenta no puede estar vacía")
+    private String account;
+
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")
     @Column(nullable = false)
     @Builder.Default

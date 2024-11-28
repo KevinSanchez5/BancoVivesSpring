@@ -10,6 +10,7 @@ import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "clients")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Client {
+public class Client implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

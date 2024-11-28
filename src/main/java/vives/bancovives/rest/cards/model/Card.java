@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.products.cardtype.model.CardType;
 import vives.bancovives.utils.IdGenerator;
 
@@ -54,6 +55,11 @@ public class Card implements Serializable {
     @ManyToOne
     @JoinColumn(name = "card_type_id", referencedColumnName = "id", nullable = false)
     private CardType cardType;
+
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    private Account account;
+
 
 
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")

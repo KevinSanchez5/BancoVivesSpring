@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vives.bancovives.rest.accounts.exception.AccountException;
+import vives.bancovives.rest.accounts.model.Account;
+import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.cards.dto.input.InputCard;
 import vives.bancovives.rest.cards.dto.input.UpdateRequestCard;
 import vives.bancovives.rest.cards.exceptions.CardDoesNotExistException;
@@ -31,11 +34,13 @@ public class CardServiceImpl implements CardService {
 
     private final CardsRepository repository;
     private final CardTypeService repositoryCardType;
+    private final AccountService accountRepository;
 
     @Autowired
-    public CardServiceImpl(CardsRepository repository, CardTypeService repositoryCardType) {
+    public CardServiceImpl(CardsRepository repository, CardTypeService repositoryCardType, AccountService accountRepository) {
         this.repository = repository;
         this.repositoryCardType = repositoryCardType;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -88,6 +93,15 @@ public class CardServiceImpl implements CardService {
     public CardType existing(String name) {
         return repositoryCardType.findByName(name);
     }
+    public Account existingAccount(String iban) {
+        return accountRepository.findByIban(iban);
+    }
+    public Account notDeleteAccount(Account account) {
+        if (account.isDeleted()) {
+            throw new AccountException("Cuenta borrada");
+        }
+        return account;
+    }
 
     public CardType notDelete(CardType cardType) {
         if (cardType.getIsDeleted()) {
@@ -102,12 +116,19 @@ public class CardServiceImpl implements CardService {
         return c;
     }
 
+    public Account validationAccount(String iban) {
+        Account c = existingAccount(iban);
+        notDeleteAccount(c);
+        return c;
+    }
+
     @Override
     @CachePut(key = "#result.id")
     public Card save(InputCard card) {
         log.info("Guardando tarjeta: " + card);
+        Account account = validationAccount(card.getAccount());
         CardType type = validation(card.getCardTypeName());
-        Card result = CardMapper.toCard(card, type);
+        Card result = CardMapper.toCard(card, type,account);
         CreditCardGenerator.generateCardDetails(result);
         return repository.save(result);
     }
