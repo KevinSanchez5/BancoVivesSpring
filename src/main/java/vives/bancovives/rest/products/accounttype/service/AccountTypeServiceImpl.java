@@ -2,10 +2,7 @@ package vives.bancovives.rest.products.accounttype.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -115,7 +112,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
     }
 
     /**
-     * Valida que no exista un tipo de cuenta con el mismo nombre y un ID diferente.
+     * Valída que no exista un tipo de cuenta con el mismo nombre y un ID diferente.
      *
      * @param name el nombre del tipo de cuenta a validar
      * @param id   el identificador único del tipo de cuenta, o null si se está creando uno nuevo
@@ -151,7 +148,10 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @return el {@link AccountType} eliminado
      */
     @Override
-    @CacheEvict(key = "#id")
+    @Caching(evict = {
+            @CacheEvict(key = "#id"),
+            @CacheEvict(key = "#result.name")
+    })
     public AccountType delete(String id) {
         log.info("Eliminando tipo de cuenta con ID: {}", id);
         AccountType accountTypeToDelete = findById(id);
@@ -168,6 +168,10 @@ public class AccountTypeServiceImpl implements AccountTypeService {
      * @return el {@link AccountType} actualizado
      */
     @Override
+    @Caching(put = {
+            @CachePut(key = "#id", unless = "#result == null"),
+            @CachePut(key = "#result.name", unless = "#result == null")
+    })
     @CachePut(key = "#id", unless = "#result == null")
     public AccountType update(String id, UpdatedAccountType updatedAccountType) {
         log.info("Actualizando tipo de cuenta con ID: {}", id);
