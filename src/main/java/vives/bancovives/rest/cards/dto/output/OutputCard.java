@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import vives.bancovives.rest.products.cardtype.dto.output.OutputCardType;
 import vives.bancovives.rest.products.cardtype.model.CardType;
+import vives.bancovives.utils.IdGenerator;
 
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class OutputCard {
-    private UUID id;
+    private String id;
     private String cardNumber;
     private String cardOwner;
     private String expirationDate;

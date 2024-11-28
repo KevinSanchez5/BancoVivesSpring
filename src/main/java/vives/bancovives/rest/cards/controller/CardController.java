@@ -22,7 +22,6 @@ import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -70,7 +69,7 @@ public class CardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OutputCard> getCardById(@PathVariable UUID id) {
+    public ResponseEntity<OutputCard> getCardById(@PathVariable String id) {
         log.info("Fetching card by ID: {}", id);
         Card card = cardService.findById(id);
         return ResponseEntity.ok(CardMapper.toOutputCard(card));
@@ -85,7 +84,7 @@ public class CardController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OutputCard> updateCard(
-            @PathVariable UUID id,
+            @PathVariable String id,
             @RequestBody @Valid UpdateRequestCard updateRequestCard
     ) {
         log.info("Updating card by ID: {}", id);
@@ -94,11 +93,9 @@ public class CardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OutputCard> deleteCard(@PathVariable UUID id) {
+    public ResponseEntity<OutputCard> deleteCard(@PathVariable String id) {
         log.info("Deleting card by ID: {}", id);
         Card deletedCard = cardService.deleteById(id);
         return ResponseEntity.ok(CardMapper.toOutputCard(deletedCard));
     }
-
-
 }

@@ -23,8 +23,6 @@ import vives.bancovives.utils.card.CreditCardGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
-
 
 @Service
 @Slf4j
@@ -32,7 +30,6 @@ import java.util.UUID;
 public class CardServiceImpl implements CardService {
 
     private final CardsRepository repository;
-
     private final CardTypeService repositoryCardType;
 
     @Autowired
@@ -72,21 +69,20 @@ public class CardServiceImpl implements CardService {
         return repository.findAll(criteria, pageable);
     }
 
+
     @Override
     @Cacheable(key = "#id")
-    public Card findById(UUID id) {
+    public Card findById(String id) {
         log.info("Buscando la tarjeta con id: " + id);
-        return repository.findById(id).orElseThrow(
+        return repository.findByPublicId(id).orElseThrow(
                 () -> new CardDoesNotExistException("La tarjeta con id: " + id + " no existe"));
     }
-
 
     @Override
     public Card findByOwner(String nombre) {
         log.info("Buscando el producto con nombre: " + nombre);
         return repository.findByCardOwner(nombre.trim().toUpperCase()).orElseThrow(
                 () -> new CardDoesNotExistException("La tarjeta con nombre: " + nombre + " no existe"));
-
     }
 
     public CardType existing(String name) {
@@ -118,17 +114,17 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @CacheEvict(key = "#id")
-    public Card deleteById(UUID id) {
+    public Card deleteById(String id) {
         log.info("Eliminando la tarjeta con id: " + id);
         Card result = findById(id);
         result.setIsDeleted(true);
         result.setLastUpdate(LocalDateTime.now());
-        return result;
+        return repository.save(result);
     }
 
     @Override
     @CachePut(key = "#id")
-    public Card updateById(UUID id, UpdateRequestCard updateCard) {
+    public Card updateById(String id, UpdateRequestCard updateCard) {
         log.info("Actualizando la tarjeta con id: " + id);
         Card existingCard = findById(id);
         Card updatedCard = CardMapper.toCard(updateCard, existingCard);
