@@ -24,4 +24,6 @@ public class UpdateRequestCard {
 
     @Min(value = 0, message = "El límite mensual no puede ser negativo")
     private Double monthlyLimit;
+
+    private Boolean isInactive;
 }
