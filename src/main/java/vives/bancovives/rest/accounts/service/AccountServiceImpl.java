@@ -84,7 +84,7 @@ public class AccountServiceImpl  implements AccountService {
     public Account save (InputAccount inputAccount){
         log.info("Guardando cuenta");
         Client client = existClientByDniAndValidated(inputAccount.getDni());
-        AccountType accountType = existsAccountTypeByName(inputAccount.getDni());
+        AccountType accountType = existsAccountTypeByName(inputAccount.getAccountType());
         Account mappedAccount = AccountMapper.toAccount(inputAccount, accountType, client);
         if(accountRepository.findByIban(mappedAccount.getIban()).isPresent()) {
             throw new AccountConflictException("La cuenta con iban " + mappedAccount.getIban() + " ya existe");
