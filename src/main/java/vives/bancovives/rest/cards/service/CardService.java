@@ -19,13 +19,13 @@ public interface CardService {
             Pageable pageable
     );
 
-    Card findById(UUID id);
+    Card findById(String id);
 
     Card findByOwner(String nombre);
 
     Card save(InputCard card);
 
-    Card deleteById(UUID id);
+    Card deleteById(String id);
 
-    Card updateById(UUID id, UpdateRequestCard updateCard);
+    Card updateById(String id, UpdateRequestCard updateCard);
 }
