@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -66,7 +65,7 @@ public class CardController {
     public ResponseEntity<OutputCard> createCard(@RequestBody @Valid InputCard inputCard) {
         log.info("Creating a new card");
         Card card = cardService.save(inputCard);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CardMapper.toOutputCard(card));
+        return ResponseEntity.ok(CardMapper.toOutputCard(card));
     }
 
     @GetMapping("/{id}")
