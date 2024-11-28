@@ -99,6 +99,4 @@ public class CardController {
         Card deletedCard = cardService.deleteById(id);
         return ResponseEntity.ok(CardMapper.toOutputCard(deletedCard));
     }
-
-
 }
