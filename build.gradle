@@ -41,12 +41,19 @@ dependencies {
 	//Redis
 	implementation 'org.springframework.data:spring-data-redis:3.4.0'
 	implementation("redis.clients:jedis:5.2.0")
+	//TestContainers
+	testImplementation("org.testcontainers:postgresql:1.20.4")
+	testImplementation("org.testcontainers:testcontainers:1.20.4")
+	testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+	//PostgreSQL
+	implementation 'org.postgresql:postgresql:42.6.0'
 	// Seguridad
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 //	implementation 'org.springframework.security:spring-security-core'
 //	implementation 'org.springframework.security:spring-security-web'
 //	implementation 'org.springframework.security:spring-security-config'
 	//Librerias para tests
+	//
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
