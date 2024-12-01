@@ -13,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import vives.bancovives.rest.movements.dtos.MovementCreateDto;
-import vives.bancovives.rest.movements.dtos.MovementResponseDto;
-import vives.bancovives.rest.movements.dtos.MovementUpdateDto;
+import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
+import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
+import vives.bancovives.rest.movements.dtos.input.MovementUpdateDto;
 import vives.bancovives.rest.movements.services.MovementService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
@@ -23,7 +23,7 @@ import vives.bancovives.utils.PaginationLinksUtils;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/movements")
+@RequestMapping("/${api.version}/movements")
 @Slf4j
 public class MovementController {
     private final MovementService movementService;
@@ -71,7 +71,7 @@ public class MovementController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MovementResponseDto> updateMovement(@PathVariable ObjectId id, @Valid @RequestBody MovementUpdateDto movement) {
+    public ResponseEntity<MovementResponseDto> updateMovement(@PathVariable ObjectId id, @Valid @RequestBody MovementCreateDto movement) {
         log.info("Update movement with id: {} and movement: {}", id, movement);
         return ResponseEntity.ok(movementService.update(id, movement));
     }

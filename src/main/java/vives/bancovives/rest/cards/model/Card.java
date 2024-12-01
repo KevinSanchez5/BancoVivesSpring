@@ -28,6 +28,8 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private String publicId;
+
     @Column(nullable = false, unique = true)
     private String cardNumber;
 
@@ -50,6 +52,14 @@ public class Card {
     @JoinColumn(name = "card_type_id", referencedColumnName = "id", nullable = false)
     private CardType cardType;
 
+    @Builder.Default
+    private double spentToday = 0;
+
+    @Builder.Default
+    private double spentThisWeek = 0;
+
+    @Builder.Default
+    private double spentThisMonth = 0;
 
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")
     @Column(nullable = false)
