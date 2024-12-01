@@ -1,8 +1,8 @@
 package vives.bancovives.rest.movements.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,7 +31,6 @@ public class Movement {
     @Builder.Default
     private ObjectId id = new ObjectId();
 
-    @Enumerated(EnumType.STRING)
     @NotNull
     private MovementType movementType;
 
@@ -57,5 +55,10 @@ public class Movement {
     @UpdateTimestamp
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @JsonProperty("id")
+    public String get_id() {
+        return id.toHexString();
+    }
 
 }
