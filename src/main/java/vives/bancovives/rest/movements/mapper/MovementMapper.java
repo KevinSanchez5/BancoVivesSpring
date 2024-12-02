@@ -31,7 +31,7 @@ public class MovementMapper {
 
     public MovementResponseDto fromEntityToResponse(Movement movement) {
         return MovementResponseDto.builder()
-                .id(movement.getId())
+                .id(movement.get_id())
                 .movementType(movement.getMovementType().name())
                 .accountOfReference(new AccountResponseForClient(
                         movement.getAccountOfReference().getPublicId(),

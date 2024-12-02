@@ -72,7 +72,7 @@ public class MovementController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MovementResponseDto> updateMovement(@PathVariable ObjectId id, @Valid @RequestBody MovementCreateDto movement) {
+    public ResponseEntity<MovementResponseDto> updateMovement(@PathVariable ObjectId id, @RequestBody MovementCreateDto movement) {
         log.info("Update movement with id: {} and movement: {}", id, movement);
         return ResponseEntity.ok(movementService.update(id, movement));
     }
@@ -80,7 +80,7 @@ public class MovementController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovement(@PathVariable ObjectId id) {
         log.info("Delete movement with id: {}", id);
-        movementService.deleteById(id);
+        movementService.cancelMovement(id);
         return ResponseEntity.noContent().build();
     }
 

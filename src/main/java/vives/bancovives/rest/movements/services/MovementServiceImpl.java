@@ -73,7 +73,7 @@ public class MovementServiceImpl implements MovementService{
         Movement movementToSave = movementMapper.fromCreateDtoToEntity(
                 movementCreateDto, accountOfReference, accountOfDestination, card);
 
-        moveMoney(movementToSave.getMovementType(), accountOfReference, accountOfDestination, card, movementCreateDto.getAmount());
+        moveMoney(movementToSave);
 
         saveModificationsInAccountsAndCard(accountOfReference, accountOfDestination, card);
         return movementMapper.fromEntityToResponse(movementRepository.save(movementToSave));
@@ -83,8 +83,8 @@ public class MovementServiceImpl implements MovementService{
     public MovementResponseDto update(ObjectId id, MovementCreateDto movementDto) {
         Movement movementToUpdate = existsMovementById(id);
 
-        if(movementToUpdate.getMovementType() != MovementType.TRANSFERENCIA && !movementDto.getMovementType().trim().equalsIgnoreCase("TRANSFERENCIA")){
-            throw new UnsupportedOperationException("No se puede modificar un movimiento que no sea de tipo transferencia");
+        if(movementToUpdate.getMovementType() != MovementType.TRANSFERENCIA || !movementDto.getMovementType().trim().equalsIgnoreCase("TRANSFERENCIA")){
+            throw new MovementBadRequest("No se puede modificar un movimiento que no sea de tipo transferencia");
         }
         validator.validateMovementDto(movementDto);
 
@@ -102,17 +102,9 @@ public class MovementServiceImpl implements MovementService{
         movementToUpdate.setAmountOfMoney(movementDto.getAmount());
 
 
-        // Realizar la nueva transferencia
-        moveMoney(
-                MovementType.TRANSFERENCIA,
-                newReferenceAccount,
-                newDestinationAccount,
-                null,
-                movementDto.getAmount()
-        );
+        moveMoney(movementToUpdate);
 
         saveModificationsInAccountsAndCard(newReferenceAccount, newDestinationAccount, null);
-
 
         movementRepository.save(movementToUpdate);
 
@@ -142,7 +134,7 @@ public class MovementServiceImpl implements MovementService{
 
         revertTransfer(movementToCancel.getAccountOfReference(), movementToCancel.getAccountOfDestination(), movementToCancel.getAmountOfMoney());
 
-        movementRepository.save(movementToCancel);
+        movementRepository.delete(movementToCancel);
 
         return true;
     }
@@ -163,22 +155,22 @@ public class MovementServiceImpl implements MovementService{
     }
 
 
-    private void moveMoney(MovementType movementType, Account accountOfReference, Account accountOfDestination,Card card, Double amount){
-        switch (movementType){
+    private void moveMoney(Movement movement){
+        switch (movement.getMovementType()){
             case TRANSFERENCIA:
-                accountOfReference.setBalance(accountOfReference.getBalance() - amount);
-                accountOfDestination.setBalance(accountOfDestination.getBalance() + amount);
+                movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() - movement.getAmountOfMoney());
+                movement.getAccountOfDestination().setBalance(movement.getAccountOfDestination().getBalance() + movement.getAmountOfMoney());
                 break;
             case INGRESO, NOMINA:
-                accountOfReference.setBalance(accountOfReference.getBalance() + amount);
+                movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() + movement.getAmountOfMoney());
                 break;
             case PAGO:
             case EXTRACCION:
-                accountOfReference.setBalance(accountOfReference.getBalance() - amount);
-                setNewLimitsInCard(card, amount);
+                movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() - movement.getAmountOfMoney());
+                setNewLimitsInCard(movement.getCard(), movement.getAmountOfMoney());
                 break;
             case INTERESMENSUAL:
-                accountOfReference.setBalance(accountOfReference.getBalance() + calculateInterest(accountOfReference));
+                movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() + calculateInterest(movement.getAccountOfReference()));
         }
     }
 

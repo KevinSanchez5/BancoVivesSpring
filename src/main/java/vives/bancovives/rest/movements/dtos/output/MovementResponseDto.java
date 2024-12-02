@@ -15,7 +15,7 @@ import vives.bancovives.rest.cards.dto.output.SimplifiedResponseCard;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MovementResponseDto {
-    private ObjectId id;
+    private String id;
     private String movementType;
     private AccountResponseForClient accountOfReference;
     private String ibanOfDestination;
