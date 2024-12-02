@@ -13,6 +13,7 @@ import vives.bancovives.rest.cards.repository.CardsRepository;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
 import vives.bancovives.rest.movements.dtos.input.MovementUpdateDto;
+import vives.bancovives.rest.movements.exceptions.MovementBadRequest;
 import vives.bancovives.rest.movements.exceptions.MovementNotFound;
 import vives.bancovives.rest.movements.mapper.MovementMapper;
 import vives.bancovives.rest.movements.model.Movement;
@@ -20,6 +21,8 @@ import vives.bancovives.rest.movements.model.MovementType;
 import vives.bancovives.rest.movements.repository.MovementRepository;
 import vives.bancovives.rest.movements.validator.MovementValidator;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -39,7 +42,7 @@ public class MovementServiceImpl implements MovementService{
         this.movementMapper = movementMapper;
     }
     @Override
-    public Page<MovementResponseDto> findAll(
+    public Page<Movement> findAll(
             Optional<String> movementType,
             Optional<String> iban,
             Optional<String> clientDni,
@@ -47,7 +50,7 @@ public class MovementServiceImpl implements MovementService{
             Optional<Boolean> isDeleted,
             Pageable pageable) {
 
-        return movementRepository.findAll(pageable).map(movementMapper::fromEntityToResponse);
+        return movementRepository.findAll(pageable);
     }
 
     @Override
@@ -77,30 +80,26 @@ public class MovementServiceImpl implements MovementService{
     }
 
     @Override
-    public MovementResponseDto update(ObjectId id, MovementCreateDto movementCreateDto) {
+    public MovementResponseDto update(ObjectId id, MovementCreateDto movementDto) {
         Movement movementToUpdate = existsMovementById(id);
 
-        if(movementToUpdate.getMovementType() != MovementType.TRANSFERENCIA){
+        if(movementToUpdate.getMovementType() != MovementType.TRANSFERENCIA && !movementDto.getMovementType().trim().equalsIgnoreCase("TRANSFERENCIA")){
             throw new UnsupportedOperationException("No se puede modificar un movimiento que no sea de tipo transferencia");
         }
-        // Validar el nuevo movimiento
-        validator.validateMovementDto(movementCreateDto);
+        validator.validateMovementDto(movementDto);
 
-        // Revertir la transferencia previa
         Account oldReferenceAccount = existsAccountByIban(movementToUpdate.getAccountOfReference().getIban());
         Account oldDestinationAccount = existsAccountByIban(movementToUpdate.getAccountOfDestination().getIban());
 
-        oldReferenceAccount.setBalance(oldReferenceAccount.getBalance() + movementToUpdate.getAmountOfMoney());
-        oldDestinationAccount.setBalance(oldDestinationAccount.getBalance() - movementToUpdate.getAmountOfMoney());
+        revertTransfer(oldReferenceAccount, oldDestinationAccount, movementToUpdate.getAmountOfMoney());
 
-        // Validar las nuevas cuentas
-        Account newReferenceAccount = existsAccountByIban(movementCreateDto.getIbanOfReference());
-        Account newDestinationAccount = existsAccountByIban(movementCreateDto.getIbanOfDestination());
+        Account newReferenceAccount = existsAccountByIban(movementDto.getIbanOfReference());
+        Account newDestinationAccount = existsAccountByIban(movementDto.getIbanOfDestination());
 
         // Actualizar la entidad del movimiento
         movementToUpdate.setAccountOfReference(newReferenceAccount);
         movementToUpdate.setAccountOfDestination(newDestinationAccount);
-        movementToUpdate.setAmountOfMoney(movementCreateDto.getAmount());
+        movementToUpdate.setAmountOfMoney(movementDto.getAmount());
 
 
         // Realizar la nueva transferencia
@@ -109,31 +108,44 @@ public class MovementServiceImpl implements MovementService{
                 newReferenceAccount,
                 newDestinationAccount,
                 null,
-                movementCreateDto.getAmount()
+                movementDto.getAmount()
         );
 
-        // Guardar los cambios en las cuentas
         saveModificationsInAccountsAndCard(newReferenceAccount, newDestinationAccount, null);
 
-        // Guardar el movimiento actualizado
+
         movementRepository.save(movementToUpdate);
 
-        // Devolver el DTO de respuesta
         return movementMapper.fromEntityToResponse(movementToUpdate);
     }
 
     @Override
     public Void deleteById(ObjectId id) {
         Movement movementToDelete = existsMovementById(id);
+        movementToDelete.setIsDeleted(true);
+        movementRepository.save(movementToDelete);
         return null;
     }
 
     @Override
     public Boolean cancelMovement(ObjectId id) {
         Movement movementToCancel = existsMovementById(id);
-        return null;
-    }
 
+        verifyIsATransferencia(movementToCancel.getMovementType());
+
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(movementToCancel.getCreatedAt(), now);
+
+        if (duration.toHours() >= 24) {
+            throw new MovementBadRequest("El movimiento no puede cancelarse porque han pasado más de 24 horas.");
+        }
+
+        revertTransfer(movementToCancel.getAccountOfReference(), movementToCancel.getAccountOfDestination(), movementToCancel.getAmountOfMoney());
+
+        movementRepository.save(movementToCancel);
+
+        return true;
+    }
 
     public Movement existsMovementById(ObjectId id){
         return movementRepository.findById(id).orElseThrow(
@@ -187,6 +199,19 @@ public class MovementServiceImpl implements MovementService{
         }
         if(card != null){
             cardsRepository.save(card);
+        }
+    }
+
+    private void revertTransfer(Account accountOfReference, Account accountOfDestination, Double amount){
+        accountOfReference.setBalance(accountOfReference.getBalance() + amount);
+        accountOfDestination.setBalance(accountOfDestination.getBalance() - amount);
+        accountRepository.save(accountOfReference);
+        accountRepository.save(accountOfDestination);
+    }
+
+    private void verifyIsATransferencia(MovementType movemntType){
+        if(movemntType != MovementType.TRANSFERENCIA){
+            throw new UnsupportedOperationException("Esta operacion solo permite en movimientos de tipo TRANSFERENCIA");
         }
     }
 }

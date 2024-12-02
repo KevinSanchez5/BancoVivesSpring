@@ -16,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
 import vives.bancovives.rest.movements.dtos.input.MovementUpdateDto;
+import vives.bancovives.rest.movements.model.Movement;
 import vives.bancovives.rest.movements.services.MovementService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
@@ -37,7 +38,7 @@ public class MovementController {
     }
 
     @RequestMapping()
-    public ResponseEntity<PageResponse<MovementResponseDto>> getAllMovements(
+    public ResponseEntity<PageResponse<Movement>> getAllMovements(
             @RequestParam(required = false) Optional<String> movementType,
             @RequestParam(required = false) Optional<String> iban,
             @RequestParam(required = false) Optional<String> clientDni,
@@ -52,7 +53,7 @@ public class MovementController {
         log.info("Buscando todos los movimientos");
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<MovementResponseDto> pageResult = movementService.findAll(movementType, iban, clientDni, fecha, isDeleted, PageRequest.of(page, size, sort));
+        Page<Movement> pageResult = movementService.findAll(movementType, iban, clientDni, fecha, isDeleted, PageRequest.of(page, size, sort));
     return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
                 .body(PageResponse.of(pageResult, sortBy, direction));
