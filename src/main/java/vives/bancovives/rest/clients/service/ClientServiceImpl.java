@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vives.bancovives.rest.accounts.model.Account;
+import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
@@ -29,14 +31,16 @@ import java.util.Optional;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final AccountService accountService;
     private final UsersService userService;
     private final ClientMapper clientMapper;
     private final ClientUpdateValidator updateValidator;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, ClientMapper clientMapper, ClientUpdateValidator updateValidator) {
+    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, ClientMapper clientMapper, ClientUpdateValidator updateValidator) {
         this.clientRepository = clientRepository;
         this.userService = userService;
+        this.accountService = accountService;
         this.clientMapper = clientMapper;
         this.updateValidator = updateValidator;
     }
@@ -62,10 +66,10 @@ public class ClientServiceImpl implements ClientService {
                 email.map(em -> criteriaBuilder.like(criteriaBuilder.upper(root.get("email")), "%" + em.toUpperCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Client> specStreet = (root, query, criteriaBuilder) ->
-                street.map(st -> criteriaBuilder.like(criteriaBuilder.upper(root.get("adress").get("street")), "%" + st.toUpperCase() + "%"))
+                street.map(st -> criteriaBuilder.like(criteriaBuilder.upper(root.get("address").get("street")), "%" + st.toUpperCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Client> specCity = (root, query, criteriaBuilder) ->
-                city.map(ci -> criteriaBuilder.like(criteriaBuilder.upper(root.get("adress").get("city")), "%" + ci.toUpperCase() + "%"))
+                city.map(ci -> criteriaBuilder.like(criteriaBuilder.upper(root.get("address").get("city")), "%" + ci.toUpperCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Client> specValidated = (root, query, criteriaBuilder) ->
                 validated.map(v -> criteriaBuilder.equal(root.get("validated"), v))
@@ -117,9 +121,13 @@ public class ClientServiceImpl implements ClientService {
             client.setUser(null);
             userService.deleteById(userPublicId);
         }
-        clientRepository.save(client);
         if (deleteData.isPresent() && deleteData.get()) {
             return deleteDataOfClient(client);
+        }
+        if(!client.getAccounts().isEmpty()) {
+            for(Account account : client.getAccounts()) {
+                accountService.deleteById(account.getPublicId());
+            }
         }
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));

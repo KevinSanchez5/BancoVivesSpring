@@ -66,7 +66,7 @@ VALUES('f885418f-e1c0-4476-bd0e-acf1f65dbda2', 'BgKW6LJLOuU92YGkVkQ', '45678912L
 
 /* Cuentas */
 INSERT INTO accounts(id, public_id, iban, balance, password, account_type, client_id, created_at, updated_at, is_deleted)
-VALUES ('96257eff-0484-4a87-9509-51a9f24daf64', 'BgLi9HNRv_UnWaC0Kkw', 'ES71CU4N1759HNCGUNQSNXM6', 0.0, 'JAKARTA24', '1e4b41d8-9d4c-4321-ade7-3c8a843626e2','fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+VALUES ('96257eff-0484-4a87-9509-51a9f24daf64', 'BgLi9HNRv_UnWaC0Kkw', 'ES71CU4N1759HNCGUNQSNXM6', 1000.0, 'JAKARTA24', '1e4b41d8-9d4c-4321-ade7-3c8a843626e2','fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 INSERT INTO accounts(id, public_id, iban, balance, password, account_type, client_id, created_at, updated_at, is_deleted)
-VALUES ('a6f20974-a880-46b6-8b6d-069694eeaf60', 'BgLi9quF_BMyN0F8Nxs', 'ES51W8N4JVONAWK5B6ZA50OV', 0.0, 'JAKARTA26', '1e4b41d8-9d4c-4321-ade7-3c8a843626e2','11b12967-5ffd-455a-aa35-65172f9b86fe',  CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(),false);
+VALUES ('a6f20974-a880-46b6-8b6d-069694eeaf60', 'BgLi9quF_BMyN0F8Nxs', 'ES51W8N4JVONAWK5B6ZA50OV', 10.0, 'JAKARTA26', '1e4b41d8-9d4c-4321-ade7-3c8a843626e2','11b12967-5ffd-455a-aa35-65172f9b86fe',  CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(),false);

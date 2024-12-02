@@ -32,7 +32,7 @@ public class Card implements Serializable {
     private UUID id;
 
     @Builder.Default
-    String publicId = IdGenerator.generateId();
+    private String publicId = IdGenerator.generateId();
 
     @Column(nullable = false, unique = true)
     private String cardNumber;
@@ -61,6 +61,14 @@ public class Card implements Serializable {
     private Account account;
 
 
+    @Builder.Default
+    private double spentToday = 0;
+
+    @Builder.Default
+    private double spentThisWeek = 0;
+
+    @Builder.Default
+    private double spentThisMonth = 0;
 
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")
     @Column(nullable = false)

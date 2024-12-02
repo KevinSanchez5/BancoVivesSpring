@@ -42,8 +42,9 @@ public class AccountController {
     @GetMapping
     public ResponseEntity<PageResponse<OutputAccount>> getAccounts(
             @RequestParam(required = false) Optional<String> iban,
+            @RequestParam(required = false) Optional<String> clientDni,
+            @RequestParam(required = false) Optional<String> accountTypeName,
             @RequestParam(required = false) Optional<Boolean> isDeleted,
-
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -55,7 +56,7 @@ public class AccountController {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?Sort.by(sortBy).ascending() :Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
 
-        Page<OutputAccount> pageResult = accountService.findAll(iban, isDeleted, PageRequest.of(page,size,sort))
+        Page<OutputAccount> pageResult = accountService.findAll(iban, clientDni, accountTypeName, isDeleted, PageRequest.of(page,size,sort))
                 .map(AccountMapper::toOutputAccount);
         return ResponseEntity.ok()
                 .header("link ", paginationLinksUtils.createLinkHeader(pageResult,uriBuilder))
