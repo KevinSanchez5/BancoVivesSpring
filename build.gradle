@@ -50,12 +50,18 @@ dependencies {
 	//MongoDB
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
+	//ProjectReactor
+	implementation("io.projectreactor:reactor-core:3.7.0")
+	//Swagger
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
 	// Seguridad
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 //	implementation 'org.springframework.security:spring-security-core'
 //	implementation 'org.springframework.security:spring-security-web'
 //	implementation 'org.springframework.security:spring-security-config'
 	//Librerias para tests
+	//
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
