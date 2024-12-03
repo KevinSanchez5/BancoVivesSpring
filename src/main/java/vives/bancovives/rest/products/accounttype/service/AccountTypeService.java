@@ -4,9 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vives.bancovives.rest.products.accounttype.dto.input.NewAccountType;
 import vives.bancovives.rest.products.accounttype.dto.input.UpdatedAccountType;
-import vives.bancovives.rest.products.accounttype.dto.output.OutputAccountType;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
-import vives.bancovives.rest.products.cardtype.model.CardType;
 
 import java.util.Optional;
 
