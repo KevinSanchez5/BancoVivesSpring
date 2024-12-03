@@ -43,7 +43,6 @@ public class FilesController {
      * @return {@link ResponseEntity} con el recurso del archivo y el tipo de contenido adecuado.
      */
     @GetMapping(value = "{filename:.+}")
-    @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
         Resource file = storageService.loadAsResource(filename);
 
