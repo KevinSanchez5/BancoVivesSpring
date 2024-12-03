@@ -63,7 +63,7 @@ public class AccountTypeStorageCSVImpl implements AccountTypeStorageCSV {
                 reader.lines()
                        .skip(linesSkipped)
                        .forEach(line -> {
-                            List<String> info = Arrays.stream(line.split(",")).toList();
+                            List<String> info = List.of(line.split(","));
                             NewAccountType newAccountType = NewAccountType.builder()
                                    .name(info.getFirst())
                                    .interest(Double.parseDouble(info.get(1)))
