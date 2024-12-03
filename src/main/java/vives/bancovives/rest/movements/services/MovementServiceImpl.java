@@ -42,7 +42,7 @@ public class MovementServiceImpl implements MovementService{
         this.movementMapper = movementMapper;
     }
     @Override
-    public Page<Movement> findAll(
+    public Page<MovementResponseDto> findAll(
             Optional<String> movementType,
             Optional<String> iban,
             Optional<String> clientDni,
@@ -50,7 +50,7 @@ public class MovementServiceImpl implements MovementService{
             Optional<Boolean> isDeleted,
             Pageable pageable) {
 
-        return movementRepository.findAll(pageable);
+        return movementRepository.findAll(pageable).map(movementMapper::fromEntityToResponse);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class MovementServiceImpl implements MovementService{
 
     private void verifyIsATransferencia(MovementType movemntType){
         if(movemntType != MovementType.TRANSFERENCIA){
-            throw new UnsupportedOperationException("Esta operacion solo permite en movimientos de tipo TRANSFERENCIA");
+            throw new MovementBadRequest("Esta operacion solo permite en movimientos de tipo TRANSFERENCIA");
         }
     }
 }

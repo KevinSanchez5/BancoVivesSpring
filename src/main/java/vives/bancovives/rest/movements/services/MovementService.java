@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface MovementService {
 
-    Page<Movement> findAll(
+    Page<MovementResponseDto> findAll(
             Optional<String> movementType,
             Optional<String> iban,
             Optional<String> clientDni,

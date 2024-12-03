@@ -37,7 +37,7 @@ public class MovementMapper {
                         movement.getAccountOfReference().getPublicId(),
                         movement.getAccountOfReference().getIban(),
                         movement.getAccountOfReference().getBalance()))
-                .ibanOfDestination(movement.getAccountOfDestination().getIban() != null ? movement.getAccountOfDestination().getIban() : null)
+                .ibanOfDestination(movement.getAccountOfDestination() != null ? movement.getAccountOfDestination().getIban() : null)
                 .amount(movement.getAmountOfMoney())
                 .card(movement.getCard() != null ? new SimplifiedResponseCard(
                         movement.getCard().getPublicId(),
