@@ -10,7 +10,6 @@ import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.cards.repository.CardsRepository;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.exceptions.MovementBadRequest;
-import vives.bancovives.rest.movements.mapper.MovementMapper;
 import vives.bancovives.rest.movements.model.MovementType;
 
 import java.time.LocalDate;
@@ -28,7 +27,6 @@ public class MovementValidator {
         this.accountRepository = accountRepository;
         this.cardRepository = cardRepository;
     }
-
 
     public void validateMovementDto(MovementCreateDto movementCreateDto) {
         validatePositiveAmount(movementCreateDto.getAmount());

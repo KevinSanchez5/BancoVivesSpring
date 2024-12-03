@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import vives.bancovives.rest.movements.model.Movement;
 
 @Repository
-public interface MovementRepository extends MongoRepository<Movement, ObjectId> {
+public interface MovementRepository extends MongoRepository<Movement, ObjectId>, MovementRepositoryCustom {
 }

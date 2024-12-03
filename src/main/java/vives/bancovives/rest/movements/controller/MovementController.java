@@ -39,7 +39,6 @@ public class MovementController {
     public ResponseEntity<PageResponse<MovementResponseDto>> getAllMovements(
             @RequestParam(required = false) Optional<String> movementType,
             @RequestParam(required = false) Optional<String> iban,
-            @RequestParam(required = false) Optional<String> clientDni,
             @RequestParam(required = false) Optional<String> fecha,
             @RequestParam(required = false, defaultValue = "false")Optional<Boolean> isDeleted,
             @RequestParam(defaultValue = "0") int page,
@@ -51,7 +50,7 @@ public class MovementController {
         log.info("Buscando todos los movimientos");
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<MovementResponseDto> pageResult = movementService.findAll(movementType, iban, clientDni, fecha, isDeleted, PageRequest.of(page, size, sort));
+        Page<MovementResponseDto> pageResult = movementService.findAll(movementType, iban, fecha, isDeleted, PageRequest.of(page, size, sort));
     return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
                 .body(PageResponse.of(pageResult, sortBy, direction));

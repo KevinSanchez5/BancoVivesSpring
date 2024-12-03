@@ -43,13 +43,12 @@ public class MovementServiceImpl implements MovementService{
     @Override
     public Page<MovementResponseDto> findAll(
             Optional<String> movementType,
-            Optional<String> iban,
-            Optional<String> clientDni,
+            Optional<String> ibanOfReference,
             Optional<String> fecha,
             Optional<Boolean> isDeleted,
             Pageable pageable) {
-
-        return movementRepository.findAll(pageable).map(movementMapper::fromEntityToResponse);
+        Page<Movement> movements = movementRepository.findAllByFilters(movementType, ibanOfReference, fecha, isDeleted, pageable);
+        return movements.map(movementMapper::fromEntityToResponse);
     }
 
     @Override
