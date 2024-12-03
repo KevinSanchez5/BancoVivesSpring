@@ -11,7 +11,6 @@ import vives.bancovives.rest.movements.model.Movement;
 import vives.bancovives.rest.movements.model.MovementType;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Component
 public class MovementMapper {

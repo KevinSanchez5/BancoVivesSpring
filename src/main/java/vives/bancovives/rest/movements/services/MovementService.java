@@ -5,8 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
-import vives.bancovives.rest.movements.dtos.input.MovementUpdateDto;
-import vives.bancovives.rest.movements.model.Movement;
 
 import java.util.Optional;
 

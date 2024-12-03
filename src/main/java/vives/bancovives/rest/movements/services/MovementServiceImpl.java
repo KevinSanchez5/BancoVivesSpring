@@ -12,7 +12,6 @@ import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.cards.repository.CardsRepository;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
-import vives.bancovives.rest.movements.dtos.input.MovementUpdateDto;
 import vives.bancovives.rest.movements.exceptions.MovementBadRequest;
 import vives.bancovives.rest.movements.exceptions.MovementNotFound;
 import vives.bancovives.rest.movements.mapper.MovementMapper;

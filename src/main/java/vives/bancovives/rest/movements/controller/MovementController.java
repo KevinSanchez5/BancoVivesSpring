@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
-import vives.bancovives.rest.movements.dtos.input.MovementUpdateDto;
-import vives.bancovives.rest.movements.model.Movement;
 import vives.bancovives.rest.movements.services.MovementService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
