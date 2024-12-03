@@ -226,7 +226,7 @@ class ProductControllerTest {
         ).andReturn().getResponse();
 
         // Assert
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
         OutputAccountType responseBody = mapper.readValue(response.getContentAsString(), OutputAccountType.class);
         assertAll(
                 () -> assertEquals(outputAccountType.getId(), responseBody.getId()),
@@ -425,7 +425,7 @@ class ProductControllerTest {
         ).andReturn().getResponse();
 
         // Assert
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
         OutputCardType responseBody = mapper.readValue(response.getContentAsString(), OutputCardType.class);
         assertAll(
                 () -> assertEquals(outputCardType.getId(), responseBody.getId()),
