@@ -3,7 +3,9 @@ package vives.bancovives.rest.movements.services;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vives.bancovives.rest.accounts.exception.AccountNotFoundException;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.repositories.AccountRepository;
@@ -24,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -66,6 +69,7 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(existsMovementById(id));
     }
 
+    @Transactional
     @Override
     public MovementResponseDto save(MovementCreateDto movementCreateDto) {
         validator.validateMovementDto(movementCreateDto);
@@ -87,6 +91,7 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(movementRepository.save(movementToSave));
     }
 
+    @Transactional
     @Override
     public MovementResponseDto update(ObjectId id, MovementCreateDto movementDto) {
         Movement movementToUpdate = existsMovementById(id);
@@ -127,6 +132,7 @@ public class MovementServiceImpl implements MovementService{
         return null;
     }
 
+    @Transactional
     @Override
     public Boolean cancelMovement(ObjectId id) {
         Movement movementToCancel = existsMovementById(id);
@@ -214,4 +220,33 @@ public class MovementServiceImpl implements MovementService{
             throw new MovementBadRequest("Esta operacion solo permite en movimientos de tipo TRANSFERENCIA");
         }
     }
+
+
+    /**
+     * Este método se ejecuta a las 00 de la noche todos los dias de manera automatica, para que busque las cuentas que
+     * tengan interes, si se cumple el mes desde que se creo la cuenta, se le añade el interes mensual a la cuenta
+     * y se almacena el movimiento y el cambio en el balance de la cuenta en las bases de datos
+     */
+    @Scheduled(cron = "0 0 0 * * ?")// se ejecutaria a las 00
+    @Transactional
+    public void createInteresMensualMovement(){
+        List<Account> accountsWithInterest = accountRepository.findAllByAccountType_InterestNotNull();
+        for (Account account : accountsWithInterest) {
+            LocalDate creationDate = account.getCreatedAt().toLocalDate();
+            LocalDate today = LocalDate.now();
+
+            if (creationDate.getDayOfMonth() == today.getDayOfMonth() ||
+                    (creationDate.getDayOfMonth() > today.lengthOfMonth() && today.getDayOfMonth() == today.lengthOfMonth())) {
+                Movement movement = Movement.builder()
+                        .movementType(MovementType.INTERESMENSUAL)
+                        .accountOfReference(account)
+                        .amountOfMoney(calculateInterest(account))
+                        .build();
+
+                moveMoney(movement);
+                saveModificationsInAccountsAndCard(account, null, null);
+            }
+        }
+    }
 }
+

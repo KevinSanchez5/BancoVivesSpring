@@ -61,11 +61,11 @@ class ClientServiceImplTest {
     @BeforeEach
     void setUp() {
         User user = new User(uuid, id, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
-        client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, true, false, LocalDateTime.now(), LocalDateTime.now());
+      //  client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
         userResponse = new UserResponse(id, "usernameTest", Collections.singleton(Role.USER), false);
-        responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
+       // responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
     }
 
 

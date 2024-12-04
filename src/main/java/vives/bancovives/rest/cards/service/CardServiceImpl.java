@@ -7,9 +7,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vives.bancovives.rest.accounts.exception.AccountException;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.service.AccountService;
@@ -24,7 +27,11 @@ import vives.bancovives.rest.products.cardtype.model.CardType;
 import vives.bancovives.rest.products.cardtype.service.CardTypeService;
 import vives.bancovives.utils.card.CreditCardGenerator;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.WeekFields;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -150,5 +157,36 @@ public class CardServiceImpl implements CardService {
         Card existingCard = findById(id);
         Card updatedCard = CardMapper.toCard(updateCard, existingCard);
         return repository.save(updatedCard);
+    }
+
+    @Scheduled(cron ="0 0 0 * * ?")
+    @Transactional
+    public void resetSpentAmountsInBatches() {
+        log.info("Reseteando los montos gastados de las tarjetas en lotes");
+        int pageSize = 200;
+        Pageable pageable = PageRequest.of(0, pageSize);
+        Page<Card> page;
+
+        do {
+            page = repository.findAll(pageable);
+            resetSpentAmountsForCards(page.getContent());
+            pageable = page.nextPageable();
+        } while (!page.isLast());
+    }
+
+    private void resetSpentAmountsForCards(List<Card> cards) {
+        LocalDateTime now = LocalDateTime.now();
+        DayOfWeek firstDayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+
+        for (Card card : cards) {
+            card.setSpentToday(0);
+            if (now.getDayOfWeek() == firstDayOfWeek) {
+                card.setSpentThisWeek(0);
+            }
+            if (now.getDayOfMonth() == 1) {
+                card.setSpentThisMonth(0);
+            }
+        }
+        repository.saveAll(cards);
     }
 }
