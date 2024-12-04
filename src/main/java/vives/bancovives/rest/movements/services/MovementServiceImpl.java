@@ -149,7 +149,7 @@ public class MovementServiceImpl implements MovementService{
 
     public Movement existsMovementById(ObjectId id){
         return movementRepository.findById(id).orElseThrow(
-                () -> new MovementNotFound("Movimiento con id" + id + "no encontrado"));
+                () -> new MovementNotFound("Movimiento con id" + id.toHexString() + "no encontrado"));
     }
 
     public Account existsAccountByIban(String iban){
