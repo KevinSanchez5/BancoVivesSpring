@@ -136,7 +136,7 @@ public class ProductController {
     @Operation(description = "Crea un tipo de cuenta")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "OK",
                     content = @Content(
                             mediaType = "application/json",
@@ -307,7 +307,7 @@ public class ProductController {
     @Operation(description = "Importa tipos de cuentas desde un archivo CSV")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "OK"
             ),
             @ApiResponse(
@@ -353,7 +353,7 @@ public class ProductController {
                         )
                 );
             }
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(HttpStatus.CREATED);
         } catch (IOException e) {
             log.error("Error al importar tipos de cuentas", e);
             throw new ProductStorageException("Error al importar tipos de cuentas desde un CSV");

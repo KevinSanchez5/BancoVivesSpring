@@ -13,7 +13,6 @@ public interface MovementService {
     Page<MovementResponseDto> findAll(
             Optional<String> movementType,
             Optional<String> iban,
-            Optional<String> clientDni,
             Optional<String> fecha,
             Optional<Boolean> isDeleted,
             Pageable pageable);

@@ -21,7 +21,9 @@ import vives.bancovives.rest.movements.repository.MovementRepository;
 import vives.bancovives.rest.movements.validator.MovementValidator;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 @Service
@@ -43,13 +45,20 @@ public class MovementServiceImpl implements MovementService{
     @Override
     public Page<MovementResponseDto> findAll(
             Optional<String> movementType,
-            Optional<String> iban,
-            Optional<String> clientDni,
+            Optional<String> ibanOfReference,
             Optional<String> fecha,
             Optional<Boolean> isDeleted,
             Pageable pageable) {
 
-        return movementRepository.findAll(pageable).map(movementMapper::fromEntityToResponse);
+        Optional<LocalDate> parsedFecha = fecha.map(f->{
+            try{
+                return LocalDate.parse(f);
+            }catch (DateTimeParseException e){
+                throw new MovementBadRequest("Formato de fecha invalido, Debe ser con formato: aaaa-mm-dd");
+            }
+        });
+        Page<Movement> movements = movementRepository.findAllByFilters(movementType, ibanOfReference, parsedFecha, isDeleted, pageable);
+        return movements.map(movementMapper::fromEntityToResponse);
     }
 
     @Override

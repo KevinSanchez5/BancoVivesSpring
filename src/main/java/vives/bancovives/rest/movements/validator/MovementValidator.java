@@ -10,8 +10,11 @@ import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.cards.repository.CardsRepository;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.exceptions.MovementBadRequest;
-import vives.bancovives.rest.movements.mapper.MovementMapper;
 import vives.bancovives.rest.movements.model.MovementType;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Component
 public class MovementValidator {
@@ -24,7 +27,6 @@ public class MovementValidator {
         this.accountRepository = accountRepository;
         this.cardRepository = cardRepository;
     }
-
 
     public void validateMovementDto(MovementCreateDto movementCreateDto) {
         validatePositiveAmount(movementCreateDto.getAmount());
@@ -69,6 +71,8 @@ public class MovementValidator {
         if (accountOfReference == null || accountOfDestination == null) {
             throw new MovementBadRequest("Se necesita una cuenta de referencia (origen) y una cuenta de destino para este tipo de movimiento");
         }
+        validateAccountIsNotDeleted(accountOfReference);
+        validateAccountIsNotDeleted(accountOfDestination);
         validateSpentAmount(accountOfReference.getBalance(), dto.getAmount());
     }
 
@@ -76,6 +80,7 @@ public class MovementValidator {
         if (accountOfReference == null) {
             throw new MovementBadRequest("Se necesita una cuenta de referencia para este tipo de movimiento");
         }
+        validateAccountIsNotDeleted(accountOfReference);
     }
 
     private void  validateIngreso(MovementCreateDto dto, Account accountOfReference, Card card) {
@@ -85,6 +90,8 @@ public class MovementValidator {
         if (card == null) {
             throw new MovementBadRequest("Se necesita una tarjeta para este tipo de movimiento");
         }
+        validateAccountIsNotDeleted(accountOfReference);
+        validateCardIsValid(card);
     }
 
     private void validatePagoExtraccion(MovementCreateDto dto, Account accountOfReference, Card card) {
@@ -94,6 +101,8 @@ public class MovementValidator {
         if (card == null) {
             throw new MovementBadRequest("Se necesita una tarjeta para este tipo de movimiento");
         }
+        validateAccountIsNotDeleted(accountOfReference);
+        validateCardIsValid(card);
         validateSpentAmount(accountOfReference.getBalance(), dto.getAmount());
         validateTimelyAmount(dto.getAmount(), card);
     }
@@ -136,6 +145,34 @@ public class MovementValidator {
         }
         if(amount + card.getSpentThisMonth() > card.getMonthlyLimit()){
             throw new MovementBadRequest("La cantidad superaria el limite mensual de la tarjeta");
+        }
+    }
+
+    public void validateAccountIsNotDeleted(Account account){
+        if(account.isDeleted()){
+            throw new MovementBadRequest("La cuenta esta eliminada");
+        }
+    }
+
+    public void validateCardIsValid(Card card){
+        if(card.getIsDeleted()){
+            throw new MovementBadRequest("La tarjeta esta eliminada");
+        }
+        if(card.getIsInactive()){
+            throw new MovementBadRequest("La tarjeta esta inactiva");
+        }
+        if(card.getExpirationDate() != null && cardExpirated(card.getExpirationDate())){
+            throw new MovementBadRequest("La tarjeta esta caducada");
+        }
+    }
+    public boolean cardExpirated(String expirationDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+        try {
+            LocalDate parsedDate = LocalDate.parse("01/" + expirationDate, DateTimeFormatter.ofPattern("dd/MM/yy"));
+            LocalDate firstDayOfNextMonth = parsedDate.plusMonths(1).withDayOfMonth(1);
+            return LocalDate.now().isAfter(firstDayOfNextMonth);
+        } catch (DateTimeParseException e) {
+            throw new MovementBadRequest("La fecha de expiración de la tarjeta es inválida");
         }
     }
 }

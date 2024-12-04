@@ -55,10 +55,6 @@ public class Account implements Serializable {
     @DBRef(lazy = true)
     private AccountType accountType;
 
-    @OneToMany
-    @JsonIgnoreProperties("account")
-    @DBRef(lazy = true)
-    private List<Card> cards;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
