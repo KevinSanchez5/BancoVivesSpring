@@ -28,13 +28,13 @@ INSERT INTO account_type(id, public_id, name, description, interest, created_at,
 VALUES ('1e4b41d8-9d4c-4321-ade7-3c8a843626e2', 'LmHVMAzSSYbddoR3qBd', 'CUENTA JUVENIL', 'Descripción cuenta juvenil', 0.5, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 INSERT INTO account_type(id, public_id, name, description, interest, created_at, updated_at, is_deleted)
-VALUES ('c56a4180-65aa-42ec-a945-5fd21dec0538', 'NqHVMAzSSYcddpT2qAd', 'CUENTA EMPRESARIAL', 'Descripción cuenta empresarial', 2.0, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+VALUES ('c56a4180-65aa-42ec-a945-5fd21dec0538', 'NqHVMAzSSYcddpT2qAd', 'CUENTA EMPRESARIAL', 'Descripción cuenta empresarial', 2, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 INSERT INTO account_type(id, public_id, name, description, interest, created_at, updated_at, is_deleted)
-VALUES ('e02fa0e4-01ad-400f-9c98-68cd3f4d3a3f', 'OkIVMAzSSYeddqV4rCd', 'CUENTA VIP', 'Descripción cuenta VIP', 3.0, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+VALUES ('e02fa0e4-01ad-400f-9c98-68cd3f4d3a3f', 'OkIVMAzSSYeddqV4rCd', 'CUENTA VIP', 'Descripción cuenta VIP', 3, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 INSERT INTO account_type(id, public_id, name, description, interest, created_at, updated_at, is_deleted)
-VALUES ('8c698f22-3ee4-11ee-89da-0242ac120002', 'PkJVMAzSSYgddnU5rEd', 'CUENTA FAMILIAR', 'Descripción cuenta familiar', 1.0, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+VALUES ('8c698f22-3ee4-11ee-89da-0242ac120002', 'PkJVMAzSSYgddnU5rEd', 'CUENTA FAMILIAR', 'Descripción cuenta familiar', 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 INSERT INTO account_type(id, public_id, name, description, interest, created_at, updated_at, is_deleted)
 VALUES ('64c283f0-bb2e-4c8f-bd2d-3b60c860ef79', 'QkKVVAzSSYhddoW6sFd', 'CUENTA ESTUDIANTIL', 'Descripción cuenta estudiantil', 0.75, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);

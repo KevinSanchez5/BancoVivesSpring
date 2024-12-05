@@ -3,7 +3,9 @@ package vives.bancovives.rest.movements.services;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vives.bancovives.rest.accounts.exception.AccountNotFoundException;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.repositories.AccountRepository;
@@ -24,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,6 +50,8 @@ public class MovementServiceImpl implements MovementService{
             Optional<String> movementType,
             Optional<String> ibanOfReference,
             Optional<String> fecha,
+            Optional<String> clientOfReferenceDni,
+            Optional<String> clientOfDestinationDni,
             Optional<Boolean> isDeleted,
             Pageable pageable) {
 
@@ -57,7 +62,7 @@ public class MovementServiceImpl implements MovementService{
                 throw new MovementBadRequest("Formato de fecha invalido, Debe ser con formato: aaaa-mm-dd");
             }
         });
-        Page<Movement> movements = movementRepository.findAllByFilters(movementType, ibanOfReference, parsedFecha, isDeleted, pageable);
+        Page<Movement> movements = movementRepository.findAllByFilters(movementType, ibanOfReference, parsedFecha, clientOfReferenceDni, clientOfDestinationDni, isDeleted, pageable);
         return movements.map(movementMapper::fromEntityToResponse);
     }
 
@@ -66,6 +71,7 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(existsMovementById(id));
     }
 
+    @Transactional
     @Override
     public MovementResponseDto save(MovementCreateDto movementCreateDto) {
         validator.validateMovementDto(movementCreateDto);
@@ -87,6 +93,22 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(movementRepository.save(movementToSave));
     }
 
+    @Transactional
+    @Override
+    public MovementResponseDto addInterest(MovementCreateDto createDto){
+        if(!createDto.getMovementType().trim().equalsIgnoreCase("INTERESMENSUAL")){
+            throw new MovementBadRequest("No se puede añadir interes a un movimiento que no sea de tipo interes mensual");
+        }
+        Account accountOfReference = existsAccountByIban(createDto.getIbanOfReference());
+        validator.validateInteresMensual(createDto, accountOfReference);
+        Movement movement = movementMapper.fromCreateDtoToEntity(createDto, accountOfReference, null, null);
+        movement.setAmountOfMoney(calculateInterest(accountOfReference));
+        moveMoney(movement);
+        saveModificationsInAccountsAndCard(accountOfReference, null, null);
+        return movementMapper.fromEntityToResponse(movementRepository.save(movement));
+    }
+
+    @Transactional
     @Override
     public MovementResponseDto update(ObjectId id, MovementCreateDto movementDto) {
         Movement movementToUpdate = existsMovementById(id);
@@ -127,6 +149,7 @@ public class MovementServiceImpl implements MovementService{
         return null;
     }
 
+    @Transactional
     @Override
     public Boolean cancelMovement(ObjectId id) {
         Movement movementToCancel = existsMovementById(id);
@@ -149,7 +172,7 @@ public class MovementServiceImpl implements MovementService{
 
     public Movement existsMovementById(ObjectId id){
         return movementRepository.findById(id).orElseThrow(
-                () -> new MovementNotFound("Movimiento con id" + id + "no encontrado"));
+                () -> new MovementNotFound("Movimiento con id" + id.toHexString() + "no encontrado"));
     }
 
     public Account existsAccountByIban(String iban){
@@ -166,24 +189,33 @@ public class MovementServiceImpl implements MovementService{
     private void moveMoney(Movement movement){
         switch (movement.getMovementType()){
             case TRANSFERENCIA:
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() - movement.getAmountOfMoney());
                 movement.getAccountOfDestination().setBalance(movement.getAccountOfDestination().getBalance() + movement.getAmountOfMoney());
+                movement.setClientOfDestinationDni(movement.getAccountOfDestination().getClient().getDni());
+                movement.setClientOfReferenceDni(movement.getAccountOfReference().getClient().getDni());
                 break;
             case INGRESO, NOMINA:
+                movement.setClientOfDestinationDni(movement.getAccountOfReference().getClient().getDni());
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() + movement.getAmountOfMoney());
                 break;
             case PAGO:
             case EXTRACCION:
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
+                movement.setClientOfReferenceDni(movement.getAccountOfReference().getClient().getDni());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() - movement.getAmountOfMoney());
                 setNewLimitsInCard(movement.getCard(), movement.getAmountOfMoney());
                 break;
             case INTERESMENSUAL:
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
+                movement.setClientOfReferenceDni(movement.getAccountOfReference().getClient().getDni());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() + calculateInterest(movement.getAccountOfReference()));
         }
     }
 
     private Double calculateInterest(Account accountOfReference){
-        return accountOfReference.getBalance() * accountOfReference.getAccountType().getInterest();
+        return accountOfReference.getBalance() * (accountOfReference.getAccountType().getInterest()/100);
     }
 
     private void setNewLimitsInCard(Card card, Double amount){
@@ -214,4 +246,33 @@ public class MovementServiceImpl implements MovementService{
             throw new MovementBadRequest("Esta operacion solo permite en movimientos de tipo TRANSFERENCIA");
         }
     }
+
+
+    /**
+     * Este método se ejecuta a las 00 de la noche todos los dias de manera automatica, para que busque las cuentas que
+     * tengan interes, si se cumple el mes desde que se creo la cuenta, se le añade el interes mensual a la cuenta
+     * y se almacena el movimiento y el cambio en el balance de la cuenta en las bases de datos
+     */
+    @Scheduled(cron = "0 0 0 * * ?")// se ejecutaria a las 00
+    @Transactional
+    public void createInteresMensualMovement(){
+        List<Account> accountsWithInterest = accountRepository.findAllByAccountType_InterestNotNull();
+        for (Account account : accountsWithInterest) {
+            LocalDate creationDate = account.getCreatedAt().toLocalDate();
+            LocalDate today = LocalDate.now();
+
+            if (creationDate.getDayOfMonth() == today.getDayOfMonth() ||
+                    (creationDate.getDayOfMonth() > today.lengthOfMonth() && today.getDayOfMonth() == today.lengthOfMonth())) {
+                Movement movement = Movement.builder()
+                        .movementType(MovementType.INTERESMENSUAL)
+                        .accountOfReference(account)
+                        .amountOfMoney(calculateInterest(account))
+                        .build();
+
+                moveMoney(movement);
+                saveModificationsInAccountsAndCard(account, null, null);
+            }
+        }
+    }
 }
+

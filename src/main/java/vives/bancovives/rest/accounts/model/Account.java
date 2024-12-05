@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
 import vives.bancovives.utils.IdGenerator;
@@ -18,7 +17,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -52,14 +50,15 @@ public class Account implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "account_type", nullable = false)
-    @DBRef(lazy = true)
+    @JsonIgnoreProperties("accounts")
+    @DBRef(lazy=true)
     private AccountType accountType;
 
 
     @ManyToOne
     @JoinColumn(name = "client_id")
     @JsonIgnoreProperties("accounts")
-    @DBRef(lazy = true)
+    @DBRef(lazy=true)
     private Client client;
 
     @Builder.Default

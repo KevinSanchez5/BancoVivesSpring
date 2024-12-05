@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
+import vives.bancovives.rest.movements.model.Movement;
 
 import java.util.Optional;
 
@@ -14,6 +15,8 @@ public interface MovementService {
             Optional<String> movementType,
             Optional<String> iban,
             Optional<String> fecha,
+            Optional<String> clientPublicId,
+            Optional<String> clientDni,
             Optional<Boolean> isDeleted,
             Pageable pageable);
 
@@ -26,4 +29,6 @@ public interface MovementService {
     Void deleteById(ObjectId id);
 
     Boolean cancelMovement(ObjectId id);
+
+    MovementResponseDto addInterest(MovementCreateDto movementCreateDto);
 }

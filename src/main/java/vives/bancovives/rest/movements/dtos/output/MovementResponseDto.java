@@ -18,8 +18,10 @@ public class MovementResponseDto {
     private String id;
     private String movementType;
     private AccountResponseForClient accountOfReference;
+    private String dniOfReference;
     private String ibanOfDestination;
-    private Double amount;
+    private Double amountBeforeMovement;
+    private Double amountMoved;
     private SimplifiedResponseCard card;
     private String createdAt;
 

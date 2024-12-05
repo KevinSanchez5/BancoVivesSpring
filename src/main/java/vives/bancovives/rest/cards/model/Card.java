@@ -1,5 +1,6 @@
 package vives.bancovives.rest.cards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -10,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.products.cardtype.model.CardType;
 import vives.bancovives.utils.IdGenerator;
@@ -56,12 +56,11 @@ public class Card implements Serializable {
     @NotNull(message = "El tipo de tarjeta no puede estar vacío")
     @ManyToOne
     @JoinColumn(name = "card_type_id", nullable = false)
-    @DBRef(lazy = true)
     private CardType cardType;
 
     @OneToOne
     @JoinColumn(name = "account_id", nullable = false)
-    @DBRef(lazy = true)
+    @JsonIgnoreProperties("card")
     private Account account;
 
 
