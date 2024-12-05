@@ -215,7 +215,7 @@ public class MovementServiceImpl implements MovementService{
     }
 
     private Double calculateInterest(Account accountOfReference){
-        return accountOfReference.getBalance() * accountOfReference.getAccountType().getInterest();
+        return accountOfReference.getBalance() * (accountOfReference.getAccountType().getInterest()/100);
     }
 
     private void setNewLimitsInCard(Card card, Double amount){
