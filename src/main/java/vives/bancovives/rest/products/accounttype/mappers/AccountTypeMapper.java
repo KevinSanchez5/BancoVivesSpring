@@ -25,7 +25,7 @@ public class AccountTypeMapper {
                 .id(input.getPublicId())
                 .name(input.getName())
                 .description(input.getDescription())
-                .interest(input.getInterest())
+                .interest(input.getInterest()*100)
                 .createdAt(input.getCreatedAt().toString())
                 .updatedAt(input.getUpdatedAt().toString())
                 .isDeleted(input.getIsDeleted())

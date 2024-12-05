@@ -1,5 +1,6 @@
 package vives.bancovives.rest.products.accounttype.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -45,6 +46,7 @@ public class AccountType implements Serializable {
     private Double interest = null;
 
     @OneToMany(mappedBy = "accountType", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("accountType")
     private List<Account> accounts = new ArrayList<>();
 
     @CreatedBy

@@ -12,6 +12,8 @@ public interface MovementRepositoryCustom {
             Optional<String> movementType,
             Optional<String> ibanOfReference,
             Optional<LocalDate> fecha,
+            Optional<String> clientOfReferenceDni,
+            Optional<String> clientOfDestinationDni,
             Optional<Boolean> isDeleted,
             Pageable pageable);
 }

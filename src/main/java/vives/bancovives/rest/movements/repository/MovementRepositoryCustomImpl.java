@@ -32,6 +32,8 @@ public class MovementRepositoryCustomImpl implements MovementRepositoryCustom {
             Optional<String> movementType,
             Optional<String> ibanOfReference,
             Optional<LocalDate> fecha,
+            Optional<String> clientOfReferenceDni,
+            Optional<String> clientOfDestinationDni,
             Optional<Boolean> isDeleted,
             Pageable pageable) {
 
@@ -45,6 +47,8 @@ public class MovementRepositoryCustomImpl implements MovementRepositoryCustom {
             LocalDateTime endOfDay = f.atTime(LocalTime.MAX);
             query.addCriteria(Criteria.where("fecha").gte(startOfDay).lte(endOfDay));
         });
+        clientOfReferenceDni.ifPresent(dnir -> query.addCriteria(Criteria.where("clientOfReferenceDni").is(dnir)));
+        clientOfDestinationDni.ifPresent(dnid -> query.addCriteria(Criteria.where("clientOfDestinationDni").is(dnid)));
         isDeleted.ifPresent(deleted -> query.addCriteria(Criteria.where("isDeleted").is(deleted)));
 
         long total = mongoTemplate.count(query, Movement.class);

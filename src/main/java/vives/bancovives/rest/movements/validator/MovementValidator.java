@@ -78,6 +78,16 @@ public class MovementValidator {
         validateSpentAmount(accountOfReference.getBalance(), dto.getAmount());
     }
 
+    public void validateInteresMensual(MovementCreateDto dto, Account accountOfReference) {
+        if (accountOfReference == null) {
+            throw new MovementBadRequest("Se necesita una cuenta de referencia para este tipo de movimiento");
+        }
+        validateAccountIsNotDeleted(accountOfReference);
+        if(accountOfReference.getAccountType().getInterest()<=0){
+            throw new MovementBadRequest("El tipo de cuenta de la cuenta no tiene intereses");
+        }
+    }
+
     private void validateNomina(MovementCreateDto dto, Account accountOfReference) {
         if (accountOfReference == null) {
             throw new MovementBadRequest("Se necesita una cuenta de referencia para este tipo de movimiento");
@@ -95,6 +105,7 @@ public class MovementValidator {
         }
         validateAccountIsNotDeleted(accountOfReference);
         validateCardIsValid(card);
+        validateCardAndAccountAreConnected(card, accountOfReference);
     }
 
     private void validatePagoExtraccion(MovementCreateDto dto, Account accountOfReference, Card card) {
@@ -107,6 +118,7 @@ public class MovementValidator {
         validateAccountIsNotDeleted(accountOfReference);
         validateCardIsValid(card);
         validateSpentAmount(accountOfReference.getBalance(), dto.getAmount());
+        validateCardAndAccountAreConnected(card, accountOfReference);
         validateTimelyAmount(dto.getAmount(), card);
     }
 
@@ -176,6 +188,11 @@ public class MovementValidator {
             return LocalDate.now().isAfter(firstDayOfNextMonth);
         } catch (DateTimeParseException e) {
             throw new MovementBadRequest("La fecha de expiración de la tarjeta es inválida");
+        }
+    }
+    public void validateCardAndAccountAreConnected(Card card, Account account){
+        if(!card.getAccount().getId().equals(account.getId())){
+            throw new MovementBadRequest("La tarjeta no pertenece a la cuenta");
         }
     }
 }

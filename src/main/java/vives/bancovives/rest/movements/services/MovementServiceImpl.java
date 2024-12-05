@@ -50,6 +50,8 @@ public class MovementServiceImpl implements MovementService{
             Optional<String> movementType,
             Optional<String> ibanOfReference,
             Optional<String> fecha,
+            Optional<String> clientOfReferenceDni,
+            Optional<String> clientOfDestinationDni,
             Optional<Boolean> isDeleted,
             Pageable pageable) {
 
@@ -60,7 +62,7 @@ public class MovementServiceImpl implements MovementService{
                 throw new MovementBadRequest("Formato de fecha invalido, Debe ser con formato: aaaa-mm-dd");
             }
         });
-        Page<Movement> movements = movementRepository.findAllByFilters(movementType, ibanOfReference, parsedFecha, isDeleted, pageable);
+        Page<Movement> movements = movementRepository.findAllByFilters(movementType, ibanOfReference, parsedFecha, clientOfReferenceDni, clientOfDestinationDni, isDeleted, pageable);
         return movements.map(movementMapper::fromEntityToResponse);
     }
 
@@ -89,6 +91,21 @@ public class MovementServiceImpl implements MovementService{
 
         saveModificationsInAccountsAndCard(accountOfReference, accountOfDestination, card);
         return movementMapper.fromEntityToResponse(movementRepository.save(movementToSave));
+    }
+
+    @Transactional
+    @Override
+    public MovementResponseDto addInterest(MovementCreateDto createDto){
+        if(!createDto.getMovementType().trim().equalsIgnoreCase("INTERESMENSUAL")){
+            throw new MovementBadRequest("No se puede añadir interes a un movimiento que no sea de tipo interes mensual");
+        }
+        Account accountOfReference = existsAccountByIban(createDto.getIbanOfReference());
+        validator.validateInteresMensual(createDto, accountOfReference);
+        Movement movement = movementMapper.fromCreateDtoToEntity(createDto, accountOfReference, null, null);
+        movement.setAmountOfMoney(calculateInterest(accountOfReference));
+        moveMoney(movement);
+        saveModificationsInAccountsAndCard(accountOfReference, null, null);
+        return movementMapper.fromEntityToResponse(movementRepository.save(movement));
     }
 
     @Transactional
@@ -172,18 +189,27 @@ public class MovementServiceImpl implements MovementService{
     private void moveMoney(Movement movement){
         switch (movement.getMovementType()){
             case TRANSFERENCIA:
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() - movement.getAmountOfMoney());
                 movement.getAccountOfDestination().setBalance(movement.getAccountOfDestination().getBalance() + movement.getAmountOfMoney());
+                movement.setClientOfDestinationDni(movement.getAccountOfDestination().getClient().getDni());
+                movement.setClientOfReferenceDni(movement.getAccountOfReference().getClient().getDni());
                 break;
             case INGRESO, NOMINA:
+                movement.setClientOfDestinationDni(movement.getAccountOfReference().getClient().getDni());
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() + movement.getAmountOfMoney());
                 break;
             case PAGO:
             case EXTRACCION:
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
+                movement.setClientOfReferenceDni(movement.getAccountOfReference().getClient().getDni());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() - movement.getAmountOfMoney());
                 setNewLimitsInCard(movement.getCard(), movement.getAmountOfMoney());
                 break;
             case INTERESMENSUAL:
+                movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
+                movement.setClientOfReferenceDni(movement.getAccountOfReference().getClient().getDni());
                 movement.getAccountOfReference().setBalance(movement.getAccountOfReference().getBalance() + calculateInterest(movement.getAccountOfReference()));
         }
     }
