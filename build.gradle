@@ -49,11 +49,12 @@ dependencies {
 	implementation 'org.postgresql:postgresql:42.6.0'
 	//MongoDB
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-
 	//ProjectReactor
 	implementation("io.projectreactor:reactor-core:3.7.0")
 	//Swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	//OpenPdf
+	implementation("com.github.librepdf:openpdf:2.0.3")
 
 	// Seguridad
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
