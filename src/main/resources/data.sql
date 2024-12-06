@@ -53,7 +53,7 @@ VALUES('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'BgLL4KEb0KwG3H_zDiP', 'pepeuno',
 INSERT INTO user_roles(user_id, roles)VALUES ('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'USER');
 
 INSERT INTO users(id, public_id, username, password, is_deleted, created_at, updated_at)
-VALUES('d2886a1d-7b10-4f24-9a31-582542db0a4a', 'BgLL4KEb1KwG3H_zDiP', 'pepedos', 'pepedos', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+VALUES('d2886a1d-7b10-4f24-9a31-582542db0a4a', 'BgLL4KEb1KwG3H_zDiP', 'pepedos', '$2a$12$SDzJki3VxgO0pTF/jSPfXeZ2kmG9iibHUor03cDkGgfELWxQ1PIAG', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO user_roles(user_id, roles)VALUES ('d2886a1d-7b10-4f24-9a31-582542db0a4a', 'USER');
 
 /* Clientes */

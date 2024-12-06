@@ -55,12 +55,13 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 	//OpenPdf
 	implementation("com.github.librepdf:openpdf:2.0.3")
-
+	//Jwt Security
+	implementation("com.auth0:java-jwt:4.4.0")
 	// Seguridad
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	implementation 'org.springframework.security:spring-security-core'
-//	implementation 'org.springframework.security:spring-security-web'
-//	implementation 'org.springframework.security:spring-security-config'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-core'
+	implementation 'org.springframework.security:spring-security-web'
+	implementation 'org.springframework.security:spring-security-config'
 	//Librerias para tests
 	//
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

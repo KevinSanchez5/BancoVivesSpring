@@ -38,7 +38,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public Page<UserResponse> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable) {
+    public Page<User> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable) {
         log.info("Buscando todos los usuarios con username: " + username + " y borrados: " + isDeleted);
         // Criterio de búsqueda por nombre
         Specification<User> specUsernameUser = (root, query, criteriaBuilder) ->
@@ -56,34 +56,33 @@ public class UsersServiceImpl implements UsersService {
                 .and(specIsDeleted);
 
         // Debe devolver un Page, por eso usamos el findAll de JPA
-        return usersRepository.findAll(criterio, pageable).map(usersMapper::fromEntityToResponseDto);
+        return usersRepository.findAll(criterio, pageable);
     }
 
     @Override
     @Cacheable(key = "#publicId")
-    public UserResponse findById(String publicId) {
+    public User findById(String publicId) {
         log.info("Buscando usuario por id: " + publicId);
-        User user = existsUserByPublicId(publicId);
-        return usersMapper.fromEntityToResponseDto(user);
+        return existsUserByPublicId(publicId);
     }
 
     @Override
     @CachePut(key = "#result.publicId")
-    public UserResponse save(UserRequest userRequest) {
+    public User save(UserRequest userRequest) {
         log.info("Guardando usuario: " + userRequest);
         existsUserByUsername(userRequest.getUsername());
-        return usersMapper.fromEntityToResponseDto(usersRepository.save(usersMapper.fromUpdateDtotoUser(userRequest)));
+        return usersRepository.save(usersMapper.fromUpdateDtotoUser(userRequest));
     }
 
     @Override
     @CachePut(key = "#result.publicId")
-    public UserResponse update(String publicId, UserUpdateDto updateDto) {
+    public User update(String publicId, UserUpdateDto updateDto) {
         log.info("Actualizando usuario: " + updateDto);
         User oldUser = existsUserByPublicId(publicId);
         userUpdateValidator.validateUpdate(updateDto);
         existsUserByUsername(updateDto.getUsername());
         User updatedUser = usersMapper.fromUpdateDtotoUser(oldUser, updateDto);
-        return usersMapper.fromEntityToResponseDto(usersRepository.save(updatedUser));
+        return usersRepository.save(updatedUser);
     }
 
     @Override
@@ -95,9 +94,17 @@ public class UsersServiceImpl implements UsersService {
         usersRepository.deleteById(userToDelete.getId());
     }
 
+    @Override
+    public User findUserByUsername(String username) {
+        log.info("Buscando usuario por nombre de usuario: " + username);
+        return usersRepository.findByUsernameEqualsIgnoreCase(username).orElseThrow(() -> new UserNotFound(username));
+    }
+
     public void existsUserByUsername(String username) {
-        if (usersRepository.findByUsernameEqualsIgnoreCase(username).isPresent()) {
-            throw new UserConflict("Ya existe un usuario con ese username");
+        log.info("Buscando usuario con el nombre de usuario: " + username);
+        Optional<User> user = usersRepository.findByUsernameEqualsIgnoreCase(username);
+        if (user.isPresent()) {
+            throw new UserConflict("Ya existe un usuario con ese nombre de usuario");
         }
     }
 

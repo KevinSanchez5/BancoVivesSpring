@@ -11,13 +11,15 @@ import java.util.Optional;
 
 public interface UsersService {
 
-    Page<UserResponse> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable);
+    Page<User> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable);
 
-    UserResponse findById(String id);
+    User findById(String id);
 
-    UserResponse save(UserRequest userRequest);
+    User findUserByUsername(String username);
 
-    UserResponse update(String id, UserUpdateDto updateDto);
+    User save(UserRequest userRequest);
+
+    User update(String id, UserUpdateDto updateDto);
 
     void deleteById(String id);
 
