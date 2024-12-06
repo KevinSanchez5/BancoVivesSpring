@@ -172,7 +172,6 @@ public class AccountTypeServiceImpl implements AccountTypeService {
             @CachePut(key = "#id", unless = "#result == null"),
             @CachePut(key = "#result.name", unless = "#result == null")
     })
-    @CachePut(key = "#id", unless = "#result == null")
     public AccountType update(String id, UpdatedAccountType updatedAccountType) {
         log.info("Actualizando tipo de cuenta con ID: {}", id);
         AccountType existingAccountType = findById(id);

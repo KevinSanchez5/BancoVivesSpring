@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import vives.bancovives.storage.exceptions.UnsupportedFileTypeException;
 import vives.bancovives.storage.service.StorageService;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class FilesController {
      * @param storageService Servicio de almacenamiento que se va a inyectar.
      */
     @Autowired
-    public void setStorageService(StorageService storageService) {
+    public FilesController(StorageService storageService) {
         this.storageService = storageService;
     }
 
@@ -73,6 +74,11 @@ public class FilesController {
             @RequestPart("file") MultipartFile file) {
 
         String urlImagen = null;
+        String filename = file.getOriginalFilename();
+
+        if (filename == null || !isValidFileExtension(filename)) {
+            throw new UnsupportedFileTypeException("Tipo de archivo no permitido. Solo se aceptan JPG, JPEG, GIF, PNG.");
+        }
 
         if (!file.isEmpty()) {
             String imagen = storageService.store(file);
@@ -93,7 +99,7 @@ public class FilesController {
     @DeleteMapping(value = "{filename:.+}")
     public ResponseEntity<Void> deleteFile(@PathVariable String filename) {
         storageService.delete(filename);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -104,5 +110,11 @@ public class FilesController {
     @GetMapping()
     public ResponseEntity<List<String>> getAllFiles() {
         return ResponseEntity.ok(storageService.loadAll());
+    }
+
+    private boolean isValidFileExtension(String filename) {
+        String lowerCaseFilename = filename.toLowerCase();
+        return lowerCaseFilename.endsWith(".jpg") || lowerCaseFilename.endsWith(".jpeg")
+                || lowerCaseFilename.endsWith(".gif") || lowerCaseFilename.endsWith(".png");
     }
 }

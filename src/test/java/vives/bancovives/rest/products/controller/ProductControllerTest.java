@@ -14,21 +14,26 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import reactor.core.publisher.Flux;
 import vives.bancovives.rest.products.accounttype.dto.input.NewAccountType;
 import vives.bancovives.rest.products.accounttype.dto.input.UpdatedAccountType;
 import vives.bancovives.rest.products.accounttype.dto.output.OutputAccountType;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
 import vives.bancovives.rest.products.accounttype.service.AccountTypeService;
+import vives.bancovives.rest.products.accounttype.storage.AccountTypeStorageCSV;
 import vives.bancovives.rest.products.cardtype.dto.input.NewCardType;
 import vives.bancovives.rest.products.cardtype.dto.input.UpdatedCardType;
 import vives.bancovives.rest.products.cardtype.dto.output.OutputCardType;
 import vives.bancovives.rest.products.cardtype.model.CardType;
 import vives.bancovives.rest.products.cardtype.service.CardTypeService;
+import vives.bancovives.rest.products.exceptions.ProductDoesNotExistException;
 import vives.bancovives.utils.IdGenerator;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -53,16 +58,22 @@ class ProductControllerTest {
     private CardTypeService cardTypeService;
 
     @MockBean
+    private AccountTypeStorageCSV accountTypeStorage;
+
+    @MockBean
     private PaginationLinksUtils paginationLinksUtils;
 
     @Autowired
     public ProductControllerTest(
             AccountTypeService accountTypeService,
             CardTypeService cardTypeService,
-            PaginationLinksUtils paginationLinksUtils
+            PaginationLinksUtils paginationLinksUtils,
+            AccountTypeStorageCSV accountTypeStorage
     ) {
         this.cardTypeService = cardTypeService;
         this.accountTypeService = accountTypeService;
+        this.paginationLinksUtils = paginationLinksUtils;
+        this.accountTypeStorage = accountTypeStorage;
         mapper.registerModule(new JavaTimeModule());
     }
 
@@ -107,24 +118,24 @@ class ProductControllerTest {
 
         // CardType
         cardType = CardType.builder()
-               .id(UUID.randomUUID())
-               .publicId(publicId)
-               .name("SOMETHING")
-               .description("idk")
-               .createdAt(LocalDateTime.now())
-               .updatedAt(LocalDateTime.now())
-               .isDeleted(false)
-               .build();
+                .id(UUID.randomUUID())
+                .publicId(publicId)
+                .name("SOMETHING")
+                .description("idk")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .isDeleted(false)
+                .build();
 
         // OutputCardType
         outputCardType = OutputCardType.builder()
-               .id(publicId)
-               .name("SOMETHING")
-               .description("idk")
-               .createdAt(LocalDateTime.now().toString())
-               .updatedAt(LocalDateTime.now().toString())
-               .isDeleted(false)
-               .build();
+                .id(publicId)
+                .name("SOMETHING")
+                .description("idk")
+                .createdAt(LocalDateTime.now().toString())
+                .updatedAt(LocalDateTime.now().toString())
+                .isDeleted(false)
+                .build();
     }
 
     @Test
@@ -291,25 +302,25 @@ class ProductControllerTest {
     void deleteAccountType() throws Exception {
         // Arrange
         AccountType serviceResponse = AccountType.builder()
-               .id(id)
-               .publicId(publicId)
-               .name("SOMETHING")
-               .description("idk")
-               .interest(0.0)
-               .createdAt(LocalDateTime.now())
-               .updatedAt(LocalDateTime.now())
-               .isDeleted(true)
-               .build();
+                .id(id)
+                .publicId(publicId)
+                .name("SOMETHING")
+                .description("idk")
+                .interest(0.0)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .isDeleted(true)
+                .build();
 
         OutputAccountType output = OutputAccountType.builder()
-               .id(publicId)
-               .name("SOMETHING")
-               .description("idk")
-               .interest(0.0)
-               .createdAt(LocalDateTime.now().toString())
-               .updatedAt(LocalDateTime.now().toString())
-               .isDeleted(true)
-               .build();
+                .id(publicId)
+                .name("SOMETHING")
+                .description("idk")
+                .interest(0.0)
+                .createdAt(LocalDateTime.now().toString())
+                .updatedAt(LocalDateTime.now().toString())
+                .isDeleted(true)
+                .build();
 
         when(accountTypeService.delete(publicId)).thenReturn(serviceResponse);
 
@@ -510,5 +521,65 @@ class ProductControllerTest {
                 () -> assertEquals(outputAccountType.getDescription(), responseBody.getDescription()),
                 () -> assertTrue(responseBody.getIsDeleted())
         );
+    }
+
+    @Test
+    void importAllAccountsFromCsv() throws Exception{
+        // Arrange
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                "something.csv",
+                "text/csv",
+                (" ").getBytes());
+        NewAccountType newAccountType = NewAccountType.builder()
+                .name("SOMETHING")
+                .description("idk")
+                .interest(0.0)
+                .build();
+        when(accountTypeStorage.read(any(File.class))).thenReturn(Flux.just(newAccountType));
+        when(accountTypeService.findByName(any(String.class))).thenThrow(new ProductDoesNotExistException(""));
+        when(accountTypeService.save(any(NewAccountType.class))).thenReturn(accountType);
+
+        // Act
+        MockHttpServletResponse response =  mockMvc.perform(multipart("/v1/products/accounts/import")
+                        .file(mockFile))
+                .andReturn().getResponse();
+
+        List<OutputAccountType> res = mapper.readValue(
+                response.getContentAsString(),
+                mapper.getTypeFactory().constructCollectionType(List.class, OutputAccountType.class)
+        );
+
+        // Assert
+        assertEquals(200, response.getStatus());
+        assertEquals(1, res.size());
+        assertEquals("SOMETHING", res.getFirst().getName());
+        assertEquals("idk", res.getFirst().getDescription());
+        assertEquals(0.0, res.getFirst().getInterest());
+    }
+
+    @Test
+    void importAccountsThatAlreadyExisted() throws Exception {
+        // Arrange
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                "something.csv",
+                "text/csv",
+                (" ").getBytes());
+        NewAccountType newAccountType = NewAccountType.builder()
+                .name("SOMETHING")
+                .description("idk")
+                .interest(0.0)
+                .build();
+        when(accountTypeStorage.read(any(File.class))).thenReturn(Flux.just(newAccountType));
+        when(accountTypeService.findByName(any(String.class))).thenReturn(accountType);
+
+        // Act
+        MockHttpServletResponse response =  mockMvc.perform(multipart("/v1/products/accounts/import")
+                        .file(mockFile))
+                .andReturn().getResponse();
+
+        // Assert
+        assertEquals(409, response.getStatus());
     }
 }
