@@ -316,9 +316,9 @@ public class ProductController {
             )
     })
     @PostMapping("/accounts/import")
-    public ResponseEntity importAccountTypes(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<OutputAccountType>> importAccountTypes(@RequestParam("file") MultipartFile file) {
         log.info("Importando tipos de cuentas desde un archivo");
-        File tempFile;
+        File tempFile = null;
         try {
             tempFile = File.createTempFile(UUID.randomUUID().toString(), ".csv");
             file.transferTo(tempFile);
@@ -353,10 +353,16 @@ public class ProductController {
                         )
                 );
             }
-            return ResponseEntity.ok().body(HttpStatus.CREATED);
+            return ResponseEntity.ok(saved);
         } catch (IOException e) {
             log.error("Error al importar tipos de cuentas", e);
             throw new ProductStorageException("Error al importar tipos de cuentas desde un CSV");
+        } finally {
+            try {
+                tempFile.delete();
+            } catch (Exception e) {
+                log.error("Error al borrar el archivo temporal", e);
+            }
         }
     }
 

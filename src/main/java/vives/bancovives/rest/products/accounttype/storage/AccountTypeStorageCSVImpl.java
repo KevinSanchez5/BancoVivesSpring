@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Esta clase implementa la interfaz AccountTypeStorageCSV, proporcionando métodos para guardar y leer tipos de cuentas en un archivo CSV.
@@ -33,10 +34,10 @@ public class AccountTypeStorageCSVImpl implements AccountTypeStorageCSV {
     public void save(List<AccountType> data, File file) {
         log.info("Exportando tipos de cuentas a un fichero CSV");
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("nombre,interés,descripción;\n");
+            writer.write("nombre,interés,descripción\n");
             data.forEach(accountType -> {
                 try {
-                    writer.write(accountType.getName() + "," + accountType.getInterest() + "," + accountType.getDescription() + ";\n");
+                    writer.write(accountType.getName() + "," + accountType.getInterest() + "," + accountType.getDescription() + "\n");
                 } catch (IOException e) {
                     throw new ProductStorageException("Hubo un error al guardar los tipos de cuenta en un fichero CSV:" + e);
                 }
@@ -58,17 +59,26 @@ public class AccountTypeStorageCSVImpl implements AccountTypeStorageCSV {
         log.info("Importando tipos de cuentas a un fichero CSV");
         return Flux.create(fluxSink -> {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                int linesSkipped = 0;
-                if (Objects.equals(reader.readLine(), "nombre,interés,descripción;")) linesSkipped = 1;
-                reader.lines()
-                       .skip(linesSkipped)
-                       .forEach(line -> {
-                            List<String> info = List.of(line.split(","));
+                // Read the first line to check if it's a header
+                String firstLine = reader.readLine();
+                if (firstLine == null) {
+                    fluxSink.complete();
+                    return;
+                }
+                Stream<String> lines;
+                if (Objects.equals(firstLine, "nombre,interés,descripción")) {
+                    lines = reader.lines();
+                } else {
+                    lines = Stream.concat(Stream.of(firstLine), reader.lines());
+                }
+
+                lines.forEach(line -> {
+                            String[] info = line.split(",");
                             NewAccountType newAccountType = NewAccountType.builder()
-                                   .name(info.getFirst())
-                                   .interest(Double.parseDouble(info.get(1)))
-                                   .description(info.get(2))
-                                   .build();
+                                    .name(info[0])
+                                    .interest(Double.parseDouble(info[1]))
+                                    .description(info[2])
+                                    .build();
                             fluxSink.next(newAccountType);
                         });
                 fluxSink.complete();
@@ -77,4 +87,5 @@ public class AccountTypeStorageCSVImpl implements AccountTypeStorageCSV {
             }
         });
     }
+
 }

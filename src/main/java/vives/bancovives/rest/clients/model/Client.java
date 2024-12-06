@@ -45,7 +45,6 @@ public class Client implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    //TODO : añadir el storage de las imagenes
     @Column(name = "photo")
     private String photo;
 

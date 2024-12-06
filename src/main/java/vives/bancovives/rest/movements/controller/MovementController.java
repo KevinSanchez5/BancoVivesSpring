@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
+import vives.bancovives.rest.movements.model.Movement;
 import vives.bancovives.rest.movements.services.MovementService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
@@ -40,6 +41,7 @@ public class MovementController {
             @RequestParam(required = false) Optional<String> movementType,
             @RequestParam(required = false) Optional<String> iban,
             @RequestParam(required = false) Optional<String> fecha,
+            @RequestParam(required = false) Optional<String> clientOfReferenceDni,
             @RequestParam(required = false, defaultValue = "false")Optional<Boolean> isDeleted,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -50,7 +52,7 @@ public class MovementController {
         log.info("Buscando todos los movimientos");
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<MovementResponseDto> pageResult = movementService.findAll(movementType, iban, fecha, isDeleted, PageRequest.of(page, size, sort));
+        Page<MovementResponseDto> pageResult = movementService.findAll(movementType, iban, fecha, clientOfReferenceDni,Optional.empty(),  isDeleted, PageRequest.of(page, size, sort));
     return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
                 .body(PageResponse.of(pageResult, sortBy, direction));
@@ -79,6 +81,12 @@ public class MovementController {
         log.info("Delete movement with id: {}", id);
         movementService.cancelMovement(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/addinterest")
+    public ResponseEntity<MovementResponseDto> addInterest(@RequestBody MovementCreateDto movementDto) {
+        log.info("Añadiendo interes manualmente a una cuenta");
+        return ResponseEntity.status(HttpStatus.CREATED).body(movementService.addInterest(movementDto));
     }
 
 }

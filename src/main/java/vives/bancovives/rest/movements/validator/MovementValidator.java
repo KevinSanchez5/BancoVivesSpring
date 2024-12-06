@@ -10,6 +10,7 @@ import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.cards.repository.CardsRepository;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.exceptions.MovementBadRequest;
+import vives.bancovives.rest.movements.exceptions.MovementForbidden;
 import vives.bancovives.rest.movements.model.MovementType;
 
 import java.time.LocalDate;
@@ -52,9 +53,8 @@ public class MovementValidator {
             case TRANSFERENCIA:
                 validateTransferencia(dto, accountOfReference, accountOfDestination);
                 break;
-            case INTERESMENSUAL:
             case NOMINA:
-                validateInteresMensualNomina(dto, accountOfReference);
+                validateNomina(dto, accountOfReference);
                 break;
             case INGRESO:
                 validateIngreso(dto, accountOfReference, card);
@@ -63,6 +63,8 @@ public class MovementValidator {
             case EXTRACCION:
                 validatePagoExtraccion(dto, accountOfReference, card);
                 break;
+            case INTERESMENSUAL:
+                throw new MovementForbidden("No tienes permisos para este tipo de movimiento");
             default: throw new MovementBadRequest("Debe insertar un tipo valido de movimiento");
         }
     }
@@ -76,11 +78,22 @@ public class MovementValidator {
         validateSpentAmount(accountOfReference.getBalance(), dto.getAmount());
     }
 
-    private void validateInteresMensualNomina(MovementCreateDto dto, Account accountOfReference) {
+    public void validateInteresMensual(MovementCreateDto dto, Account accountOfReference) {
         if (accountOfReference == null) {
             throw new MovementBadRequest("Se necesita una cuenta de referencia para este tipo de movimiento");
         }
         validateAccountIsNotDeleted(accountOfReference);
+        if(accountOfReference.getAccountType().getInterest()<=0){
+            throw new MovementBadRequest("El tipo de cuenta de la cuenta no tiene intereses");
+        }
+    }
+
+    private void validateNomina(MovementCreateDto dto, Account accountOfReference) {
+        if (accountOfReference == null) {
+            throw new MovementBadRequest("Se necesita una cuenta de referencia para este tipo de movimiento");
+        }
+        validateAccountIsNotDeleted(accountOfReference);
+        validatePositiveAmount(dto.getAmount());
     }
 
     private void  validateIngreso(MovementCreateDto dto, Account accountOfReference, Card card) {
@@ -92,6 +105,7 @@ public class MovementValidator {
         }
         validateAccountIsNotDeleted(accountOfReference);
         validateCardIsValid(card);
+        validateCardAndAccountAreConnected(card, accountOfReference);
     }
 
     private void validatePagoExtraccion(MovementCreateDto dto, Account accountOfReference, Card card) {
@@ -104,6 +118,7 @@ public class MovementValidator {
         validateAccountIsNotDeleted(accountOfReference);
         validateCardIsValid(card);
         validateSpentAmount(accountOfReference.getBalance(), dto.getAmount());
+        validateCardAndAccountAreConnected(card, accountOfReference);
         validateTimelyAmount(dto.getAmount(), card);
     }
 
@@ -173,6 +188,11 @@ public class MovementValidator {
             return LocalDate.now().isAfter(firstDayOfNextMonth);
         } catch (DateTimeParseException e) {
             throw new MovementBadRequest("La fecha de expiración de la tarjeta es inválida");
+        }
+    }
+    public void validateCardAndAccountAreConnected(Card card, Account account){
+        if(!card.getAccount().getId().equals(account.getId())){
+            throw new MovementBadRequest("La tarjeta no pertenece a la cuenta");
         }
     }
 }

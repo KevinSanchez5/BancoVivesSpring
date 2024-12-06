@@ -37,7 +37,13 @@ public class Movement {
     @NotNull
     private Account accountOfReference;
 
+    private String clientOfReferenceDni;
+
     private Account accountOfDestination;
+
+    private String clientOfDestinationDni;
+
+    private double amountBeforeMovement;
 
     @Builder.Default
     @NotNull
