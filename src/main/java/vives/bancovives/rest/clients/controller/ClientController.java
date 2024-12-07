@@ -221,7 +221,7 @@ public class ClientController {
      */
     @Operation(
             summary = "Actualiza un cliente",
-            description = "Actualiza un cliente dado su public Id e inserta los nuevos datos a traves de un UpdateClientDto"
+            description = "Actualiza un cliente dado su public Id e inserta los nuevos datos a traves de un ClientUpdateDto"
     )
     @ApiResponses( value = {
             @ApiResponse(
