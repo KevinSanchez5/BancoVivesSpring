@@ -71,7 +71,7 @@ class ClientServiceImplTest {
     @BeforeEach
     void setUp() {
         User user = new User(uuid, id, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
-        account = new Account(UUID.randomUUID(), IdGenerator.generateId(), "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
+        account = new Account(UUID.randomUUID(), id, "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
         accountResponse = new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance());
         client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, List.of(account), true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
@@ -200,39 +200,28 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void deleteByIdLogically_Success() {
-        String userPublicId = "user-id-456";
-        String accountPublicId = "account-id-789";
-
-        Client client = new Client();
-        client.setId(uuid);
-        client.setPublicId(id);
-        client.setDeleted(false);
-
-        User user = new User();
-        user.setPublicId(userPublicId);
-        client.setUser(user);
-
-        Account account = new Account();
-        account.setPublicId(accountPublicId);
-        client.setAccounts(List.of(account));
-
+    void deleteByIdLogically_Success_NotDataDeleted() {
         when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
         when(clientRepository.save(any(Client.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        doNothing().when(userService).deleteById(userPublicId);
-        doNothing().when(accountService).deleteById(accountPublicId);
+        doNothing().when(userService).deleteById(id);
+        when(accountService.deleteById(id)).thenReturn(account);
 
         ClientResponseDto clientResponse = clientService.deleteByIdLogically(id, Optional.empty());
 
         assertAll(
-                () -> assertNotNull(clientResponse, "El cliente no debería ser null"),
-                () -> assertEquals(id, clientResponse.getPublicId(), "El ID del cliente no coincide"),
-                () -> assertTrue(client.isDeleted(), "El cliente debería estar marcado como eliminado")
+                () -> assertNotNull(clientResponse),
+                () -> assertEquals(id, clientResponse.getPublicId()),
+                () -> assertTrue(clientResponse.getIsDeleted()),
+                () -> assertNotNull(clientResponse.getDni()),
+                () -> assertNotNull(clientResponse.getCompleteName()),
+                () -> assertNotNull(clientResponse.getEmail()),
+                () -> assertNotNull(clientResponse.getPhoneNumber()),
+                () -> assertNull(clientResponse.getUserResponse())
         );
 
         verify(clientRepository, times(1)).findByPublicId(id);
-        verify(userService, times(1)).deleteById(userPublicId);
-        verify(accountService, times(1)).deleteById(accountPublicId);
+        verify(userService, times(1)).deleteById(id);
+        verify(accountService, times(1)).deleteById(id);
         verify(clientRepository, times(1)).save(client);
     }
 

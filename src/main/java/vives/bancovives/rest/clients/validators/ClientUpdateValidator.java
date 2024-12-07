@@ -11,7 +11,7 @@ public class ClientUpdateValidator {
         validateNotNullAtributes(dto.getDni(), dto.getCompleteName(),dto.getEmail(), dto.getPhoneNumber(),dto.getPhoto(), dto.getDniPicture(), dto.getStreet(), dto.getHouseNumber() ,dto.getCity(),dto.getCountry(),dto.getUsername(),dto.getPassword());
         validateDni(dto.getDni());
         validateCompleteName(dto.getCompleteName());
-        validateEmail(dto.getCompleteName());
+        validateEmail(dto.getEmail());
         validatePhoneNumber(dto.getPhoneNumber());
         validateStreet(dto.getStreet());
         validateHouseNumber(dto.getHouseNumber());
@@ -36,13 +36,13 @@ public class ClientUpdateValidator {
     }
     
     private void validateCompleteName(String completeName){
-        if (completeName != null && completeName.trim().isBlank() && (completeName.length() < 5 || completeName.length() > 255)) {
+        if (completeName != null && (completeName.length() < 5 || completeName.length() > 255)) {
             throw new ClientBadRequest("El nombre tiene que tener entre 5 y 255 caracteres");
         }
     }
-    
+
     private void validateEmail(String email){
-        if (email != null &&  email.trim().isBlank()  && !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$")) {
+        if (email != null && !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
             throw new ClientBadRequest("El email debe de ser valido");
         }
     }
@@ -54,12 +54,12 @@ public class ClientUpdateValidator {
     }
 
     private void validateStreet(String street){
-        if (street != null && street.trim().isBlank()  && (street.length() < 5 || street.length() > 255)) {
+        if (street != null && (street.length() < 5 || street.length() > 255)) {
             throw new ClientBadRequest("El nombre de la calle tiene que tener entre 5 y 255 caracteres");
         }
     }
     private void validateHouseNumber(String houseNumber){
-        if (houseNumber != null && houseNumber.trim().isBlank() && !houseNumber.matches("\\d+[A-Za-z]*")) {
+        if (houseNumber != null && !houseNumber.matches("\\d+[A-Za-z]*")) {
             throw new ClientBadRequest("El numero de la casa debe ser un numero y puede tener una letra al final de manera opcional");
         }
     }

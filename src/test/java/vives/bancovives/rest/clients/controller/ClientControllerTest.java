@@ -147,7 +147,7 @@ class ClientControllerTest {
         ClientResponseDto responseClient = jsonMapper.readValue(response.getContentAsString(), ClientResponseDto.class);
 
         assertAll(
-                () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+                () -> assertEquals(HttpStatus.CREATED.value(), response.getStatus()),
                 () -> assertEquals(responseDto, responseClient),
                 () -> assertEquals(client.getPublicId(), responseClient.getPublicId()),
                 () -> assertEquals(client.getDni(), responseClient.getDni())
@@ -155,6 +155,8 @@ class ClientControllerTest {
 
         verify(clientService, times(1)).save(createDto);
     }
+
+
 
     @Test
     void createClient_BadRequest() throws Exception{
@@ -194,7 +196,7 @@ class ClientControllerTest {
     }
 
     @Test
-    void updateClient() throws Exception{
+    void updateClient_Success() throws Exception{
         when(clientService.update(publicId, updateDto)).thenReturn(responseDto);
 
         MockHttpServletResponse response = mockMvc.perform(
