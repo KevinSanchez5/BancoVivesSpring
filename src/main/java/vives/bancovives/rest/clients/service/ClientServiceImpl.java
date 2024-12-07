@@ -149,6 +149,13 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
+    public ClientResponseDto findMe(String username) {
+        Client client = clientRepository.findByUser_Username(username).orElseThrow(
+                ()-> new ClientNotFound("Cliente no encontrado")
+        );
+        return clientMapper.fromEntityToResponse(client);
+    }
+
     public void existsClientByDniAndEmail(String dni, String email) {
         if (clientRepository.findByDniIgnoreCase(dni).isPresent()) {
             throw new ClientConflict("Cliente con ese dni ya existe");

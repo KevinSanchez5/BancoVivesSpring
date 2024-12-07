@@ -28,5 +28,6 @@ public interface ClientService {
     ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData);
     ClientResponseDto deleteDataOfClient(Client client);
     ClientResponseDto validateClient(String id);
+    ClientResponseDto findMe(String username);
 
 }

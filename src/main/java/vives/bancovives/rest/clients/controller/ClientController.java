@@ -29,6 +29,7 @@ import vives.bancovives.rest.clients.service.ClientService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -350,5 +351,13 @@ public class ClientController {
     public ResponseEntity<ClientResponseDto> validateClient(@PathVariable String id) {
         log.info("Validando cliente con id: {}", id);
         return ResponseEntity.ok(clientService.validateClient(id));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ClientResponseDto> findMe(Principal principal){
+        String username = principal.getName();
+        log.info("Buscando su informacion");
+        return ResponseEntity.ok(clientService.findMe(username));
     }
 }
