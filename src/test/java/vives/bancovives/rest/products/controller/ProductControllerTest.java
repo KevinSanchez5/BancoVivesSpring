@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import reactor.core.publisher.Flux;
 import vives.bancovives.rest.products.accounttype.dto.input.NewAccountType;
@@ -219,6 +220,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void createAccountType() throws Exception {
         // Arrange
         NewAccountType newAccountType = NewAccountType.builder()
@@ -248,6 +250,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void updateAccountType() throws Exception {
         // Arrange
         UpdatedAccountType input = UpdatedAccountType.builder()
@@ -299,6 +302,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void deleteAccountType() throws Exception {
         // Arrange
         AccountType serviceResponse = AccountType.builder()
@@ -419,6 +423,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void createCardType() throws Exception {
         // Arrange
         NewCardType input = NewCardType.builder()
@@ -446,6 +451,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void updateCardType() throws Exception {
         // Arrange
         UpdatedCardType input = UpdatedCardType.builder()
@@ -492,6 +498,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void deleteCardType() throws Exception {
         // Arrange
         CardType serviceResponse = CardType.builder()
@@ -524,6 +531,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void importAllAccountsFromCsv() throws Exception{
         // Arrange
         MockMultipartFile mockFile = new MockMultipartFile(
@@ -559,6 +567,7 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     void importAccountsThatAlreadyExisted() throws Exception {
         // Arrange
         MockMultipartFile mockFile = new MockMultipartFile(
