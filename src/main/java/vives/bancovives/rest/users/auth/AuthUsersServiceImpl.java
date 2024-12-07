@@ -16,7 +16,6 @@ public class AuthUsersServiceImpl implements AuthUsersService {
         this.authUsersRepository = authUsersRepository;
     }
 
-
     @Override
     public UserDetails loadUserByUsername(String username) {
         return authUsersRepository.findByUsername(username)

@@ -52,7 +52,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 @RestController
 @RequestMapping("${api.version}/products")
-@PreAuthorize("hasAnyRole('ADMIN')")
 @Tag(name = "API de productos", description = "API para la gestión de productos")
 public class ProductController {
 
@@ -150,6 +149,7 @@ public class ProductController {
                     description = "Conflict"
             )
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/accounts")
     public ResponseEntity<OutputAccountType> createAccountType(@RequestBody @Valid NewAccountType newAccountType) {
         log.info("Creando un nuevo tipo de cuenta");
@@ -254,6 +254,7 @@ public class ProductController {
             )
     })
     @PutMapping("/accounts/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<OutputAccountType> updateAccountType(
             @PathVariable String id,
             @RequestBody @Valid UpdatedAccountType updatedAccountType
@@ -289,6 +290,7 @@ public class ProductController {
             )
     })
     @DeleteMapping("/accounts/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<OutputAccountType> deleteAccountType(
             @PathVariable String id
     ) {
@@ -318,6 +320,7 @@ public class ProductController {
             )
     })
     @PostMapping("/accounts/import")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<List<OutputAccountType>> importAccountTypes(@RequestParam("file") MultipartFile file) {
         log.info("Importando tipos de cuentas desde un archivo");
         File tempFile = null;
@@ -436,6 +439,7 @@ public class ProductController {
             )
     })
     @PostMapping("/cards")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<OutputCardType> createCardType(@RequestBody @Valid NewCardType newCardType) {
         log.info("Creando un nuevo producto");
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -534,6 +538,7 @@ public class ProductController {
             )
     })
     @PutMapping("/cards/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<OutputCardType> updateCardById(
             @PathVariable String id,
             @RequestBody @Valid UpdatedCardType updatedCardType
@@ -569,6 +574,7 @@ public class ProductController {
             )
     })
     @DeleteMapping("/cards/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<OutputCardType> deleteCardType(
             @PathVariable String id
     ) {

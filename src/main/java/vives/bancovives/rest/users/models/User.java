@@ -82,22 +82,6 @@ public class User implements UserDetails, Serializable {
                         .collect(Collectors.toSet());
         }
 
-
-        @Override
-        public boolean isAccountNonExpired() {
-                return true;
-        }
-
-        @Override
-        public boolean isAccountNonLocked() {
-                return true;
-        }
-
-        @Override
-        public boolean isCredentialsNonExpired() {
-                return true;
-        }
-
         @Override
         public boolean isEnabled() {
                 return !isDeleted;

@@ -1,5 +1,7 @@
 package vives.bancovives.rest.users.controllers;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.server.ResponseStatusException;
 import vives.bancovives.rest.users.auth.AuthUsersService;
 import vives.bancovives.rest.users.auth.AuthUsersServiceImpl;
 import vives.bancovives.rest.users.dto.input.UserRequest;
@@ -8,6 +10,7 @@ import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.exceptions.UserConflict;
 import vives.bancovives.rest.users.exceptions.UserNotFound;
 import vives.bancovives.rest.users.mappers.UsersMapper;
+import vives.bancovives.rest.users.models.Role;
 import vives.bancovives.rest.users.services.UsersService;
 import vives.bancovives.security.model.JwtAuthResponse;
 import vives.bancovives.security.userauthentication.AuthenticationService;
@@ -22,8 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.prepost.PreAuthorize;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@RequestMapping("${api.version}/users") // Es la ruta del controlador
-//@PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+@RequestMapping("${api.version}/users")
 public class UsersRestController {
     private final UsersService usersService;
     private final PaginationLinksUtils paginationLinksUtils;
@@ -210,6 +210,10 @@ public class UsersRestController {
 
     @PostMapping("/signUp")
     public ResponseEntity<JwtAuthResponse> signUpregister(@RequestBody UserRequest user) {
+        log.info("Agregando usuario");
+        if (user.getRoles().contains(Role.SUPER_ADMIN) || user.getRoles().contains(Role.ADMIN)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No puede crear un administrador");
+        }
         return ResponseEntity.ok(userAuthenticationService.signUp(user));
     }
 
@@ -217,6 +221,16 @@ public class UsersRestController {
     public ResponseEntity<JwtAuthResponse> signIn(@RequestBody UserRequest user) {
         log.info("Iniciando sesión");
         return ResponseEntity.ok(userAuthenticationService.signIn(user));
+    }
+
+    @PostMapping("/addAdmin")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<JwtAuthResponse>addAdmin(@RequestBody UserRequest user) {
+        log.info("Agregando admin");
+        if (user.getRoles().contains(Role.SUPER_ADMIN)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No puede añadir un super administrador");
+        }
+        return ResponseEntity.ok(userAuthenticationService.signUp(user));
     }
 
 }
