@@ -25,6 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Clase dedicada a la generación y validación de tokens JWT
+ *
+ * @author Diego Novillo Luceño
+ * @since 1.0.0
+ */
 @Service
 @Slf4j
 public class JwtServiceImpl implements JwtService {
@@ -39,36 +45,57 @@ public class JwtServiceImpl implements JwtService {
     private Long jwtExpiration;
 
     /**
-     * Extrae el nombre de usuario del token
+     * Extrae el nombre de usuario del token.
+     * Utiliza el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @param token Token JWT a analizar.
+     * @return Nombre de usuario extraído del token.
      */
     @Override
     public String extractUserName(String token) {
-        log.info("Extracting username from token: {}", token);
-        return extractClaim(token, DecodedJWT::getSubject);
+        log.info("Extrayendo nombre de usuario del token: {}", token);
+        DecodedJWT decodedJWT = JWT.decode(token);
+        return decodedJWT.getSubject();
     }
 
     /**
-     * Genera un token
+     * Genera un token JWT para un usuario determinado.
+     * Utiliza el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @param userDetails Detalles del usuario para el que se generará el token.
+     * @return Token JWT generado.
+     * @throws RuntimeException Si se produce algún error durante la generación del token.
      */
     @Override
     public String generateToken(UserDetails userDetails) {
-        log.info("Generating token for user: {}", userDetails.getUsername());
+        log.info("Generando token para el usuario: {}", userDetails.getUsername());
         return generateToken(new HashMap<>(), userDetails);
     }
 
     /**
-     * Valida el token
+     * Valida un token JWT para un usuario determinado.
+     * Utiliza el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @param token Token JWT a validar.
+     * @param userDetails Detalles del usuario para el que se validará el token.
+     * @return true si el token es válido y pertenece al usuario especificado; de lo contrario, false.
      */
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        log.info("Validating token: {} for user: {}", token, userDetails.getUsername());
+        log.info("Validando token: {} para el usuario: {}", token, userDetails.getUsername());
         if (!verifyToken(token)) return false;
         final String userName = extractUserName(token);
         return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     /**
-     * Genera un token con datos extra
+     * Genera un token JWT con datos extra.
+     * Utiliza el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @param extraClaims Datos extra a incluir en el token.
+     * @param userDetails Detalles del usuario para el que se generará el token.
+     * @return Token JWT generado.
+     * @throws RuntimeException Sí se produce algún error durante la generación del token.
      */
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         try {
@@ -77,7 +104,7 @@ public class JwtServiceImpl implements JwtService {
             Algorithm algorithm = Algorithm.ECDSA256(null, (ECPrivateKey) privateKey);
 
             Date now = new Date();
-            Date expirationDate = new Date(now.getTime() + (jwtExpiration * 1000)); // Convert to milliseconds
+            Date expirationDate = new Date(now.getTime() + (jwtExpiration * 1000)); // Convertir a milisegundos
 
             return JWT.create()
                     .withHeader(createHeader())
@@ -87,21 +114,16 @@ public class JwtServiceImpl implements JwtService {
                     .withClaim("extraClaims", extraClaims)
                     .sign(algorithm);
         } catch (Exception e) {
-            log.error("Error generating token: {}", e.getMessage());
-            throw new RuntimeException("Error generating token", e);
+            log.error("Error generando token: {}", e.getMessage());
+            throw new RuntimeException("Error generando token", e);
         }
     }
 
     /**
-     * Extrae un reclamo del token
-     */
-    private <T> T extractClaim(String token, Function<DecodedJWT, T> claimsResolvers) {
-        DecodedJWT decodedJWT = JWT.decode(token);
-        return claimsResolvers.apply(decodedJWT);
-    }
-
-    /**
-     * Comprueba si el token ha expirado
+     * Comprueba si un token ha expirado.
+     *
+     * @param token Token JWT a analizar.
+     * @return true si el token ha expirado; de lo contrario, false.
      */
     private boolean isTokenExpired(String token) {
         Date expirationDate = extractExpiration(token);
@@ -109,14 +131,21 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Extrae la fecha de expiración
+     * Extrae la fecha de expiración del token.
+     *
+     * @param token Token JWT a analizar.
+     * @return Fecha de expiración del token.
      */
-    private Date extractExpiration(String token) {
-        return extractClaim(token, DecodedJWT::getExpiresAt);
+    public Date extractExpiration(String token) {
+        DecodedJWT decodedJWT = JWT.decode(token);
+        return decodedJWT.getExpiresAt();
     }
 
     /**
-     * Carga la clave privada
+     * Carga la clave privada utilizando el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @return Clave privada cargada.
+     * @throws Exception Si se produce algún error durante la carga de la clave privada.
      */
     private PrivateKey loadPrivateKey() throws Exception {
         String privateKeyPEM = loadKeyContent(privateKeyPath)
@@ -129,7 +158,10 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Carga la clave pública
+     * Carga la clave pública utilizando el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @return Clave pública cargada.
+     * @throws Exception Si se produce algún error durante la carga de la clave pública.
      */
     private PublicKey loadPublicKey() throws Exception {
         String publicKeyPEM = loadKeyContent(publicKeyPath)
@@ -142,30 +174,38 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Verifica el token con la clave pública
+     * Verifica un token JWT utilizando la clave pública.
+     * Utiliza el algoritmo ECDSA (Elliptic Curve Digital Signature Algorithm) con curva 256 bits (ES256).
+     *
+     * @param token Token JWT a verificar.
+     * @return true si el token es válido; de lo contrario, false.
      */
     public boolean verifyToken(String token) {
         try {
             PublicKey publicKey = loadPublicKey();
             JWTVerifier verifier = JWT.require(Algorithm.ECDSA256((ECPublicKey) publicKey, null))
                     .build();
-            verifier.verify(token); // Verifies the token using the public key
-            return true; // Token is valid
+            verifier.verify(token); // Verifica el token utilizando la clave pública
+            return true;
         } catch (Exception e) {
-            log.error("Invalid token: {}", e.getMessage());
-            return false; // Token is invalid
+            log.error("Token inválido: {}", e.getMessage());
+            return false;
         }
     }
 
     /**
-     * Lee el contenido de una clave
+     * Lee el contenido de una clave desde un archivo o recurso de clase.
+     *
+     * @param keyPath Ruta al archivo o recurso de clase que contiene la clave.
+     * @return Contenido de la clave.
+     * @throws Exception Si se produce algún error durante la lectura del contenido de la clave.
      */
     private String loadKeyContent(String keyPath) throws Exception {
         if (keyPath.startsWith("classpath:")) {
             String resourcePath = keyPath.substring("classpath:".length());
             try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
                 if (is == null) {
-                    throw new IllegalArgumentException("Key file not found: " + keyPath);
+                    throw new IllegalArgumentException("Archivo de clave no encontrado: " + keyPath);
                 }
                 return new String(is.readAllBytes());
             }
@@ -175,7 +215,9 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Crea el encabezado JWT
+     * Crea el encabezado JWT con información básica.
+     *
+     * @return Mapa con la información del encabezado JWT.
      */
     private Map<String, Object> createHeader() {
         Map<String, Object> header = new HashMap<>();

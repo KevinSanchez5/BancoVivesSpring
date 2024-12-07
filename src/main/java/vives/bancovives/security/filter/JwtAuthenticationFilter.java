@@ -22,18 +22,48 @@ import java.io.IOException;
 
 import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
+/**
+ * Esta clase es un filtro utilizado para la autenticación JWT (JSON Web Tokens) en una aplicación Spring Boot.
+ * Hereda de {@link OncePerRequestFilter} y se encarga de validar y autenticar las solicitudes entrantes.
+ *
+ * @author Diego Novillo Luceño
+ * @since 1.0.0
+ */
 @Component
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    /**
+     * El servicio JWT utilizado para la generación y validación de tokens.
+     */
     private final JwtService jwtService;
+
+    /**
+     * El servicio de usuarios utilizado para recuperar los detalles del usuario.
+     */
     private final UsersService userService;
 
+    /**
+     * Constructor para la clase JwtAuthenticationFilter.
+     *
+     * @param jwtService El servicio JWT que se utilizará.
+     * @param userService El servicio de usuarios que se utilizará.
+     */
     @Autowired
     public JwtAuthenticationFilter(JwtService jwtService, UsersService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }
 
+    /**
+     * Este método se llama para cada solicitud entrante y realiza el proceso de autenticación JWT.
+     *
+     * @param request La solicitud HTTP entrante.
+     * @param response La respuesta HTTP saliente.
+     * @param filterChain La cadena de filtros que se ejecutarán después de este filtro.
+     * @throws ServletException Si se produce un error específico de servlet.
+     * @throws IOException Si se produce un error de E/S.
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
@@ -65,7 +95,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("Usuario autenticado: {}", userName);
         if (StringUtils.hasText(userName)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Comprobamos que el usuario existe y que el token es válido
             log.info("Comprobando usuario y token");
             try {
                 userDetails = userService.findUserByUsername(userName);
@@ -77,19 +106,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Usuario encontrado: {}", userDetails);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 log.info("JWT válido");
-                // Si es válido, lo autenticamos en el contexto de seguridad
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
-                // Añadimos los detalles de la petición
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Lo añadimos al contexto de seguridad
                 context.setAuthentication(authToken);
-                // Y lo añadimos al contexto de seguridad
                 SecurityContextHolder.setContext(context);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "El token proporcionado no es válido");
+                return;
             }
         }
-        // Y seguimos con la petición
         filterChain.doFilter(request, response);
     }
 }

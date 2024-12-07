@@ -21,6 +21,13 @@ import vives.bancovives.security.filter.JwtAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Esta clase se encarga de configurar Spring Security para la aplicación.
+ * Configura la autenticación, la autorización y la protección CSRF.
+ *
+ * @author Diego Novillo Luceño
+ * @since 1.0.0
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -28,19 +35,32 @@ public class SecurityConfig {
     private final UserDetailsService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Constructor para la clase SecurityConfig.
+     *
+     * @param userService       El servicio para recuperar los detalles del usuario.
+     * @param jwtAuthenticationFilter El filtro para manejar la autenticación JWT.
+     */
     @Autowired
     public SecurityConfig(UserDetailsService userService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userService = userService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    /**
+     * Configura la cadena de filtros de seguridad.
+     *
+     * @param http El objeto HttpSecurity para configurar la seguridad.
+     * @return La cadena de filtros de seguridad configurada.
+     * @throws Exception Si se produce un error durante la configuración.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers( "/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/users/signIn").permitAll()
                         .requestMatchers("/users/signUp").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/accounts").permitAll()
@@ -51,11 +71,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configura el codificador de contraseñas para hashear las contraseñas de los usuarios.
+     *
+     * @return El codificador de contraseñas configurado BCryptPasswordEncoder.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configura el proveedor de autenticación para recuperar los detalles del usuario y validar las contraseñas.
+     *
+     * @return El proveedor de autenticación configurado DaoAuthenticationProvider.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -64,11 +94,16 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Configura el administrador de autenticación para manejar las solicitudes de autenticación.
+     *
+     * @param config El objeto AuthenticationConfiguration para obtener el administrador de autenticación.
+     * @return El administrador de autenticación configurado.
+     * @throws Exception Si se produce un error durante la configuración.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
         return config.getAuthenticationManager();
     }
-
-
 }
