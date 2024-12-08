@@ -12,16 +12,28 @@ import java.util.UUID;
 
 @Component
 public class UsersMapper {
-    public User fromUpdateDtotoUser(UserRequest request) {
-        return User.builder()
-                .id(UUID.randomUUID())
-                .publicId(IdGenerator.generateId())
+    /**
+     * Mapea un objeto {@link UserRequest} a un objeto {@link User}.
+     *
+     * @param request El objeto {@link UserRequest} que contiene la información del usuario.
+     * @return Un objeto {@link User} con la información proporcionada.
+     */
+    public User fromRequestDtotoUser(UserRequest request) {
+        User user = User.builder()
                 .username(request.getUsername())
                 .password(request.getPassword())
                 .roles(request.getRoles())
                 .build();
+        return user;
     }
 
+    /**
+     * Actualiza un objeto User con la información de un objeto UserUpdateDto.
+     *
+     * @param oldUser El objeto {@link User} original que se va a actualizar.
+     * @param updateDto El objeto {@link UserUpdateDto} que contiene la información actualizada.
+     * @return Un objeto {@link User} actualizado con la nueva información.
+     */
     public User fromUpdateDtotoUser(User oldUser, UserUpdateDto updateDto) {
         return new User(
                 oldUser.getId(),
@@ -36,15 +48,28 @@ public class UsersMapper {
                 );
     }
 
+    /**
+     * Mapea un objeto {@link User} a un objeto UserResponse.
+     *
+     * @param user El objeto {@link User} que se va a mapear.
+     * @return Un objeto {@link UserUpdateDto} con la información del usuario.
+     */
     public UserResponse fromEntityToResponseDto(User user) {
         return UserResponse.builder()
-                .publicId(user.getPublicId())
+                .id(user.getPublicId())
                 .username(user.getUsername())
                 .roles(user.getRoles())
                 .isDeleted(user.getIsDeleted())
                 .build();
     }
 
+    /**
+     * Actualiza un objeto User con la información de otro objeto {@link User} (desde un cliente).
+     *
+     * @param oldUser El objeto {@link User} original que se va a actualizar.
+     * @param newUser El objeto {@link User} que contiene la información actualizada (desde un cliente).
+     * @return Un objeto {@link User} actualizado con la nueva información.
+     */
     public User updateUserFromClient(User oldUser, User newUser){
         return new User(
                 oldUser.getId(),
@@ -58,5 +83,4 @@ public class UsersMapper {
                 oldUser.getIsDeleted()
         );
     }
-
 }

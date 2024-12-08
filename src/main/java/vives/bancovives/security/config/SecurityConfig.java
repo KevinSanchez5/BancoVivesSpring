@@ -62,7 +62,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/**").permitAll()
                         .requestMatchers("/users/signIn").permitAll()
-                        .requestMatchers("/users/signUp").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/accounts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/cards").permitAll()
                         .anyRequest().authenticated())
