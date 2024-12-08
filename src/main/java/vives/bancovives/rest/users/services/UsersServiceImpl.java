@@ -100,7 +100,7 @@ public class UsersServiceImpl implements UsersService {
      * @return Usuario encontrado
      */
     @Override
-    @Cacheable(key = "#publicId")
+    @Cacheable(key = "#publicId", unless = "#result == null")
     public User findById(String publicId) {
         log.info("Buscando usuario por id: " + publicId);
         return findByPublicId(publicId);
@@ -113,16 +113,15 @@ public class UsersServiceImpl implements UsersService {
      * @return Token de autenticación
      */
     @Override
-    @CachePut(key = "#result.publicId")
-    public JwtAuthResponse save(UserRequest userRequest) {
+    @CachePut(key = "#result.publicId", unless = "#result == null")
+    public User save(UserRequest userRequest) {
         log.info("Guardando usuario: " + userRequest);
         validateUsernameIsNotTaken(userRequest.getUsername());
         userRequest.setRoles(Set.of(Role.ADMIN));
         userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         verifyRoleDoesntIncludeSuperAdmin(userRequest);
         User user = usersMapper.fromRequestDtotoUser(userRequest);
-        User userStored = usersRepository.save(user);
-        return JwtAuthResponse.builder().token(jwtService.generateToken(userStored)).build();
+        return usersRepository.save(user);
     }
 
     /**
@@ -133,7 +132,7 @@ public class UsersServiceImpl implements UsersService {
      * @return Usuario actualizado
      */
     @Override
-    @CachePut(key = "#result.publicId")
+    @CachePut(key = "#result.publicId", unless = "#result == null")
     public User update(String publicId, UserUpdateDto updateDto) {
         log.info("Actualizando usuario: " + updateDto);
         User oldUser = findByPublicId(publicId);
@@ -221,6 +220,7 @@ public class UsersServiceImpl implements UsersService {
      * @param updateUser Los nuevos datos del usuario.
      * @return El usuario actualizado.
      */
+    @CachePut(key = "#publicId", unless = "#result == null")
     public User updateUserFromClient(String publicId, User updateUser) {
         log.info("Actualizando usuario desde cliente");
         User oldUser = findByPublicId(publicId);

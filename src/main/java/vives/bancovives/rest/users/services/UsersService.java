@@ -18,7 +18,7 @@ public interface UsersService {
 
     User findUserByUsername(String username);
 
-    JwtAuthResponse save(UserRequest userRequest);
+    User save(UserRequest userRequest);
 
     User update(String id, UserUpdateDto updateDto);
 

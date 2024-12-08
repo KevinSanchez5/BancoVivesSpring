@@ -23,6 +23,7 @@ import vives.bancovives.rest.users.dto.input.UserRequest;
 import vives.bancovives.rest.users.dto.input.UserUpdateDto;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.mappers.UsersMapper;
+import vives.bancovives.rest.users.models.Role;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
 import vives.bancovives.security.model.JwtAuthResponse;
@@ -30,6 +31,7 @@ import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -96,7 +98,7 @@ class UsersControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"ADMIN"})
+    @WithMockUser(username = "testuser", roles = {"ADMIN"})
     void findAllUsers() throws Exception {
         // Arrange
         when(usersService.findAll(any(), any(), any(Pageable.class)))
@@ -108,7 +110,7 @@ class UsersControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        get("/v1/usuarios")
+                        get("/v1/users")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
@@ -132,14 +134,14 @@ class UsersControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        get("/v1/usuarios/" + userId)
+                        get("/v1/users/" + userId)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
         // Assert
         assertEquals(200, response.getStatus());
         UserResponse responseBody = mapper.readValue(response.getContentAsString(), UserResponse.class);
-        assertEquals(userResponse.getPublicId(), responseBody.getPublicId());
+        assertEquals(userResponse.getId(), responseBody.getId());
     }
 
     @Test
@@ -147,11 +149,11 @@ class UsersControllerTest {
     void addAdmin() throws Exception {
         // Arrange
         when(usersService.save(any(UserRequest.class)))
-                .thenReturn(jwtAuthResponse);
+                .thenReturn(user);
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        post("/v1/usuarios/addAdmin")
+                        post("/v1/users/addAdmin")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(userRequest))
                                 .accept(MediaType.APPLICATION_JSON))
@@ -165,11 +167,11 @@ class UsersControllerTest {
     void addAdmin_shouldThrowUnauthorizedException() throws Exception {
         // Arrange
         when(usersService.save(any(UserRequest.class)))
-                .thenReturn(jwtAuthResponse);
+                .thenReturn(user);
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        post("/v1/usuarios/addAdmin")
+                        post("/v1/users/addAdmin")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(userRequest))
                                 .accept(MediaType.APPLICATION_JSON))
@@ -190,7 +192,7 @@ class UsersControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        put("/v1/usuarios/" + userId)
+                        put("/v1/users/" + userId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(userUpdateDto))
                                 .accept(MediaType.APPLICATION_JSON))
@@ -204,18 +206,54 @@ class UsersControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = {"ADMIN"})
-    void deleteUser() throws Exception {
+    void deleteAdmin() throws Exception {
         // Arrange
+        user.setRoles(Set.of(Role.ADMIN));
+        when(usersService.findById(anyString())).thenReturn(user);
         doNothing().when(usersService).deleteById(anyString());
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        delete("/v1/usuarios/" + userId)
+                        delete("/v1/users/" + userId)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
         // Assert
         assertEquals(204, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
+    void itShouldNotLetYouDeleteRegularUsers() throws Exception {
+        // Arrange
+        user.setRoles(Set.of(Role.USER));
+        when(usersService.findById(anyString())).thenReturn(user);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        delete("/v1/users/" + userId)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // Assert
+        assertEquals(403, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"ADMIN"})
+    void itShouldNotLetYouDeleteSuperAdmins() throws Exception {
+        // Arrange
+        user.setRoles(Set.of(Role.SUPER_ADMIN));
+        when(usersService.findById(anyString())).thenReturn(user);
+
+        // Act
+        MockHttpServletResponse response = mockMvc.perform(
+                        delete("/v1/users/" + userId)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // Assert
+        assertEquals(403, response.getStatus());
     }
 
     @Test
@@ -229,7 +267,7 @@ class UsersControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        post("/v1/usuarios/signIn")
+                        post("/v1/users/signIn")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(userRequest))
                                 .accept(MediaType.APPLICATION_JSON))
@@ -249,7 +287,7 @@ class UsersControllerTest {
 
         // Act
         MockHttpServletResponse response = mockMvc.perform(
-                        post("/v1/usuarios/signIn")
+                        post("/v1/users/signIn")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(userRequest))
                                 .accept(MediaType.APPLICATION_JSON))

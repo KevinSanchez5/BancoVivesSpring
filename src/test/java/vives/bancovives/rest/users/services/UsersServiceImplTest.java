@@ -113,14 +113,13 @@ class UsersServiceImplTest {
         when(usersMapper.fromRequestDtotoUser(request)).thenReturn(mockUser);
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
         when(usersRepository.save(any(User.class))).thenReturn(mockUser);
-        when(jwtService.generateToken(any(User.class))).thenReturn("jwt-token");
 
         // Act
-        JwtAuthResponse response = usersService.save(request);
+        User response = usersService.save(request);
 
         // Assert
         assertNotNull(response);
-        assertEquals("jwt-token", response.getToken());
+        assertEquals(mockUser.getUsername(), response.getUsername());
         verify(usersRepository).save(any(User.class));
     }
 

@@ -72,7 +72,7 @@ public class UsersMapperTest {
         UserResponse result = usersMapper.fromEntityToResponseDto(user);
 
         // Assert
-        assertEquals(user.getPublicId(), result.getPublicId());
+        assertEquals(user.getPublicId(), result.getId());
         assertEquals(user.getUsername(), result.getUsername());
         assertEquals(user.getRoles(), result.getRoles());
         assertEquals(user.getIsDeleted(), result.getIsDeleted());

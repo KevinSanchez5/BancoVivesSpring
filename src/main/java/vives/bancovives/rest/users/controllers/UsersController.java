@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@RequestMapping("${api.version}/usuarios")
+@RequestMapping("${api.version}/users")
 public class UsersController {
     private final UsersService usersService;
     private final PaginationLinksUtils paginationLinksUtils;
@@ -61,7 +61,7 @@ public class UsersController {
      * @return Respuesta con la página de {@link User}.
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<PageResponse<UserResponse>> findAll(
             @RequestParam(required = false) Optional<String> username,
             @RequestParam(required = false) Optional<Boolean> isDeleted,
@@ -91,7 +91,7 @@ public class UsersController {
      * @throws vives.bancovives.rest.users.exceptions.UserNotFoundException si no existe el usuario (404)
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<UserResponse> findById(@PathVariable String id) {
         log.info("findById: id: {}", id);
         return ResponseEntity.ok(usersMapper.fromEntityToResponseDto(usersService.findById(id)));
@@ -109,13 +109,16 @@ public class UsersController {
      */
     @PostMapping("/addAdmin")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity addAdmin(@RequestBody UserRequest user) {
+    public ResponseEntity<UserResponse> addAdmin(@RequestBody UserRequest user) {
         log.info("Agregando admin");
         if (user.getRoles().contains(Role.SUPER_ADMIN)){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No puede añadir un super administrador");
         }
-        usersService.save(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(
+                usersMapper.fromEntityToResponseDto(
+                        usersService.save(user)
+                )
+        );
     }
     
     /**
@@ -129,7 +132,7 @@ public class UsersController {
      * @throws UserAlreadyExistsException si el nombre de usuario ya existen
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<UserResponse> updateUser(@PathVariable String id, @Valid @RequestBody UserUpdateDto userUpdate) {
         log.info("update: id: {}, userRequest: {}", id, userUpdate);
         return ResponseEntity.ok(usersMapper.fromEntityToResponseDto(usersService.update(id, userUpdate)));
@@ -143,10 +146,15 @@ public class UsersController {
      * @throws UserNotFoundException si el usuario no existe (404)
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         log.info("delete: id: {}", id);
-        usersService.deleteById(id);
+        User userFound = usersService.findById(id);
+        if (userFound.getRoles().contains(Role.USER)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puede eliminar usuarios");
+        }else if (userFound.getRoles().contains(Role.SUPER_ADMIN)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puede eliminar super administradores");
+        } else usersService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 

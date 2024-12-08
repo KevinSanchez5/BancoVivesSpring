@@ -56,7 +56,7 @@ public class UsersMapper {
      */
     public UserResponse fromEntityToResponseDto(User user) {
         return UserResponse.builder()
-                .publicId(user.getPublicId())
+                .id(user.getPublicId())
                 .username(user.getUsername())
                 .roles(user.getRoles())
                 .isDeleted(user.getIsDeleted())
