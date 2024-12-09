@@ -11,15 +11,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
-import vives.bancovives.rest.movements.model.Movement;
 import vives.bancovives.rest.movements.services.MovementService;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -37,6 +38,7 @@ public class MovementController {
     }
 
     @RequestMapping()
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<PageResponse<MovementResponseDto>> getAllMovements(
             @RequestParam(required = false) Optional<String> movementType,
             @RequestParam(required = false) Optional<String> iban,
@@ -59,34 +61,56 @@ public class MovementController {
     }
 
     @RequestMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<MovementResponseDto> getMovementById(@PathVariable ObjectId id) {
         log.info("Get movement by id: {}", id);
         return ResponseEntity.ok(movementService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<MovementResponseDto> createMovement(@Valid @RequestBody MovementCreateDto movementDto) {
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<MovementResponseDto> createMovement(Principal principal, @Valid @RequestBody MovementCreateDto movementDto) {
         log.info("Create movement: {}", movementDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(movementService.save(movementDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(movementService.save(principal, movementDto));
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<MovementResponseDto> updateMovement(@PathVariable ObjectId id, @RequestBody MovementCreateDto movement) {
         log.info("Update movement with id: {} and movement: {}", id, movement);
         return ResponseEntity.ok(movementService.update(id, movement));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMovement(@PathVariable ObjectId id) {
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Void> deleteMovement(Principal principal, @PathVariable ObjectId id) {
         log.info("Delete movement with id: {}", id);
-        movementService.cancelMovement(id);
+        movementService.cancelMovement(principal, id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/addinterest")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<MovementResponseDto> addInterest(@RequestBody MovementCreateDto movementDto) {
         log.info("Añadiendo interes manualmente a una cuenta");
         return ResponseEntity.status(HttpStatus.CREATED).body(movementService.addInterest(movementDto));
+    }
+
+    @GetMapping("/myMovements")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<PageResponse<MovementResponseDto>> findMe(
+            Principal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            HttpServletRequest request){
+        log.info("Buscando sus movientos");
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
+        Page<MovementResponseDto> pageResult = movementService.findMyMovements(principal, PageRequest.of(page, size, sort));
+        return ResponseEntity.ok().header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
+                .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
 }

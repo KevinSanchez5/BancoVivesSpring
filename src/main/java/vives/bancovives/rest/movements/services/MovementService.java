@@ -7,6 +7,8 @@ import vives.bancovives.rest.movements.dtos.input.MovementCreateDto;
 import vives.bancovives.rest.movements.dtos.output.MovementResponseDto;
 import vives.bancovives.rest.movements.model.Movement;
 
+import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 public interface MovementService {
@@ -22,13 +24,16 @@ public interface MovementService {
 
     MovementResponseDto findById(ObjectId id);
 
-    MovementResponseDto save(MovementCreateDto movementCreateDto);
+    MovementResponseDto save(Principal principal, MovementCreateDto movementCreateDto);
 
     MovementResponseDto update(ObjectId id, MovementCreateDto movementCreateDto);
 
     Void deleteById(ObjectId id);
 
-    Boolean cancelMovement(ObjectId id);
+    Boolean cancelMovement(Principal principal, ObjectId id);
 
     MovementResponseDto addInterest(MovementCreateDto movementCreateDto);
+
+    Page<MovementResponseDto> findMyMovements(Principal principal, Pageable pageable);
+
 }

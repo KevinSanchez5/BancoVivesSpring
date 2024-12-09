@@ -1,7 +1,7 @@
 package vives.bancovives.rest.movements.mapper;
 
 import org.springframework.stereotype.Component;
-import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.cards.dto.output.SimplifiedResponseCard;
 import vives.bancovives.rest.cards.model.Card;
@@ -32,7 +32,7 @@ public class MovementMapper {
         return MovementResponseDto.builder()
                 .id(movement.get_id())
                 .movementType(movement.getMovementType().name())
-                .accountOfReference(new AccountResponseForClient(
+                .accountOfReference(new AccountResponseSimplified(
                         movement.getAccountOfReference().getPublicId(),
                         movement.getAccountOfReference().getIban(),
                         movement.getAccountOfReference().getBalance()))

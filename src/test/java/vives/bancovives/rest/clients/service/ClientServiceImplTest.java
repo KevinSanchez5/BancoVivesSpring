@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
+import vives.bancovives.rest.accounts.model.Account;
+import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
@@ -23,6 +26,7 @@ import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
 import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.models.Role;
 import vives.bancovives.rest.users.models.User;
+import vives.bancovives.rest.users.services.UsersService;
 import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
@@ -41,11 +45,13 @@ class ClientServiceImplTest {
     Address address = new Address("streetTest","123", "CITYTEST", "ESPAÑA");
     String id = IdGenerator.generateId();
     UUID uuid = UUID.randomUUID();
+    Account account;
     Client client ;
     ClientCreateDto createDto;
     ClientUpdateDto updateDto;
     ClientResponseDto responseDto;
     UserResponse userResponse;
+    AccountResponseSimplified accountResponse;
 
 
     @Mock
@@ -54,6 +60,10 @@ class ClientServiceImplTest {
     private ClientMapper clientMapper;
     @Mock
     private ClientUpdateValidator updateValidator;
+    @Mock
+    private AccountService accountService;
+    @Mock
+    private UsersService userService;
 
     @InjectMocks
     private ClientServiceImpl clientService;
@@ -61,11 +71,14 @@ class ClientServiceImplTest {
     @BeforeEach
     void setUp() {
         User user = new User(uuid, id, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
-      //  client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, true, false, LocalDateTime.now(), LocalDateTime.now());
+        account = new Account(UUID.randomUUID(), id, "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
+        accountResponse = new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance());
+        client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, List.of(account), true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
         userResponse = new UserResponse(id, "usernameTest", Collections.singleton(Role.USER), false);
-       // responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
+        responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse, List.of(accountResponse), true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
+        account.setClient(client);
     }
 
 
@@ -186,22 +199,31 @@ class ClientServiceImplTest {
         verify(clientRepository, times(1)).save(client);
     }
 
-//    @Test
-//    void deleteByIdLogically_Success() {
-//        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
-//        client.setDeleted(true);
-//        when(clientRepository.save(client)).thenReturn(client);
-//
-//        Client client = clientService.deleteByIdLogically(id, Optional.empty());
-//
-//        assertAll(
-//                () -> assertNotNull(client),
-//                () -> assertEquals(id, client.getId()),
-//                () -> assertTrue(client.isDeleted())
-//        );
-//
-//        verify(clientRepository, times(1)).deleteById(id);
-//    }
+    @Test
+    void deleteByIdLogically_Success_NotDataDeleted() {
+        when(clientRepository.findByPublicId(id)).thenReturn(Optional.of(client));
+        when(clientRepository.save(any(Client.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doNothing().when(userService).deleteById(id);
+        when(accountService.deleteById(id)).thenReturn(account);
+
+        ClientResponseDto clientResponse = clientService.deleteByIdLogically(id, Optional.empty());
+
+        assertAll(
+                () -> assertNotNull(clientResponse),
+                () -> assertEquals(id, clientResponse.getPublicId()),
+                () -> assertTrue(clientResponse.getIsDeleted()),
+                () -> assertNotNull(clientResponse.getDni()),
+                () -> assertNotNull(clientResponse.getCompleteName()),
+                () -> assertNotNull(clientResponse.getEmail()),
+                () -> assertNotNull(clientResponse.getPhoneNumber()),
+                () -> assertNull(clientResponse.getUserResponse())
+        );
+
+        verify(clientRepository, times(1)).findByPublicId(id);
+        verify(userService, times(1)).deleteById(id);
+        verify(accountService, times(1)).deleteById(id);
+        verify(clientRepository, times(1)).save(client);
+    }
 
     @Test
     void deleteByIdLogically_NotFound() {
