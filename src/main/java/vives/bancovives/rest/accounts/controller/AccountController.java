@@ -3,12 +3,12 @@ package vives.bancovives.rest.accounts.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,6 @@ import vives.bancovives.utils.PaginationLinksUtils;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -44,6 +43,7 @@ public class AccountController {
     }
 
     @GetMapping
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<PageResponse<OutputAccount>> getAccounts(
             @RequestParam(required = false) Optional<String> iban,
             @RequestParam(required = false) Optional<String> clientDni,
@@ -68,6 +68,7 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize(" hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<OutputAccount> getAccountById(@PathVariable String id){
         log.info("Buscando cuenta con id {}", id);
         return ResponseEntity.ok(
@@ -79,6 +80,7 @@ public class AccountController {
 
 
     @PostMapping
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<OutputAccount> createAccount(@RequestBody @Valid InputAccount inputAccount){
         log.info("Creando cuenta");
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -90,6 +92,7 @@ public class AccountController {
     }
 
     @GetMapping("/iban/{iban}")
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<OutputAccount> getAccountByIban(@PathVariable String iban) {
         log.info("Buscando cuenta con iban {}", iban);
         return ResponseEntity.ok(
@@ -100,6 +103,7 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<OutputAccount>updateAccount(@PathVariable String id , @RequestBody @Valid InputAccount inputAccount){
         log.info("Actualizando una cuenta com id {}", id);
         return ResponseEntity.ok(
@@ -110,6 +114,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<OutputAccount> deleteAccount(@PathVariable String id){
         log.info("Eliminando cuenta con id {}", id);
         return ResponseEntity.ok(
