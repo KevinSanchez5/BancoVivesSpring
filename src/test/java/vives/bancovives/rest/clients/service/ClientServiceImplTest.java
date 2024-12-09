@@ -27,6 +27,7 @@ import vives.bancovives.rest.users.dto.output.UserResponse;
 import vives.bancovives.rest.users.models.Role;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
+import vives.bancovives.storage.service.StorageService;
 import vives.bancovives.utils.IdGenerator;
 
 import java.time.LocalDateTime;
@@ -64,6 +65,8 @@ class ClientServiceImplTest {
     private AccountService accountService;
     @Mock
     private UsersService userService;
+    @Mock
+    private StorageService storageService;
 
     @InjectMocks
     private ClientServiceImpl clientService;

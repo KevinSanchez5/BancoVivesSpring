@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
@@ -21,9 +22,12 @@ import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
+import vives.bancovives.storage.exceptions.StorageException;
+import vives.bancovives.storage.service.StorageService;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -34,16 +38,18 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final AccountService accountService;
+    private final StorageService storageService;
     private final UsersService userService;
     private final ClientMapper clientMapper;
     private final ClientUpdateValidator updateValidator;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, ClientMapper clientMapper, ClientUpdateValidator updateValidator, PasswordEncoder passwordEncoder) {
+    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, StorageService storageService, ClientMapper clientMapper, ClientUpdateValidator updateValidator, PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
         this.userService = userService;
         this.accountService = accountService;
+        this.storageService = storageService;
         this.clientMapper = clientMapper;
         this.updateValidator = updateValidator;
         this.passwordEncoder = passwordEncoder;
@@ -127,13 +133,13 @@ public class ClientServiceImpl implements ClientService {
             client.setUser(null);
             userService.deleteById(userPublicId);
         }
-        if (deleteData.isPresent() && deleteData.get()) {
-            return deleteDataOfClient(client);
-        }
         if(!client.getAccounts().isEmpty()) {
             for(Account account : client.getAccounts()) {
                 accountService.deleteById(account.getPublicId());
             }
+        }
+        if (deleteData.isPresent() && deleteData.get()) {
+            return deleteDataOfClient(client);
         }
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
@@ -181,6 +187,30 @@ public class ClientServiceImpl implements ClientService {
     public Client existClientByPublicId(String id) {
         return clientRepository.findByPublicId(id).orElseThrow(
                 () -> new ClientNotFound("El cliente con id: " + id + " no encontrado"));
+    }
+
+    @Override
+    public Map<String, Object> storeImage(String id, MultipartFile file, String campo){
+        String urlImagen = null;
+        Client client = existClientByPublicId(id);
+        if (!file.isEmpty()) {
+            if(campo.equals("photo") && client.getPhoto()!=null){
+                storageService.delete(client.getPhoto());
+            } else if(campo.equals("dniPicture") && client.getDniPicture()!=null){
+                storageService.delete(client.getDniPicture());
+            }
+            String imagen = storageService.store(file);
+            urlImagen = storageService.getUrl(imagen);
+            if(campo.equals("photo")){
+                client.setPhoto(urlImagen);
+            } else {
+                client.setDniPicture(urlImagen);
+            }
+            clientRepository.save(client);
+            return Map.of("url", urlImagen);
+        } else {
+            throw new StorageException("No se puede subir un fichero vacío");
+        }
     }
 }
 

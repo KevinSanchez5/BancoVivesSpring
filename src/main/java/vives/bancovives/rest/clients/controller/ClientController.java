@@ -15,9 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
@@ -30,6 +32,7 @@ import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
 import java.security.Principal;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -387,4 +390,17 @@ public class ClientController {
         log.info("Buscando su informacion");
         return ResponseEntity.ok(clientService.findMe(principal));
     }
+
+    @PatchMapping(value= "/dniImage/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> uploadDniPicture(@PathVariable String id, @RequestPart("file") MultipartFile file) {
+        log.info("Actualizando imagen del dni del clietne con id: {}", id);
+        return ResponseEntity.ok(clientService.storeImage(id, file, "dniPicture"));
+    }
+
+    @PatchMapping(value= "/photo/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> uploadPhoto(@PathVariable String id, @RequestPart("file") MultipartFile file) {
+        log.info("Actualizando imagen de perfil del cliente con id: {}", id);
+        return ResponseEntity.ok(clientService.storeImage(id, file, "photo"));
+    }
+
 }
