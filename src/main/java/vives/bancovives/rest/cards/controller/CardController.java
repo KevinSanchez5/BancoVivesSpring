@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.cards.dto.input.InputCard;
@@ -26,11 +27,11 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("${api.version}/cards")
+@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
 public class CardController {
     private final CardService cardService;
 
     private final PaginationLinksUtils paginationLinksUtils;
-
 
     @Autowired
     public CardController(CardService cardService, PaginationLinksUtils paginationLinksUtils) {

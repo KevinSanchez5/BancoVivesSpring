@@ -20,6 +20,7 @@ import vives.bancovives.rest.cards.dto.input.InputCard;
 import vives.bancovives.rest.cards.dto.input.UpdateRequestCard;
 import vives.bancovives.rest.cards.exceptions.CardDoesNotExistException;
 import vives.bancovives.rest.cards.exceptions.CardException;
+import vives.bancovives.rest.cards.exceptions.CardIbanInUse;
 import vives.bancovives.rest.cards.mapper.CardMapper;
 import vives.bancovives.rest.cards.model.Card;
 import vives.bancovives.rest.cards.repository.CardsRepository;
@@ -100,9 +101,11 @@ public class CardServiceImpl implements CardService {
     public CardType existing(String name) {
         return repositoryCardType.findByName(name);
     }
+
     public Account existingAccount(String iban) {
         return accountRepository.findByIban(iban);
     }
+
     public Account notDeleteAccount(Account account) {
         if (account.isDeleted()) {
             throw new AccountException("Cuenta borrada");
@@ -129,13 +132,21 @@ public class CardServiceImpl implements CardService {
         return c;
     }
 
+    public void isIbanInUse(Card card) {
+        String iban = card.getAccount().getIban();
+        if (repository.existsByAccount_Iban(iban)) {
+            throw new CardIbanInUse("El IBAN: " + iban + " esta ya en uso.");
+        }
+    }
+
     @Override
     @CachePut(key = "#result.id")
     public Card save(InputCard card) {
-        log.info("Guardando tarjeta: " + card);
+        log.info("Saving card: " + card);
         Account account = validationAccount(card.getAccount());
         CardType type = validation(card.getCardTypeName());
-        Card result = CardMapper.toCard(card, type,account);
+        Card result = CardMapper.toCard(card, type, account);
+        isIbanInUse(result);
         CreditCardGenerator.generateCardDetails(result);
         return repository.save(result);
     }
@@ -159,7 +170,7 @@ public class CardServiceImpl implements CardService {
         return repository.save(updatedCard);
     }
 
-    @Scheduled(cron ="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void resetSpentAmountsInBatches() {
         log.info("Reseteando los montos gastados de las tarjetas en lotes");
@@ -174,7 +185,7 @@ public class CardServiceImpl implements CardService {
         } while (!page.isLast());
     }
 
-    private void resetSpentAmountsForCards(List<Card> cards) {
+    void resetSpentAmountsForCards(List<Card> cards) {
         LocalDateTime now = LocalDateTime.now();
         DayOfWeek firstDayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
 
