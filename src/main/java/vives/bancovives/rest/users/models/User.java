@@ -3,10 +3,7 @@ package vives.bancovives.rest.users.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
@@ -58,6 +55,7 @@ public class User implements UserDetails, Serializable {
 
         @OneToOne(mappedBy = "user")
         @JsonIgnoreProperties("user")
+        @ToString.Exclude
         private Client client;
 
 
