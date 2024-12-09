@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import vives.bancovives.rest.clients.model.Client;
+import vives.bancovives.utils.IdGenerator;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -32,15 +33,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class) // Para que sea auditada y se autorellene
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails, Serializable {
         @Id
-        @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name = "id", updatable = false, nullable = false)
-        private UUID id;
+        @Builder.Default
+        private UUID id = UUID.randomUUID();
 
         @Column(name = "public_id", unique = true, nullable = false)
-        private String publicId;
+        @Builder.Default
+        private String publicId = IdGenerator.generateId();
 
         @Column(unique = true, nullable = false)
         @NotBlank(message = "Username no puede estar vacío")
@@ -55,23 +57,19 @@ public class User implements UserDetails, Serializable {
         @Enumerated(EnumType.STRING)
         private Set<Role> roles;
 
-
         @OneToOne(mappedBy = "user")
         @JsonIgnoreProperties("user")
         private Client client;
 
-
-        @CreationTimestamp
-        @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+        @Column(updatable = false, nullable = false)
         @Builder.Default
         private LocalDateTime createdAt = LocalDateTime.now();
 
-        @UpdateTimestamp
-        @Column( nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+        @Column(nullable = false)
         @Builder.Default
         private LocalDateTime updatedAt = LocalDateTime.now();
 
-        @Column(columnDefinition = "boolean default false")
+        @Column(nullable = false)
         @Builder.Default
         private Boolean isDeleted = false;
 

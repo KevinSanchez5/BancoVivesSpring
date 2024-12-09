@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -41,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * El servicio de usuarios utilizado para recuperar los detalles del usuario.
      */
-    private final UsersService userService;
+    private final UserDetailsService userService;
 
     /**
      * Constructor para la clase JwtAuthenticationFilter.
@@ -50,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @param userService El servicio de usuarios que se utilizará.
      */
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService, UsersService userService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }
@@ -97,7 +98,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
             log.info("Comprobando usuario y token");
             try {
-                userDetails = userService.findUserByUsername(userName);
+                userDetails = userService.loadUserByUsername(userName);
             } catch (Exception e) {
                 log.info("Usuario no encontrado: {}", userName);
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autorizado");

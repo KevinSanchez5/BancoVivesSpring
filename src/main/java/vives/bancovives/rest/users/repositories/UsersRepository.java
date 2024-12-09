@@ -20,7 +20,4 @@ public interface UsersRepository extends JpaRepository<User, UUID>, JpaSpecifica
 
     Optional<User> findByPublicId(String publicId);
 
-    @Modifying // Para indicar que es una consulta de actualización
-    @Query("UPDATE User u SET u.isDeleted = true WHERE u.publicId = :publicId")
-    void updateIsDeletedToTrueByPublicId(String publicId);
 }

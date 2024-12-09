@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private String publicId;
+    private String id;
     private String username;
     @Builder.Default
     private Set<Role> roles = Set.of(Role.USER);

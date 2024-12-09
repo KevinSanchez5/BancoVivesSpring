@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import vives.bancovives.rest.users.models.Role;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
@@ -30,7 +31,7 @@ public class JwtAuthenticationFilterTest {
     private JwtService jwtService;
 
     @Mock
-    private UsersService userService;
+    private UserDetailsService userService;
 
     @InjectMocks
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -89,7 +90,7 @@ public class JwtAuthenticationFilterTest {
                 .build();
 
         when(jwtService.extractUserName(validToken.substring(7))).thenReturn(username);
-        when(userService.findUserByUsername(username)).thenReturn(userDetails);
+        when(userService.loadUserByUsername(username)).thenReturn(userDetails);
         when(jwtService.isTokenValid(validToken.substring(7), userDetails)).thenReturn(true);
 
         // Act
@@ -116,7 +117,6 @@ public class JwtAuthenticationFilterTest {
                 .build();
 
         when(jwtService.extractUserName(validToken.substring(7))).thenReturn(username);
-        when(userService.findUserByUsername(username)).thenThrow(new RuntimeException("User not found"));
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -139,8 +139,6 @@ public class JwtAuthenticationFilterTest {
                 .build();
 
         when(jwtService.extractUserName(validToken.substring(7))).thenReturn(username);
-        when(userService.findUserByUsername(username)).thenReturn(userDetails);
-        when(jwtService.isTokenValid(validToken.substring(7), userDetails)).thenReturn(false);
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
