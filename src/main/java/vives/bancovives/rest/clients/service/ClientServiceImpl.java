@@ -21,7 +21,6 @@ import vives.bancovives.rest.clients.repository.ClientRepository;
 import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
-import vives.bancovives.security.userauthentication.AuthenticationService;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
