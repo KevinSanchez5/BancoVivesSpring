@@ -285,18 +285,18 @@ public class MovementServiceImpl implements MovementService{
     @Override
     public Page<MovementResponseDto> findMyMovements(Principal principal, Pageable pageable){
         log.info("Buscando sus movientos");
-        String username = principal.getName();
-        List<Account> accounts = accountRepository.findAllByClient_User_Username(username);
+
+        List<Account> accounts = accountRepository.findAllByClient_User_Username(principal.getName());
         if(accounts.isEmpty()){
-            throw new MovementNotFound("No se han encontrado cuentas para el usuario con username " + username);
+            throw new MovementNotFound("No se han encontrado cuentas para el usuario con username " + principal.getName());
         }
 
         List<Movement> movements = accounts.stream()
-                .flatMap(account -> movementRepository.findAllByAccountOfReference(account.getIban()).stream())
+                .flatMap(account -> movementRepository.findAllByAccountOfReference_Iban(account.getIban()).stream())
                 .toList();
 
         if(movements.isEmpty()){
-            throw new MovementNotFound("No se han encontrado movimientos para las cuentas del usuario con username " + username);
+            throw new MovementNotFound("No se han encontrado movimientos para las cuentas del usuario con username " + principal.getName());
         }
         List<MovementResponseDto> responses = movements.stream().map(movementMapper::fromEntityToResponse).toList();
 
