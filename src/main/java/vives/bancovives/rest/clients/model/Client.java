@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
@@ -54,6 +55,7 @@ public class Client implements Serializable {
     @OneToOne
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("client")
+    @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "client")

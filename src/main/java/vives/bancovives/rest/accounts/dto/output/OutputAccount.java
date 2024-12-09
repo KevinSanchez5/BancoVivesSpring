@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vives.bancovives.rest.clients.dto.output.ClientResponseForAccount;
+import vives.bancovives.rest.clients.dto.output.ClientResponseSimplified;
 
 @Data
 @Builder
@@ -17,7 +17,7 @@ public class OutputAccount {
     private String iban;
     private double balance;
     private String accountType;
-    private ClientResponseForAccount client;
+    private ClientResponseSimplified client;
     private String createdAt;
     private String updatedAt;
     private boolean isDeleted;

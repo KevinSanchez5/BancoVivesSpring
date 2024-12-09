@@ -3,14 +3,14 @@ package vives.bancovives.rest.accounts.mapper;
 import vives.bancovives.rest.accounts.dto.input.InputAccount;
 import vives.bancovives.rest.accounts.dto.output.OutputAccount;
 import vives.bancovives.rest.accounts.model.Account;
-import vives.bancovives.rest.clients.dto.output.ClientResponseForAccount;
+import vives.bancovives.rest.clients.dto.output.ClientResponseSimplified;
 import vives.bancovives.rest.clients.model.Client;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
 
 public class AccountMapper {
 
     public static OutputAccount toOutputAccount(Account account) {
-        ClientResponseForAccount clientResponseForAccount = new ClientResponseForAccount(
+        ClientResponseSimplified clientResponseSimplified = new ClientResponseSimplified(
                 account.getClient().getPublicId(),
                 account.getClient().getDni(),
                 account.getClient().getCompleteName(),
@@ -20,7 +20,7 @@ public class AccountMapper {
                 .id(account.getPublicId())
                 .iban(account.getIban())
                 .balance(account.getBalance())
-                .client(clientResponseForAccount)
+                .client(clientResponseSimplified)
                 .createdAt(account.getCreatedAt().toString())
                 .updatedAt(account.getUpdatedAt().toString())
                 .isDeleted(account.isDeleted())

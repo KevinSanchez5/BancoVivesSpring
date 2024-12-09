@@ -12,4 +12,5 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     Optional<Account> findByPublicId(String id);
     Optional<Account> findByIban(String iban);
     List<Account> findAllByAccountType_InterestNotNull();
+    List<Account> findAllByClient_User_Username(String username);
 }

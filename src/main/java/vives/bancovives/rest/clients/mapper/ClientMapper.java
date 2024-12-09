@@ -1,7 +1,7 @@
 package vives.bancovives.rest.clients.mapper;
 
 import org.springframework.stereotype.Component;
-import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
@@ -87,7 +87,7 @@ public class ClientMapper {
 
     public ClientResponseDto fromEntityToResponse(Client client){
         UserResponse userResponse = null;
-        List<AccountResponseForClient> accounts = null;
+        List<AccountResponseSimplified> accounts = null;
         if(client.getUser()!=null){
             userResponse = new UserResponse(
                 client.getUser().getPublicId(),
@@ -98,7 +98,7 @@ public class ClientMapper {
         if (client.getAccounts()!=null) {
             accounts = client.getAccounts().stream()
                     .filter(account -> !account.isDeleted())
-                    .map(account -> new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance())
+                    .map(account -> new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance())
             ).collect(toList());
         }
         return new ClientResponseDto(

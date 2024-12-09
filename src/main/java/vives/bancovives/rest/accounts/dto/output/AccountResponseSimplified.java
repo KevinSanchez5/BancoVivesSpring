@@ -1,4 +1,4 @@
-package vives.bancovives.rest.clients.dto.output;
+package vives.bancovives.rest.accounts.dto.output;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ClientResponseForAccount {
+public class AccountResponseSimplified {
     private String publicId;
-    private String dni;
-    private String completeName;
-    private String email;
+    private String iban;
+    private double balance;
 }

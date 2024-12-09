@@ -15,7 +15,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
+import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
@@ -52,11 +55,13 @@ class ClientControllerTest {
     String publicId = IdGenerator.generateId();
     Address address = new Address("streetTest","123", "CITYTEST", "PORTUGAL");
     User user = new User(id, publicId, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
-    Client client = new Client(id, publicId, "12345678Z", "nameTest",address, "email@test.com", "654321987", null, null, user, true, false,LocalDateTime.now(), LocalDateTime.now());
+    Account account = new Account(UUID.randomUUID(), IdGenerator.generateId(), "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
+    Client client = new Client(id, publicId, "12345678Z", "nameTest",address, "email@test.com", "654321987", null, null, user, List.of(account),true, false,LocalDateTime.now(), LocalDateTime.now());
     ClientCreateDto createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "PORTUGAL", "usernameTest", "passwordTest");
     ClientUpdateDto updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
     UserResponse userResponse = new UserResponse(publicId, "usernameTest", Collections.singleton(Role.USER), false);
-    ClientResponseDto responseDto = new ClientResponseDto(publicId, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
+    AccountResponseSimplified accountResponse = new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance());
+    ClientResponseDto responseDto = new ClientResponseDto(publicId, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,List.of(accountResponse), true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
 
     ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -76,6 +81,7 @@ class ClientControllerTest {
     String endpoint = "/v1/clients";
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getClients() throws Exception {
         List<ClientResponseDto> list = List.of(responseDto);
         Page<ClientResponseDto> page = new PageImpl<>(list);
@@ -97,6 +103,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getClientById_Success() throws Exception {
         when(clientService.findById(publicId)).thenReturn(responseDto);
         MockHttpServletResponse response = mockMvc.perform(
@@ -115,6 +122,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getClientById_NotFound() throws Exception {
         when(clientService.findById("123")).thenThrow(new ClientNotFound("123"));
         MockHttpServletResponse response = mockMvc.perform(
@@ -143,7 +151,7 @@ class ClientControllerTest {
         ClientResponseDto responseClient = jsonMapper.readValue(response.getContentAsString(), ClientResponseDto.class);
 
         assertAll(
-                () -> assertEquals(HttpStatus.OK.value(), response.getStatus()),
+                () -> assertEquals(HttpStatus.CREATED.value(), response.getStatus()),
                 () -> assertEquals(responseDto, responseClient),
                 () -> assertEquals(client.getPublicId(), responseClient.getPublicId()),
                 () -> assertEquals(client.getDni(), responseClient.getDni())
@@ -151,6 +159,8 @@ class ClientControllerTest {
 
         verify(clientService, times(1)).save(createDto);
     }
+
+
 
     @Test
     void createClient_BadRequest() throws Exception{
@@ -190,7 +200,8 @@ class ClientControllerTest {
     }
 
     @Test
-    void updateClient() throws Exception{
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void updateClient_Success() throws Exception{
         when(clientService.update(publicId, updateDto)).thenReturn(responseDto);
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -213,6 +224,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_NotFound() throws Exception{
         when(clientService.update("123", updateDto)).thenThrow(new ClientNotFound("123"));
 
@@ -231,6 +243,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_BadRequest() throws Exception{
         when(clientService.update(publicId, updateDto)).thenThrow(new ClientBadRequest(""));
 
@@ -249,6 +262,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_Conflict() throws Exception{
         when(clientService.update(publicId, updateDto)).thenThrow(new ClientConflict(""));
 
@@ -268,6 +282,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteClient() throws Exception{
         when(clientService.deleteByIdLogically(publicId, Optional.of(false))).thenReturn(responseDto);
 
@@ -284,6 +299,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteClient_NotFound() throws Exception{
         when(clientService.deleteByIdLogically("123", Optional.of(false))).thenThrow(new ClientNotFound("123"));
 
@@ -300,6 +316,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void validateClient() throws Exception{
         when(clientService.validateClient(publicId)).thenReturn(responseDto);
 
@@ -321,6 +338,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void validateClient_NotFound() throws Exception{
         when(clientService.validateClient("123")).thenThrow(new ClientNotFound("123"));
 

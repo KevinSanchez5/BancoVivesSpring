@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.service.AccountService;
@@ -21,6 +22,7 @@ import vives.bancovives.rest.clients.validators.ClientUpdateValidator;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -35,14 +37,16 @@ public class ClientServiceImpl implements ClientService {
     private final UsersService userService;
     private final ClientMapper clientMapper;
     private final ClientUpdateValidator updateValidator;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, ClientMapper clientMapper, ClientUpdateValidator updateValidator) {
+    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, ClientMapper clientMapper, ClientUpdateValidator updateValidator, PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
         this.userService = userService;
         this.accountService = accountService;
         this.clientMapper = clientMapper;
         this.updateValidator = updateValidator;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -93,8 +97,10 @@ public class ClientServiceImpl implements ClientService {
         log.info("Guardando un nuevo cliente");
         Client clientToSave = clientMapper.fromCreateDtoToEntity(createDto);
         existsClientByDniAndEmail(createDto.getDni(), createDto.getEmail());
-        User user = userService.saveUserFromClient(clientToSave.getUser());
-        clientToSave.setUser(user);
+        User user = clientToSave.getUser();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User userToSave = userService.saveUserFromClient(user);
+        clientToSave.setUser(userToSave);
         return clientMapper.fromEntityToResponse(clientRepository.save(clientToSave));
     }
 
@@ -147,6 +153,14 @@ public class ClientServiceImpl implements ClientService {
         client.setUpdatedAt(LocalDateTime.now());
         client.setDeleted(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
+    }
+
+    public ClientResponseDto findMe(Principal principal) {
+        String username = principal.getName();
+        Client client = clientRepository.findByUser_Username(username).orElseThrow(
+                ()-> new ClientNotFound("Cliente no encontrado")
+        );
+        return clientMapper.fromEntityToResponse(client);
     }
 
     public void existsClientByDniAndEmail(String dni, String email) {

@@ -6,6 +6,8 @@ import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.dto.input.InputAccount;
 
 
+import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
@@ -21,5 +23,5 @@ public interface AccountService {
     Account save(InputAccount account);
     Account deleteById(String id);
     Account updateById(String id, InputAccount updatedAccount);
-
+    List<Account> findMyAccounts(Principal principal);
 }
