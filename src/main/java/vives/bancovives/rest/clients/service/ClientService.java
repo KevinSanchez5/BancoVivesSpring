@@ -7,6 +7,7 @@ import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.rest.clients.model.Client;
 
+import java.security.Principal;
 import java.util.Optional;
 
 public interface ClientService {
@@ -28,6 +29,6 @@ public interface ClientService {
     ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData);
     ClientResponseDto deleteDataOfClient(Client client);
     ClientResponseDto validateClient(String id);
-    ClientResponseDto findMe(String username);
+    ClientResponseDto findMe(Principal principal);
 
 }

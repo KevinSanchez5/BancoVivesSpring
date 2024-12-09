@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
@@ -59,7 +59,7 @@ class ClientControllerTest {
     ClientCreateDto createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "PORTUGAL", "usernameTest", "passwordTest");
     ClientUpdateDto updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
     UserResponse userResponse = new UserResponse(publicId, "usernameTest", Collections.singleton(Role.USER), false);
-    AccountResponseForClient accountResponse = new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance());
+    AccountResponseSimplified accountResponse = new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance());
     ClientResponseDto responseDto = new ClientResponseDto(publicId, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse,List.of(accountResponse), true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
 
     ObjectMapper jsonMapper = new ObjectMapper();

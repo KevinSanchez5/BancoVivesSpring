@@ -93,7 +93,7 @@ public class ClientController {
             )
     })
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN' OR 'SUPER_ADMIN') ")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<PageResponse<ClientResponseDto>> getClients(
             @Parameter(description = "Dni del cliente a buscar")
             @RequestParam(required = false) Optional<String> dni,
@@ -353,11 +353,38 @@ public class ClientController {
         return ResponseEntity.ok(clientService.validateClient(id));
     }
 
+    @Operation(
+            summary = "Devuelve los datos del cliente que usa la aplicacion",
+            description = "Devuelve los datos del cliente que ha iniciado sesion en la aplicacion"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Información devuelta exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ClientResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado. El usuario debe autenticarse para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso prohibido. El usuario no tiene permisos suficientes para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cliente no encontrado",
+                    content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<ClientResponseDto> findMe(Principal principal){
-        String username = principal.getName();
         log.info("Buscando su informacion");
-        return ResponseEntity.ok(clientService.findMe(username));
+        return ResponseEntity.ok(clientService.findMe(principal));
     }
 }

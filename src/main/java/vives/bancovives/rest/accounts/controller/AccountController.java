@@ -10,15 +10,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vives.bancovives.rest.accounts.dto.input.InputAccount;
 import vives.bancovives.rest.accounts.dto.output.OutputAccount;
 import vives.bancovives.rest.accounts.mapper.AccountMapper;
 import vives.bancovives.rest.accounts.service.AccountService;
+import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
 import vives.bancovives.utils.PageResponse;
 import vives.bancovives.utils.PaginationLinksUtils;
 
+import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -114,5 +118,15 @@ public class AccountController {
                 )
         );
     }
+
+    @GetMapping("/myAccounts")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<List<OutputAccount>> findMyAccounts(Principal principal){
+        log.info("Buscando su informacion");
+        return ResponseEntity.ok(accountService.findMyAccounts(principal).stream().map(AccountMapper::toOutputAccount).toList());
+    }
+
+
+
 
 }

@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
-import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
 import vives.bancovives.rest.cards.dto.output.SimplifiedResponseCard;
 
 @Data
@@ -17,7 +16,7 @@ import vives.bancovives.rest.cards.dto.output.SimplifiedResponseCard;
 public class MovementResponseDto {
     private String id;
     private String movementType;
-    private AccountResponseForClient accountOfReference;
+    private AccountResponseSimplified accountOfReference;
     private String dniOfReference;
     private String ibanOfDestination;
     private Double amountBeforeMovement;

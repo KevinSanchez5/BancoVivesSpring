@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import vives.bancovives.rest.accounts.dto.output.AccountResponseForClient;
+import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
@@ -51,7 +51,7 @@ class ClientServiceImplTest {
     ClientUpdateDto updateDto;
     ClientResponseDto responseDto;
     UserResponse userResponse;
-    AccountResponseForClient accountResponse;
+    AccountResponseSimplified accountResponse;
 
 
     @Mock
@@ -72,7 +72,7 @@ class ClientServiceImplTest {
     void setUp() {
         User user = new User(uuid, id, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
         account = new Account(UUID.randomUUID(), id, "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
-        accountResponse = new AccountResponseForClient(account.getPublicId(), account.getIban(), account.getBalance());
+        accountResponse = new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance());
         client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, List.of(account), true, false, LocalDateTime.now(), LocalDateTime.now());
         createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();

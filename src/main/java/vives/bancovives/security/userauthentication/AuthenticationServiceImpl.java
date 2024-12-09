@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import vives.bancovives.rest.users.auth.AuthUsersService;
 import vives.bancovives.rest.users.dto.input.UserRequest;
 import vives.bancovives.rest.users.exceptions.UserBadRequest;
+import vives.bancovives.rest.users.models.User;
 import vives.bancovives.rest.users.services.UsersService;
 import vives.bancovives.security.jwt.JwtService;
 import vives.bancovives.security.model.JwtAuthResponse;
@@ -48,6 +49,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         request.setPassword(encodedPassword);
         var userStored = anotherUsersService.save(request);
         return JwtAuthResponse.builder().token(jwtService.generateToken(userStored)).build();
+    }
+
+    @Override
+    public JwtAuthResponse signUpClient(User user){
+        log.info("Creando usuario desde el endpoint clientes");
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        User userSaved = anotherUsersService.saveUserFromClient(user);
+        return JwtAuthResponse.builder().token(jwtService.generateToken(userSaved)).build();
     }
 
     /**
