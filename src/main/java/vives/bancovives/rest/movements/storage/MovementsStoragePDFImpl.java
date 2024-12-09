@@ -1,7 +1,13 @@
 package vives.bancovives.rest.movements.storage;
 
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vives.bancovives.rest.accounts.model.Account;

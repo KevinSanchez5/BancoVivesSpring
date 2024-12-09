@@ -24,7 +24,9 @@ import vives.bancovives.rest.products.accounttype.model.AccountType;
 import vives.bancovives.rest.products.accounttype.repositories.AccountTypeRepository;
 import vives.bancovives.rest.products.exceptions.ProductDoesNotExistException;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -131,6 +133,14 @@ public class AccountServiceImpl  implements AccountService {
             existingAccount.setAccountType(accountType);
         }
         return accountRepository.save(existingAccount);
+    }
+
+    public List<Account> findMyAccounts(Principal principal){
+        log.info("Buscando su informacion");
+        String username = principal.getName();
+        return clientRepository.findByUser_Username(username)
+                .orElseThrow(()->
+                new ClientNotFound("Cliente no encontrado")).getAccounts();
     }
 
     public Account existsAccountByPublicId(String id){

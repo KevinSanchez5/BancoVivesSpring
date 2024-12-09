@@ -1,9 +1,12 @@
 package vives.bancovives.rest.movements.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vives.bancovives.rest.accounts.exception.AccountNotFoundException;
@@ -22,6 +25,7 @@ import vives.bancovives.rest.movements.model.MovementType;
 import vives.bancovives.rest.movements.repository.MovementRepository;
 import vives.bancovives.rest.movements.validator.MovementValidator;
 
+import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class MovementServiceImpl implements MovementService{
 
     private final MovementRepository movementRepository;
@@ -73,8 +78,9 @@ public class MovementServiceImpl implements MovementService{
 
     @Transactional
     @Override
-    public MovementResponseDto save(MovementCreateDto movementCreateDto) {
+    public MovementResponseDto save(Principal principal, MovementCreateDto movementCreateDto) {
         validator.validateMovementDto(movementCreateDto);
+        validateUser(principal, movementCreateDto.getIbanOfReference());
 
         Account accountOfReference = existsAccountByIban(movementCreateDto.getIbanOfReference());
         Account accountOfDestination = movementCreateDto.getIbanOfDestination() != null
@@ -151,10 +157,11 @@ public class MovementServiceImpl implements MovementService{
 
     @Transactional
     @Override
-    public Boolean cancelMovement(ObjectId id) {
+    public Boolean cancelMovement(Principal principal, ObjectId id) {
         Movement movementToCancel = existsMovementById(id);
 
         verifyIsATransferencia(movementToCancel.getMovementType());
+        validateUser(principal, movementToCancel.getAccountOfReference().getIban());
 
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(movementToCancel.getCreatedAt(), now);
@@ -274,5 +281,59 @@ public class MovementServiceImpl implements MovementService{
             }
         }
     }
+
+    @Override
+    public Page<MovementResponseDto> findMyMovements(Principal principal, Pageable pageable){
+        log.info("Buscando sus movientos");
+
+        List<Account> accounts = accountRepository.findAllByClient_User_Username(principal.getName());
+        if(accounts.isEmpty()){
+            throw new MovementNotFound("No se han encontrado cuentas para el usuario con username " + principal.getName());
+        }
+
+        List<Movement> movements = accounts.stream()
+                .flatMap(account -> movementRepository.findAllByAccountOfReference_Iban(account.getIban()).stream())
+                .toList();
+
+        if(movements.isEmpty()){
+            throw new MovementNotFound("No se han encontrado movimientos para las cuentas del usuario con username " + principal.getName());
+        }
+        List<MovementResponseDto> responses = movements.stream().map(movementMapper::fromEntityToResponse).toList();
+
+        return getPage(responses, pageable);
+    }
+
+    private <T> Page<T> getPage(List<T> list, Pageable pageable) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+
+        if (start >= list.size()) {
+            return Page.empty(pageable);
+        }
+
+        return new PageImpl<>(list.subList(start, end), pageable, list.size());
+    }
+
+
+    public void validateUser(Principal principal, String ibanOfReference){
+        Authentication authentication = (Authentication) principal;
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN") || auth.getAuthority().equals("ROLE_SUPER_ADMIN"));
+
+        if (!isAdmin) {
+            List<Account> accountsOfUser = accountRepository.findAllByClient_User_Username(principal.getName());
+
+            if (accountsOfUser.isEmpty()) {
+                throw new AccountNotFoundException("No se han encontrado cuentas para el usuario con username " + principal.getName());
+            }
+
+            boolean ibanBelongsToUser = accountsOfUser.stream().anyMatch(account -> account.getIban().equals(ibanOfReference));
+
+            if (!ibanBelongsToUser) {
+                throw new AccountNotFoundException("La cuenta con iban " + ibanOfReference + " no pertenece al usuario con username " + principal.getName());
+            }
+        }
+    }
+
 }
 
