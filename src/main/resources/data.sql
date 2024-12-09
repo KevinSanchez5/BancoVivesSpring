@@ -41,19 +41,23 @@ VALUES ('64c283f0-bb2e-4c8f-bd2d-3b60c860ef79', 'QkKVVAzSSYhddoW6sFd', 'CUENTA E
 
 /*Usuarios*/
 INSERT INTO users(id, public_id, username, password, is_deleted, created_at, updated_at)
-VALUES('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'BgLL3psMG54VmML6ilx', 'admin', 'admin', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+VALUES('f47ac10b-58cc-4372-a567-0e02b2c3d480', 'BgLL3psMG54VmML6ilF', 'god', '$2a$12$YVMQRQ22QJ9nHyoOQt6vveeFW.i.7V9orNXMXk3/WkJW5GDmBKsOK', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO user_roles(user_id, roles)VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d480', 'SUPER_ADMIN');
+
+INSERT INTO users(id, public_id, username, password, is_deleted, created_at, updated_at)
+VALUES('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'BgLL3psMG54VmML6ilx', 'admin', '$2a$12$LNnJBlZ./G9V4hUz8L1gI.W/BxXA5z4./3Or9ths/BQ40rs6s4.Yu', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO user_roles(user_id, roles)VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'ADMIN');
 
 INSERT INTO users(id, public_id, username, password, is_deleted, created_at, updated_at)
-VALUES('9b0e9e1a-1f40-11ee-be56-0242ac120002', 'BgLL4KEb3KwG3H_zDiP', 'usertest', 'usertest', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+VALUES('9b0e9e1a-1f40-11ee-be56-0242ac120002', 'BgLL4KEb3KwG3H_zDiP', 'usertest', '$2a$12$2t7hi9B1hjOLhFf.pKrSRepvxapzRaxoMepWzMpKj7.ggqY0Q3HFS', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO user_roles(user_id, roles)VALUES ('9b0e9e1a-1f40-11ee-be56-0242ac120002', 'USER');
 
 INSERT INTO users(id, public_id, username, password, is_deleted, created_at, updated_at)
-VALUES('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'BgLL4KEb0KwG3H_zDiP', 'pepeuno', 'pepeuno', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+VALUES('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'BgLL4KEb0KwG3H_zDiP', 'pepeuno', '$2a$12$i.QRX1dan9GdHQdJ.P7ReeDceo0L7hgBBsYUHod82OqHCMWx.lZ1K', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO user_roles(user_id, roles)VALUES ('3fa85f64-5717-4562-b3fc-2c963f66afa6', 'USER');
 
 INSERT INTO users(id, public_id, username, password, is_deleted, created_at, updated_at)
-VALUES('d2886a1d-7b10-4f24-9a31-582542db0a4a', 'BgLL4KEb1KwG3H_zDiP', 'pepedos', 'pepedos', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+VALUES('d2886a1d-7b10-4f24-9a31-582542db0a4a', 'BgLL4KEb1KwG3H_zDiP', 'pepedos', '$2a$12$SDzJki3VxgO0pTF/jSPfXeZ2kmG9iibHUor03cDkGgfELWxQ1PIAG', false, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 INSERT INTO user_roles(user_id, roles)VALUES ('d2886a1d-7b10-4f24-9a31-582542db0a4a', 'USER');
 
 /* Clientes */

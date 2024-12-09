@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import vives.bancovives.rest.products.accounttype.dto.input.NewAccountType;
 import vives.bancovives.rest.products.accounttype.model.AccountType;
 import vives.bancovives.rest.products.accounttype.service.AccountTypeService;
+import vives.bancovives.rest.products.exceptions.ProductStorageException;
 import vives.bancovives.utils.IdGenerator;
 
 import java.io.File;
@@ -29,26 +30,19 @@ class AccountTypeStorageCSVImplTest {
     @InjectMocks
     private AccountTypeStorageCSVImpl storageCSV;
 
-    private NewAccountType newAccountType;
-
     private File tempFile;
 
     @BeforeEach
     void setUp() throws Exception {
-        newAccountType = NewAccountType.builder()
-                .name("SOMETHING")
-                .interest(0.0)
-                .description("idk")
-                .build();
         tempFile = File.createTempFile("test", ".csv");
     }
     @AfterEach
-    void tearDown() throws IOException {
+    void tearDown() {
         tempFile.delete();
     }
 
     @Test
-    void save() throws Exception {
+    void save() {
         // Arrange
         AccountType accountType = AccountType.builder()
                .id(UUID.randomUUID())
@@ -72,7 +66,29 @@ class AccountTypeStorageCSVImplTest {
     }
 
     @Test
-    void read() throws Exception {
+    void saveOnAnNonWritableFile() {
+        // Arrange
+        AccountType accountType = AccountType.builder()
+               .id(UUID.randomUUID())
+               .publicId(IdGenerator.generateId())
+               .name("SOMETHING")
+               .description("idk")
+               .interest(0.0)
+               .createdAt(LocalDateTime.now())
+               .updatedAt(LocalDateTime.now())
+               .isDeleted(false)
+               .build();
+        tempFile.setWritable(false);
+
+        // Act & Assert
+        assertThrows(
+                ProductStorageException.class,
+                () -> storageCSV.save(List.of(accountType), tempFile)
+        );
+    }
+
+    @Test
+    void read() {
         // Arrange
         AccountType accountType = AccountType.builder()
                .id(UUID.randomUUID())
