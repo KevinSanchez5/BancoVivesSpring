@@ -14,6 +14,7 @@ import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
 import vives.bancovives.rest.clients.dto.input.ClientUpdateDto;
 import vives.bancovives.rest.clients.dto.output.ClientResponseDto;
+import vives.bancovives.rest.clients.exceptions.ClientBadRequest;
 import vives.bancovives.rest.clients.exceptions.ClientConflict;
 import vives.bancovives.rest.clients.exceptions.ClientNotFound;
 import vives.bancovives.rest.clients.mapper.ClientMapper;
@@ -180,6 +181,9 @@ public class ClientServiceImpl implements ClientService {
 
     public ClientResponseDto validateClient(String id) {
         Client client = existClientByPublicId(id);
+        if(client.getDniPicture()==null){
+            throw new ClientBadRequest("No se puede validar un cliente sin imagen de dni");
+        }
         client.setValidated(true);
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
