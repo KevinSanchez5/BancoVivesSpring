@@ -170,7 +170,7 @@ public class CardServiceImpl implements CardService {
         return repository.save(updatedCard);
     }
 
-    @Scheduled(cron ="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void resetSpentAmountsInBatches() {
         log.info("Reseteando los montos gastados de las tarjetas en lotes");
@@ -185,7 +185,7 @@ public class CardServiceImpl implements CardService {
         } while (!page.isLast());
     }
 
-    private void resetSpentAmountsForCards(List<Card> cards) {
+    void resetSpentAmountsForCards(List<Card> cards) {
         LocalDateTime now = LocalDateTime.now();
         DayOfWeek firstDayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
 
