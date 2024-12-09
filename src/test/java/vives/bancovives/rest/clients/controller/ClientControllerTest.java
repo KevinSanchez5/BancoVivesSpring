@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import vives.bancovives.rest.accounts.dto.output.AccountResponseSimplified;
 import vives.bancovives.rest.accounts.model.Account;
@@ -80,6 +81,7 @@ class ClientControllerTest {
     String endpoint = "/v1/clients";
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getClients() throws Exception {
         List<ClientResponseDto> list = List.of(responseDto);
         Page<ClientResponseDto> page = new PageImpl<>(list);
@@ -101,6 +103,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getClientById_Success() throws Exception {
         when(clientService.findById(publicId)).thenReturn(responseDto);
         MockHttpServletResponse response = mockMvc.perform(
@@ -119,6 +122,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getClientById_NotFound() throws Exception {
         when(clientService.findById("123")).thenThrow(new ClientNotFound("123"));
         MockHttpServletResponse response = mockMvc.perform(
@@ -196,6 +200,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_Success() throws Exception{
         when(clientService.update(publicId, updateDto)).thenReturn(responseDto);
 
@@ -219,6 +224,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_NotFound() throws Exception{
         when(clientService.update("123", updateDto)).thenThrow(new ClientNotFound("123"));
 
@@ -237,6 +243,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_BadRequest() throws Exception{
         when(clientService.update(publicId, updateDto)).thenThrow(new ClientBadRequest(""));
 
@@ -255,6 +262,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateClient_Conflict() throws Exception{
         when(clientService.update(publicId, updateDto)).thenThrow(new ClientConflict(""));
 
@@ -274,6 +282,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteClient() throws Exception{
         when(clientService.deleteByIdLogically(publicId, Optional.of(false))).thenReturn(responseDto);
 
@@ -290,6 +299,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteClient_NotFound() throws Exception{
         when(clientService.deleteByIdLogically("123", Optional.of(false))).thenThrow(new ClientNotFound("123"));
 
@@ -306,6 +316,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void validateClient() throws Exception{
         when(clientService.validateClient(publicId)).thenReturn(responseDto);
 
@@ -327,6 +338,7 @@ class ClientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void validateClient_NotFound() throws Exception{
         when(clientService.validateClient("123")).thenThrow(new ClientNotFound("123"));
 
