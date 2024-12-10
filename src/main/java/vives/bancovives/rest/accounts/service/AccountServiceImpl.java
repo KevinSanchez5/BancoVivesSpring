@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Implementacion del servicio para manejar cuentas.
+ */
 @Service
 @Slf4j
 @CacheConfig(cacheNames = {"accounts"})
@@ -39,7 +41,13 @@ public class AccountServiceImpl  implements AccountService {
     private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
     private final AccountTypeRepository accountTypeRepository;
-
+    /**
+     * Constructor para AccountServiceImpl.
+     *
+     * @param accountRepository el repositorio de la cuenta
+     * @param clientRepository el repositorio del cliente
+     * @param accountTypeRepository el repositorio de tipo de cuenta
+     */
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, ClientRepository clientRepository, AccountTypeRepository accountTypeRepository) {
         this.accountRepository = accountRepository;
