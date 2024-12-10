@@ -1,0 +1,1481 @@
+{
+	"info": {
+		"_postman_id": "47a3aff7-731c-454b-a3cd-4d67d5bc67b7",
+		"name": "BancoVives Production",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29759773"
+	},
+	"item": [
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "getAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients?completeName=pepe",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients"
+							],
+							"query": [
+								{
+									"key": "completeName",
+									"value": "pepe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdClient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveClient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{     \r\n    \"dni\": \"12345678z\",\r\n    \"completeName\": \"Eustaquio Habichuela\",\r\n    \"email\": \"email@email.com\",\r\n    \"phoneNumber\": \"623456789\",\r\n    \"street\": \"Calle Madrid\",\r\n    \"houseNumber\": \"1\",\r\n    \"city\": \"Madrid\",\r\n    \"country\": \"España\",\r\n    \"username\": \"eustaquio\",\r\n    \"password\": \"perro\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/clients",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"completeName\": \"cliente cambiado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteClient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd?deleteData=true",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							],
+							"query": [
+								{
+									"key": "deleteData",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd/validate",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findMe",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc4OTM3OSwiZXhwIjoxNzMzNzkyOTc5LCJleHRyYUNsYWltcyI6e319.PiAtfPmXQhcW8HigEanJnTspO_cjZVDclPfYzS7s-GLBWryQaFm4H8JRfcrVDe5Kaaeju3e93h-ws9o03zttyA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients/me",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "exportOwnData JSON",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc5MDY4MiwiZXhwIjoxNzMzNzk0MjgyLCJleHRyYUNsYWltcyI6e319.GhMcBqL87ADF-P1MCmqQMaxCNpYfSqp9czttNxSmfrcce7zFYBVicZOv_XRNKFOOfjG6Af-8Z1Bo_c8uAxJhnw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients/exportMe",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"exportMe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch imagenDni",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "file",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/clients/dniImage",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"dniImage"
+							],
+							"query": [
+								{
+									"key": "file",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch photo",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/clients/photo",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"photo"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "getAllPaginated",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/users",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByPublicId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/users/BgLL4KEb1KwG3H_zDiP",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users",
+								"BgLL4KEb1KwG3H_zDiP"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveAdmin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJnb2QiLCJpYXQiOjE3MzM3NzcwMzAsImV4cCI6MTczMzc4MDYzMCwiZXh0cmFDbGFpbXMiOnt9fQ.YGh5bnVTd0E6PskoR7hoDeNIcARh4FDYJjuvH-uy7IaOr2NHTV5TQMH10rz4Qwq-Pk8PU_qPyXMaA99eqLHI6w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{     \r\n    \"username\": \"admin2\",\r\n    \"password\": \"admin2\",\r\n    \"roles\":[\r\n        \"ADMIN\",\"USER\"\r\n    ]\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/users/addAdmin",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users",
+								"addAdmin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"completeName\": \"cliente cambiado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteClient Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd?deleteData=true",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							],
+							"query": [
+								{
+									"key": "deleteData",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movimientos",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/movements",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements"
+							],
+							"query": [
+								{
+									"key": "accountOfReference",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/movements/674e2b6634dadd773f587f2e",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements",
+								"674e2b6634dadd773f587f2e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createTransferencia",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\":\"transferencia\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"ibanOfDestination\": \"ES51W8N4JVONAWK5B6ZA50OV\",\r\n    \"amount\": 10\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/movements",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateMovement",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\": \"transferencia\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"ibanOfDestination\": \"ES51W8N4JVONAWK5B6ZA50OV\",\r\n    \"amount\": 170\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/movements/674e3186ef2b4e47248c9ce5",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements",
+								"674e3186ef2b4e47248c9ce5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/movements/674e30a9cfd4f845f9a840f9",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements",
+								"674e30a9cfd4f845f9a840f9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createExtraccion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc3MDQxMiwiZXhwIjoxNzMzNzc0MDEyLCJleHRyYUNsYWltcyI6e319.AZiOQvdItT6VDQ-Y1k5cUlQCAw0wFpEfKJR5Swy1o03rkzqHploG3Kf628xAWD2apfgE2tL3Wh2Iw9GIRYJJAg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\":\"extraccion\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"cardNumber\":\"1234567890123456\",\r\n    \"amount\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/movements",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveInteresManualmente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\":\"INTERESMENSUAL\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"amount\": 0.1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/movements/addinterest",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements",
+								"addinterest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ver mis movimientos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc3NjgwOSwiZXhwIjoxNzMzNzgwNDA5LCJleHRyYUNsYWltcyI6e319.JkU_TvhmoF30kemPy39GhT5tNxCDmKToFGe94tau3uVBt8o_3k49XW66z3I4Ia_2VspU0Vw0BAao2_7dDJd_0g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/movements/myMovements",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"movements",
+								"myMovements"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "getAllCards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/products/cards",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"products",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllAccountType",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/products/accounts",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"products",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdProducts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/products/3a5ce050-dcd4-456b-854f-534459946733",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"products",
+								"3a5ce050-dcd4-456b-854f-534459946733"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveProduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"cuenta ahoRrqweo    \",\r\n    \"productType\": \"cuenta\",\r\n    \"description\": \"esta es una cuenta\",\r\n    \"interest\":0\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/products",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateProduct",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"interest\": 1.2,\r\n    \"name\": \"null\",\r\n    \"description\":\" null\",\r\n    \"productType\": \"null\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/products/3a5ce050-dcd4-456b-854f-534459946733",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"products",
+								"3a5ce050-dcd4-456b-854f-534459946733"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProduct",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/products/3a5ce050-dcd4-456b-854f-534459946733",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"products",
+								"3a5ce050-dcd4-456b-854f-534459946733"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tarjetas",
+			"item": [
+				{
+					"name": "GetAllCards",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/cards",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"cards"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "nombre",
+									"value": "IRVING",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByOwner",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/cards/name/luis",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"cards",
+								"name",
+								"luis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/cards/BgMIEu68Qe8cqH53iBJ",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"cards",
+								"BgMIEu68Qe8cqH53iBJ"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveCard",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un número aleatorio de 3 dígitos (100 a 999)\r",
+									"const randomThreeDigits = Math.floor(100 + Math.random() * 900);\r",
+									"\r",
+									"// Guardar el valor en una variable\r",
+									"pm.variables.set(\"randomThreeDigits\", randomThreeDigits);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"cardOwner\": \"{{$randomFullName}}\",\r\n  \"pin\": \"{{randomThreeDigits}}\",\r\n  \"dailyLimit\": 20000,\r\n  \"cardTypeName\" : \"TARJETA CORPORATIVA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/cards",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateCard",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un número aleatorio de 3 dígitos (100 a 999)\r",
+									"const randomThreeDigits = Math.floor(100 + Math.random() * 900);\r",
+									"\r",
+									"// Guardar el valor en una variable\r",
+									"pm.variables.set(\"randomThreeDigits\", randomThreeDigits);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pin\": \"111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/cards/BgMKd5aOXwAp6U2p0Qus",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"cards",
+								"BgMKd5aOXwAp6U2p0Qus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteCard",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un número aleatorio de 3 dígitos (100 a 999)\r",
+									"const randomThreeDigits = Math.floor(100 + Math.random() * 900);\r",
+									"\r",
+									"// Guardar el valor en una variable\r",
+									"pm.variables.set(\"randomThreeDigits\", randomThreeDigits);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMzgzMDU5MCwiZXhwIjoxNzMzODM0MTkwLCJleHRyYUNsYWltcyI6e319.3z8MutnEE6p36wPS71z4tEsVs3f1qUqHqVIQqHVeYp8YQ4jpKMLHk4fxDII-AWPTcjuughkXAyntqclL37WZQw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/cards/c09f7fa0-92c9-4ebd-8195-3fb37af5c3b7",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"cards",
+								"c09f7fa0-92c9-4ebd-8195-3fb37af5c3b7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cuentas",
+			"item": [
+				{
+					"name": "GetAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/accounts",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/accounts/",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByIban",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/accounts/iban/",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts",
+								"iban",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateCuenta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"jakarta26\",\r\n    \"accountType\":\"CUENTA JUVENIL\",\r\n    \"dni\": \"\";\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/accounts",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateCuenta",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/accounts",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCuenta",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/accounts/",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get MyAccounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc3NjgwOSwiZXhwIjoxNzMzNzgwNDA5LCJleHRyYUNsYWltcyI6e319.JkU_TvhmoF30kemPy39GhT5tNxCDmKToFGe94tau3uVBt8o_3k49XW66z3I4Ia_2VspU0Vw0BAao2_7dDJd_0g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/accounts/myAccounts",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"accounts",
+								"myAccounts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sign",
+			"item": [
+				{
+					"name": "SignIn eustaquio",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"eustaquio\",\r\n    \"password\": \"perro\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/users/signIn",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignInAdmin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/users/signIn",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signIn Test",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"usertest\",\r\n    \"password\": \"usertest\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/users/signIn",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signIn SuperAdmin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"god\",\r\n    \"password\": \"god\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://vivesbank/v1/users/signIn",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Divisas",
+			"item": [
+				{
+					"name": "conversor",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://vivesbank/v1/convert?amount=1&from=EUR&to=USD",
+							"protocol": "https",
+							"host": [
+								"vivesbank"
+							],
+							"path": [
+								"v1",
+								"convert"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "1"
+								},
+								{
+									"key": "from",
+									"value": "EUR"
+								},
+								{
+									"key": "to",
+									"value": "USD"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
