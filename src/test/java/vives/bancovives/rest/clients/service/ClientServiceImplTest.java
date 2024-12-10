@@ -1,5 +1,7 @@
 package vives.bancovives.rest.clients.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,6 +69,8 @@ class ClientServiceImplTest {
     private UsersService userService;
     @Mock
     private StorageService storageService;
+    @Mock
+    private ObjectMapper jsonMapper;
 
     @InjectMocks
     private ClientServiceImpl clientService;
@@ -82,6 +86,7 @@ class ClientServiceImplTest {
         userResponse = new UserResponse(id, "usernameTest", Collections.singleton(Role.USER), false);
         responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse, List.of(accountResponse), true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
         account.setClient(client);
+        jsonMapper.registerModule(new JavaTimeModule());
     }
 
 

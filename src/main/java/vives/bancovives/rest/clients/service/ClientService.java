@@ -1,5 +1,6 @@
 package vives.bancovives.rest.clients.service;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +33,6 @@ public interface ClientService {
     ClientResponseDto deleteDataOfClient(Client client);
     ClientResponseDto validateClient(String id);
     ClientResponseDto findMe(Principal principal);
-    Map<String, Object> storeImage(String id, MultipartFile file, String campo);
-
+    Map<String, Object> storeImage(Principal principal, MultipartFile file, String campo);
+    Resource exportMeAsJson(Principal principal);
 }

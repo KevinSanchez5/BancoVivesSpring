@@ -1,14 +1,22 @@
 package vives.bancovives.rest.clients.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vives.bancovives.rest.accounts.exception.AccountNotFoundException;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
@@ -26,8 +34,13 @@ import vives.bancovives.rest.users.services.UsersService;
 import vives.bancovives.storage.exceptions.StorageException;
 import vives.bancovives.storage.service.StorageService;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,9 +57,10 @@ public class ClientServiceImpl implements ClientService {
     private final ClientMapper clientMapper;
     private final ClientUpdateValidator updateValidator;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper jsonMapper;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, StorageService storageService, ClientMapper clientMapper, ClientUpdateValidator updateValidator, PasswordEncoder passwordEncoder) {
+    public ClientServiceImpl(ClientRepository clientRepository, UsersService userService, AccountService accountService, StorageService storageService, ClientMapper clientMapper, ClientUpdateValidator updateValidator, PasswordEncoder passwordEncoder, ObjectMapper jsonMapper) {
         this.clientRepository = clientRepository;
         this.userService = userService;
         this.accountService = accountService;
@@ -54,6 +68,8 @@ public class ClientServiceImpl implements ClientService {
         this.clientMapper = clientMapper;
         this.updateValidator = updateValidator;
         this.passwordEncoder = passwordEncoder;
+        this.jsonMapper = jsonMapper;
+        jsonMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
@@ -163,11 +179,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public ClientResponseDto findMe(Principal principal) {
+        Client client = findClientByPrincipal(principal);
+        return clientMapper.fromEntityToResponse(client);
+    }
+
+    public Client findClientByPrincipal(Principal principal) {
         String username = principal.getName();
-        Client client = clientRepository.findByUser_Username(username).orElseThrow(
+        return clientRepository.findByUser_Username(username).orElseThrow(
                 ()-> new ClientNotFound("Cliente no encontrado")
         );
-        return clientMapper.fromEntityToResponse(client);
     }
 
     public void existsClientByDniAndEmail(String dni, String email) {
@@ -194,9 +214,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Map<String, Object> storeImage(String id, MultipartFile file, String campo){
+    public Map<String, Object> storeImage(Principal principal, MultipartFile file, String campo){
         String urlImagen = null;
-        Client client = existClientByPublicId(id);
+        Client client = findClientByPrincipal(principal);
         if (!file.isEmpty()) {
             if(campo.equals("photo") && client.getPhoto()!=null){
                 storageService.delete(client.getPhoto());
@@ -214,6 +234,20 @@ public class ClientServiceImpl implements ClientService {
             return Map.of("url", urlImagen);
         } else {
             throw new StorageException("No se puede subir un fichero vacío");
+        }
+    }
+
+    @Override
+    public Resource exportMeAsJson(Principal principal) {
+        log.info("Exportando datos del cliente con id: " + principal.getName());
+        Client client = findClientByPrincipal(principal);
+        try {
+            File tempFile = File.createTempFile("client", ".json");
+            jsonMapper.writeValue(tempFile, client);
+            return new FileSystemResource(tempFile);
+        } catch (IOException e) {
+            log.error("Error al convertir el cliente a JSON");
+            throw new StorageException("Error al exportar el cliente como JSON", e);
         }
     }
 }

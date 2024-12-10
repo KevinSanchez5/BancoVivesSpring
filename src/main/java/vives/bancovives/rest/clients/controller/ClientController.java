@@ -11,9 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -389,18 +391,30 @@ public class ClientController {
     public ResponseEntity<ClientResponseDto> findMe(Principal principal){
         log.info("Buscando su informacion");
         return ResponseEntity.ok(clientService.findMe(principal));
+
     }
 
-    @PatchMapping(value= "/dniImage/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Object>> uploadDniPicture(@PathVariable String id, @RequestPart("file") MultipartFile file) {
-        log.info("Actualizando imagen del dni del clietne con id: {}", id);
-        return ResponseEntity.ok(clientService.storeImage(id, file, "dniPicture"));
+    @PatchMapping(value= "/dniImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> uploadDniPicture(Principal principal, @RequestPart("file") MultipartFile file) {
+        log.info("Actualizando imagen del dni del clietne con username: {}", principal.getName());
+        return ResponseEntity.ok(clientService.storeImage(principal,  file, "dniPicture"));
     }
 
-    @PatchMapping(value= "/photo/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Object>> uploadPhoto(@PathVariable String id, @RequestPart("file") MultipartFile file) {
-        log.info("Actualizando imagen de perfil del cliente con id: {}", id);
-        return ResponseEntity.ok(clientService.storeImage(id, file, "photo"));
+    @PatchMapping(value= "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> uploadPhoto(Principal principal,  @RequestPart("file") MultipartFile file) {
+        log.info("Actualizando imagen de perfil del cliente con username: {}", principal.getName());
+        return ResponseEntity.ok(clientService.storeImage(principal, file, "photo"));
+    }
+
+    @GetMapping("/exportMe")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Resource> exportClient(Principal principal) {
+        Resource clientJson = clientService.exportMeAsJson(principal);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + clientJson.getFilename() + "\"")
+                .body(clientJson);
     }
 
 }

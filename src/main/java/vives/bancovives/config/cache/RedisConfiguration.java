@@ -1,4 +1,4 @@
-package vives.bancovives.cache;
+package vives.bancovives.config.cache;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
