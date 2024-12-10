@@ -19,17 +19,25 @@ import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Clase que se encarga de mapear los objetos de la clase Client a los objetos de las clases ClientCreateDto y ClientUpdateDto.
+ */
 @Component
 public class ClientMapper {
 
+    /**
+     * Método que mapea un objeto de la clase ClientCreateDto a un objeto de la clase Client
+     * @param createDto Objeto de la clase ClientCreateDto que se va a mapear
+     * @return Objeto de la clase Client mapeado
+     */
     public Client fromCreateDtoToEntity(ClientCreateDto createDto) {
         Client newClient = new Client(
                 createDto.getDni().toUpperCase(),
                 createDto.getCompleteName().trim(),
                 createDto.getEmail().trim(),
                 createDto.getPhoneNumber(),
-                createDto.getPhoto(),
-                createDto.getDniPicture()
+                null,
+                null
         );
         User newUser = new User(
                 UUID.randomUUID(),
@@ -53,6 +61,12 @@ public class ClientMapper {
         return newClient;
     }
 
+    /**
+     * Método que mapea un objeto de la clase ClientUpdateDto a un objeto de la clase Client
+     * @param client Objeto de la clase Client que se va a actualizar
+     * @param updateDto Objeto de la clase ClientUpdateDto que contiene los nuevos datos
+     * @return Objeto de la clase Client actualizado
+     */
     public Client fromUpdateDtoToEntity(Client client, ClientUpdateDto updateDto) {
         Address updatedAddress = new Address(
                 updateDto.getStreet() != null ? updateDto.getStreet().trim() : client.getAddress().getStreet(),
@@ -85,6 +99,11 @@ public class ClientMapper {
         return updatedClient;
     }
 
+    /**
+     * Método que mapea un objeto de la clase Client a un dto de respuesta {@link ClientResponseDto}
+     * @param client Objeto de la clase {@link Client} que se va a mapear
+     * @return Objeto de la clase ClientResponseDto mapeado
+     */
     public ClientResponseDto fromEntityToResponse(Client client){
         UserResponse userResponse = null;
         List<AccountResponseSimplified> accounts = null;

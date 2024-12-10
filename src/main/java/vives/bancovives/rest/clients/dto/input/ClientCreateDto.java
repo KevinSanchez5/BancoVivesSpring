@@ -30,9 +30,6 @@ public class ClientCreateDto {
     @Pattern(regexp = "^[679]\\d{8}$", message = "El numero de telefono debe de tener 9 digitos y comenzar por 6, 7 o 9")
     private String phoneNumber;
 
-    private String photo;
-
-    private String dniPicture;
 
     @NotNull(message = "El nombre de la calle no puede ser nulo")
     @NotBlank(message = "El nombre de la calle no puede estar vacio")

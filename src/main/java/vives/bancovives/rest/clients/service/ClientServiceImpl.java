@@ -1,6 +1,5 @@
 package vives.bancovives.rest.clients.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -8,15 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import vives.bancovives.rest.accounts.exception.AccountNotFoundException;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.accounts.service.AccountService;
 import vives.bancovives.rest.clients.dto.input.ClientCreateDto;
@@ -36,15 +32,20 @@ import vives.bancovives.storage.service.StorageService;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
+/**
+ * Implementación de la interfaz ClientService.
+ * Proporciona métodos para buscar, guardar, actualizar y eliminar clientes.
+ * Además, proporciona métodos para validar un cliente, buscar un cliente por su id y exportar los datos de un cliente como JSON.
+ * También proporciona métodos para subir una imagen de un cliente y para borrar los datos de un cliente.
+ *
+ * @author Kelvin Jesús Sánchez Barahona
+ * @since 1.0.0
+ */
 @Service
 @CacheConfig(cacheNames = {"clients"})
 @Slf4j
@@ -72,6 +73,18 @@ public class ClientServiceImpl implements ClientService {
         jsonMapper.registerModule(new JavaTimeModule());
     }
 
+    /**
+     * Método que busca clientes filtrados por diferentes criterios
+     * @param dni dni de un cliente
+     * @param completeName nombre completo de un cliente
+     * @param email email de un cliente
+     * @param street calle de un cliente
+     * @param city ciudad de un cliente
+     * @param validated si el cliente esta validado
+     * @param isDeleted si el cliente esta borrado
+     * @param pageable paginación
+     * @return Página de clientes que cumplen los criterios de búsqueda
+     */
     @Override
     public Page<ClientResponseDto> findAll(
             Optional<String> dni,
@@ -109,12 +122,22 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findAll(criterio, pageable).map(clientMapper::fromEntityToResponse);
     }
 
+    /**
+     * Método que busca un cliente por su id
+     * @param id id del cliente
+     * @return Cliente con el id especificado
+     */
     @Override
     public ClientResponseDto findById(String id) {
         log.info("Buscando el cliente con id: " + id);
         return clientMapper.fromEntityToResponse(existClientByPublicId(id));
     }
 
+    /**
+     * Método que guarda un nuevo cliente y su usuario asociado
+     * @param createDto datos del cliente a guardar
+     * @return ClienteResponseDto el cliente guardado mapeado a un dto de respuesta
+     */
     @Override
     public ClientResponseDto save(ClientCreateDto createDto) {
         log.info("Guardando un nuevo cliente");
@@ -127,6 +150,12 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.fromEntityToResponse(clientRepository.save(clientToSave));
     }
 
+    /**
+     * Método que actualiza un cliente, tambien actualiza el usuario asociado si se proporciona un nuevo username o password
+     * @param id id del cliente a actualizar
+     * @param updateDto datos del cliente a actualizar
+     * @return ClienteResponseDto el cliente actualizado mapeado a un dto de respuesta
+     */
     @Override
     public ClientResponseDto update(String id, ClientUpdateDto updateDto) {
         log.info("Actualizando cliente con id: " + id);
@@ -141,6 +170,13 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.fromEntityToResponse(clientRepository.save(updatedClient));
     }
 
+    /**
+     * Método que borra un cliente de forma lógica, si se proporciona deleteData como true, se borran todos los datos del cliente
+     * tambien borra el usuario asociado y todas las cuentas asociadas al cliente de manera logica
+     * @param id id del cliente a borrar
+     * @param deleteData si se deben borrar los datos del cliente
+     * @return ClienteResponseDto el cliente borrado mapeado a un dto de respuesta
+     */
     @Override
     public ClientResponseDto deleteByIdLogically(String id, Optional<Boolean> deleteData) {
         log.info("Borrando cliente con id: " + id);
@@ -162,6 +198,11 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
+    /**
+     * Método que borra todos los datos de un cliente
+     * @param client cliente al que se le van a borrar los datos
+     * @return ClienteResponseDto el cliente con los datos borrados mapeado a un dto de respuesta
+     */
     @Override
     public ClientResponseDto deleteDataOfClient(Client client) {
         log.info("Borrando datos del cliente con id: " + client.getId());
@@ -178,11 +219,21 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
+    /**
+     * Método que busca el cliente asociado al usuario que ha hecho la petición
+     * @param principal usuario que ha hecho la petición
+     * @return ClienteResponseDto el cliente asociado al usuario que ha hecho la petición mapeado a un dto de respuesta
+     */
     public ClientResponseDto findMe(Principal principal) {
         Client client = findClientByPrincipal(principal);
         return clientMapper.fromEntityToResponse(client);
     }
 
+    /**
+     * Método que busca el cliente asociado al usuario que ha hecho la petición
+     * @param principal usuario que ha hecho la petición
+     * @return Cliente asociado al usuario que ha hecho la petición
+     */
     public Client findClientByPrincipal(Principal principal) {
         String username = principal.getName();
         return clientRepository.findByUser_Username(username).orElseThrow(
@@ -190,6 +241,11 @@ public class ClientServiceImpl implements ClientService {
         );
     }
 
+    /**
+     * Método que valida que no exista un cliente con el mismo dni o email
+     * @param dni dni del cliente
+     * @param email email del cliente
+     */
     public void existsClientByDniAndEmail(String dni, String email) {
         if (clientRepository.findByDniIgnoreCase(dni).isPresent()) {
             throw new ClientConflict("Cliente con ese dni ya existe");
@@ -199,6 +255,11 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Método que valida un cliente, para validar un cliente se necesita una imagen de su dni
+     * @param id id del cliente a validar
+     * @return ClienteResponseDto el cliente validado mapeado a un dto de respuesta
+     */
     public ClientResponseDto validateClient(String id) {
         Client client = existClientByPublicId(id);
         if(client.getDniPicture()==null){
@@ -208,11 +269,23 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.fromEntityToResponse(clientRepository.save(client));
     }
 
+    /**
+     * Método que busca un cliente por su id
+     * @param id id del cliente
+     * @return Cliente con el id especificado
+     */
     public Client existClientByPublicId(String id) {
         return clientRepository.findByPublicId(id).orElseThrow(
                 () -> new ClientNotFound("El cliente con id: " + id + " no encontrado"));
     }
 
+    /**
+     * Método que sube una imagen de un cliente y la guarda en el sistema de almacenamiento
+     * @param principal usuario que ha hecho la petición
+     * @param file imagen a subir
+     * @param campo campo de la imagen a subir
+     * @return Map con la url de la imagen subida
+     */
     @Override
     public Map<String, Object> storeImage(Principal principal, MultipartFile file, String campo){
         String urlImagen = null;
@@ -237,6 +310,11 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Método que exporta los datos de un cliente como JSON
+     * @param principal usuario que ha hecho la petición
+     * @return Resource con los datos del cliente exportados como JSON
+     */
     @Override
     public Resource exportMeAsJson(Principal principal) {
         log.info("Exportando datos del cliente con id: " + principal.getName());

@@ -37,6 +37,9 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Controlador REST para gestionar los clientes
+ */
 @RestController
 @RequestMapping("${api.version}/clients")
 @Slf4j
@@ -358,6 +361,11 @@ public class ClientController {
         return ResponseEntity.ok(clientService.validateClient(id));
     }
 
+    /**
+     * Muestra la informacion del cliente que ha iniciado sesion
+     * @param principal Usuario que ha iniciado sesion
+     * @return Un {@link ResponseEntity} con un objeto {@link ClientResponseDto} con los datos del cliente que ha iniciado sesion
+     */
     @Operation(
             summary = "Devuelve los datos del cliente que usa la aplicacion",
             description = "Devuelve los datos del cliente que ha iniciado sesion en la aplicacion"
@@ -394,6 +402,41 @@ public class ClientController {
 
     }
 
+    /**
+     * Actualiza la imagen del dni del cliente
+     * @param principal Usuario que ha iniciado sesion
+     * @param file Archivo de imagen del dni
+     * @return  Un {@link ResponseEntity} con un objeto {@link Map} con la url de la imagen actualizada
+     */
+    @Operation(
+            summary = "Actualiza la imagen del dni del cliente",
+            description = "Actualiza la imagen del dni del cliente que ha iniciado sesion"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Imagen actualizada exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado. El usuario debe autenticarse para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso prohibido. El usuario no tiene permisos suficientes para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cliente no encontrado",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @PatchMapping(value= "/dniImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<Map<String, Object>> uploadDniPicture(Principal principal, @RequestPart("file") MultipartFile file) {
@@ -401,6 +444,41 @@ public class ClientController {
         return ResponseEntity.ok(clientService.storeImage(principal,  file, "dniPicture"));
     }
 
+    /**
+     * Actualiza la imagen de perfil del cliente
+     * @param principal Usuario que ha iniciado sesion
+     * @param file Archivo de imagen de perfil
+     * @return  Un {@link ResponseEntity} con un objeto {@link Map} con la url de la imagen actualizada
+     */
+    @Operation(
+            summary = "Actualiza la imagen de perfil del cliente",
+            description = "Actualiza la imagen de perfil del cliente que ha iniciado sesion"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Imagen actualizada exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado. El usuario debe autenticarse para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso prohibido. El usuario no tiene permisos suficientes para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cliente no encontrado",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @PatchMapping(value= "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<Map<String, Object>> uploadPhoto(Principal principal,  @RequestPart("file") MultipartFile file) {
@@ -408,6 +486,40 @@ public class ClientController {
         return ResponseEntity.ok(clientService.storeImage(principal, file, "photo"));
     }
 
+    /**
+     * Exporta los datos del cliente en formato JSON
+     * @param principal Usuario que ha iniciado sesion
+     * @return  Un {@link ResponseEntity} con un objeto {@link Resource} con los datos del cliente exportados
+     */
+    @Operation(
+            summary = "Exporta los datos del cliente en formato JSON",
+            description = "Exporta los datos del cliente que ha iniciado sesion en formato JSON"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Datos exportados exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Resource.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado. El usuario debe autenticarse para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acceso prohibido. El usuario no tiene permisos suficientes para acceder a este recurso.",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cliente no encontrado",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @GetMapping("/exportMe")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<Resource> exportClient(Principal principal) {
