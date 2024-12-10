@@ -186,6 +186,12 @@ public class ClientServiceImpl implements ClientService {
             client.setUser(null);
             userService.deleteById(userPublicId);
         }
+        if(client.getPhoto()!=null){
+            storageService.delete(client.getPhoto());
+        }
+        if(client.getDniPicture()!=null){
+            storageService.delete(client.getDniPicture());
+        }
         if(!client.getAccounts().isEmpty()) {
             for(Account account : client.getAccounts()) {
                 accountService.deleteById(account.getPublicId());
