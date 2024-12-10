@@ -1,0 +1,1328 @@
+{
+	"info": {
+		"_postman_id": "0a95c913-caed-4fd7-b877-f693d794d647",
+		"name": "BancoVives",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29759773",
+		"_collection_link": "https://bancovives.postman.co/workspace/Banco~c3de791e-39d3-4760-b263-c7bdd4a29558/collection/30710707-0a95c913-caed-4fd7-b877-f693d794d647?action=share&source=collection_link&creator=29759773"
+	},
+	"item": [
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "getAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients?completeName=pepe",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients"
+							],
+							"query": [
+								{
+									"key": "completeName",
+									"value": "pepe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdClient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveClient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{     \r\n    \"dni\": \"12345678z\",\r\n    \"completeName\": \"Eustaquio Habichuela\",\r\n    \"email\": \"email@email.com\",\r\n    \"phoneNumber\": \"623456789\",\r\n    \"street\": \"Calle Madrid\",\r\n    \"houseNumber\": \"1\",\r\n    \"city\": \"Madrid\",\r\n    \"country\": \"España\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/clients",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"completeName\": \"cliente cambiado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteClient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd?deleteData=true",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							],
+							"query": [
+								{
+									"key": "deleteData",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validateClient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd/validate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findMe",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc4OTM3OSwiZXhwIjoxNzMzNzkyOTc5LCJleHRyYUNsYWltcyI6e319.PiAtfPmXQhcW8HigEanJnTspO_cjZVDclPfYzS7s-GLBWryQaFm4H8JRfcrVDe5Kaaeju3e93h-ws9o03zttyA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "exportOwnData JSON",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc5MDY4MiwiZXhwIjoxNzMzNzk0MjgyLCJleHRyYUNsYWltcyI6e319.GhMcBqL87ADF-P1MCmqQMaxCNpYfSqp9czttNxSmfrcce7zFYBVicZOv_XRNKFOOfjG6Af-8Z1Bo_c8uAxJhnw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/exportMe",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"exportMe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch imagenDni",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/v1/clients/dniImage",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"dniImage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch photo",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/v1/clients/photo",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"photo"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "getAllPaginated",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByPublicId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/users/BgLL4KEb1KwG3H_zDiP",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"BgLL4KEb1KwG3H_zDiP"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveAdmin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJnb2QiLCJpYXQiOjE3MzM3NzcwMzAsImV4cCI6MTczMzc4MDYzMCwiZXh0cmFDbGFpbXMiOnt9fQ.YGh5bnVTd0E6PskoR7hoDeNIcARh4FDYJjuvH-uy7IaOr2NHTV5TQMH10rz4Qwq-Pk8PU_qPyXMaA99eqLHI6w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{     \r\n    \"username\": \"admin2\",\r\n    \"password\": \"admin2\",\r\n    \"roles\":[\r\n        \"ADMIN\",\"USER\"\r\n    ]\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/users/addAdmin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"addAdmin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"completeName\": \"cliente cambiado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteClient Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/clients/fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd?deleteData=true",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"clients",
+								"fb1ef73c-4c7e-44b4-b5d9-9135dc40b4fd"
+							],
+							"query": [
+								{
+									"key": "deleteData",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movimientos",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/movements",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/movements/674e2b6634dadd773f587f2e",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements",
+								"674e2b6634dadd773f587f2e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createTransferencia",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\":\"transferencia\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"ibanOfDestination\": \"ES51W8N4JVONAWK5B6ZA50OV\",\r\n    \"amount\": 10\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/movements",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateMovement",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\": \"transferencia\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"ibanOfDestination\": \"ES51W8N4JVONAWK5B6ZA50OV\",\r\n    \"amount\": 170\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/movements/674e3186ef2b4e47248c9ce5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements",
+								"674e3186ef2b4e47248c9ce5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/movements/674e30a9cfd4f845f9a840f9",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements",
+								"674e30a9cfd4f845f9a840f9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createExtraccion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc3MDQxMiwiZXhwIjoxNzMzNzc0MDEyLCJleHRyYUNsYWltcyI6e319.AZiOQvdItT6VDQ-Y1k5cUlQCAw0wFpEfKJR5Swy1o03rkzqHploG3Kf628xAWD2apfgE2tL3Wh2Iw9GIRYJJAg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\":\"extraccion\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"cardNumber\":\"1234567890123456\",\r\n    \"amount\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/movements",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveInteresManualmente",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movementType\":\"INTERESMENSUAL\",\r\n    \"ibanOfReference\": \"ES71CU4N1759HNCGUNQSNXM6\",\r\n    \"amount\": 0.1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/movements/addinterest",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements",
+								"addinterest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ver mis movimientos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc3NjgwOSwiZXhwIjoxNzMzNzgwNDA5LCJleHRyYUNsYWltcyI6e319.JkU_TvhmoF30kemPy39GhT5tNxCDmKToFGe94tau3uVBt8o_3k49XW66z3I4Ia_2VspU0Vw0BAao2_7dDJd_0g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/movements/myMovements",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"movements",
+								"myMovements"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "getAllCards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/products/cards",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"products",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllAccountType",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "getByIdProducts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "BQDoLeDzVjhGcfHMEqP6RwDUBZC7_3v8CPwPCr9U49zPZtWTcRTcZk-ij6NcGdnmu2fkggCmhqEJ03_Zsf9aTWBeNmpNlBAHGIc3yJVFalRydf82sx5n6s72PRy2fTX12XUTU7WUlU-4BNupQm34aipdT6dOfdqw58UjZ-MN4HywlHC3pZXwdNKvfscuhy0FU8AZM6tMF7ClO9cHImKD59q-ahVa2cKoBfUgNZI0zeER0AgKS8Aqdy8pOxgnxjEOiEN9a9FIbUxQvEUz6GXzHY5xgiETCGSg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/products/3a5ce050-dcd4-456b-854f-534459946733",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"products",
+								"3a5ce050-dcd4-456b-854f-534459946733"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveProduct",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"cuenta ahoRrqweo    \",\r\n    \"productType\": \"cuenta\",\r\n    \"description\": \"esta es una cuenta\",\r\n    \"interest\":0\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/products",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateProduct",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"interest\": 1.2,\r\n    \"name\": \"null\",\r\n    \"description\":\" null\",\r\n    \"productType\": \"null\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/products/3a5ce050-dcd4-456b-854f-534459946733",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"products",
+								"3a5ce050-dcd4-456b-854f-534459946733"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProduct",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/products/3a5ce050-dcd4-456b-854f-534459946733",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"products",
+								"3a5ce050-dcd4-456b-854f-534459946733"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tarjetas",
+			"item": [
+				{
+					"name": "GetAllCards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/cards",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"cards"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "nombre",
+									"value": "IRVING",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByOwner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/cards/name/luis",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"cards",
+								"name",
+								"luis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/cards/BgMIEu68Qe8cqH53iBJ",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"cards",
+								"BgMIEu68Qe8cqH53iBJ"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveCard",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un número aleatorio de 3 dígitos (100 a 999)\r",
+									"const randomThreeDigits = Math.floor(100 + Math.random() * 900);\r",
+									"\r",
+									"// Guardar el valor en una variable\r",
+									"pm.variables.set(\"randomThreeDigits\", randomThreeDigits);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"cardOwner\": \"{{$randomFullName}}\",\r\n  \"pin\": \"{{randomThreeDigits}}\",\r\n  \"dailyLimit\": 20000,\r\n  \"cardTypeName\" : \"TARJETA CORPORATIVA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/cards",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateCard",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un número aleatorio de 3 dígitos (100 a 999)\r",
+									"const randomThreeDigits = Math.floor(100 + Math.random() * 900);\r",
+									"\r",
+									"// Guardar el valor en una variable\r",
+									"pm.variables.set(\"randomThreeDigits\", randomThreeDigits);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pin\": \"111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/cards/BgMKd5aOXwAp6U2p0Qus",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"cards",
+								"BgMKd5aOXwAp6U2p0Qus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteCard",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un número aleatorio de 3 dígitos (100 a 999)\r",
+									"const randomThreeDigits = Math.floor(100 + Math.random() * 900);\r",
+									"\r",
+									"// Guardar el valor en una variable\r",
+									"pm.variables.set(\"randomThreeDigits\", randomThreeDigits);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/cards/c09f7fa0-92c9-4ebd-8195-3fb37af5c3b7",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"cards",
+								"c09f7fa0-92c9-4ebd-8195-3fb37af5c3b7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cuentas",
+			"item": [
+				{
+					"name": "GetAllPaged",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/accounts",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetById",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "GetByIban",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/accounts/iban/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"iban",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateCuenta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"jakarta26\",\r\n    \"accountType\":\"CUENTA JUVENIL\",\r\n    \"dni\": \"\";\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/accounts",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateCuenta",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/accounts",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCuenta",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/accounts/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get MyAccounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VydGVzdCIsImlhdCI6MTczMzc3NjgwOSwiZXhwIjoxNzMzNzgwNDA5LCJleHRyYUNsYWltcyI6e319.JkU_TvhmoF30kemPy39GhT5tNxCDmKToFGe94tau3uVBt8o_3k49XW66z3I4Ia_2VspU0Vw0BAao2_7dDJd_0g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/accounts/myAccounts",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"myAccounts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sign",
+			"item": [
+				{
+					"name": "SignIn eustaquio",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"eustaquio\",\r\n    \"password\": \"perro\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/users/signIn",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignInAdmin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/users/signIn",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signIn Test",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"usertest\",\r\n    \"password\": \"usertest\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/users/signIn",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signIn SuperAdmin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"god\",\r\n    \"password\": \"god\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/users/signIn",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Divisas",
+			"item": [
+				{
+					"name": "conversor",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/convert?amount=1&from=EUR&to=USD",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"convert"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "1"
+								},
+								{
+									"key": "from",
+									"value": "EUR"
+								},
+								{
+									"key": "to",
+									"value": "USD"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
