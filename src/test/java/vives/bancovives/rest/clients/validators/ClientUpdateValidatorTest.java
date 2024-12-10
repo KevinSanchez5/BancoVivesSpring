@@ -18,7 +18,7 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_AllFieldsNull_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, null, null, null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -29,14 +29,14 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_ValidDni_NoExceptionThrown() {
-        ClientUpdateDto dto = new ClientUpdateDto("12345678Z", null, null, null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto("12345678Z", null, null, null, null, null,  null, null, null, null);
 
         assertDoesNotThrow(() -> validator.validateUpdateDto(dto));
     }
 
     @Test
     public void testValidateUpdateDto_InvalidDni_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto("12345A", null, null, null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto("12345A", null, null, null, null, null, null, null, null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -47,7 +47,7 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_InvalidCompleteName_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, "A", null, null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, "A", null, null, null, null, null, null, null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -58,14 +58,14 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_ValidCompleteName_NoExceptionThrown() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, "John Doe", null, null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, "John Doe", null, null, null, null, null, null, null, null);
 
         assertDoesNotThrow(() -> validator.validateUpdateDto(dto));
     }
 
     @Test
     public void testValidateUpdateDto_InvalidEmail_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, "invalid-email", null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, "invalid-email", null, null, null, null, null, null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -76,14 +76,14 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_ValidEmail_NoExceptionThrown() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, "test@example.com", null, null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, "test@example.com", null, null, null, null , null, null, null);
 
         assertDoesNotThrow(() -> validator.validateUpdateDto(dto));
     }
 
     @Test
     public void testValidateUpdateDto_InvalidPhoneNumber_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, "12345", null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, "12345", null, null, null, null, null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -94,14 +94,14 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_ValidPhoneNumber_NoExceptionThrown() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, "612345678", null, null, null, null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, "612345678", null, null, null, null, null, null);
 
         assertDoesNotThrow(() -> validator.validateUpdateDto(dto));
     }
 
     @Test
     public void testValidateUpdateDto_InvalidStreet_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, "A", null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, "A", null,  null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -112,14 +112,14 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_ValidStreet_NoExceptionThrown() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, "Calle Mayor 123", null, null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null,  "Calle Mayor 123", null, null, null, null, null);
 
         assertDoesNotThrow(() -> validator.validateUpdateDto(dto));
     }
 
     @Test
     public void testValidateUpdateDto_InvalidHouseNumber_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, null, "ABC", null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null,  "ABC", null, null, null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
@@ -130,7 +130,7 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_ValidHouseNumber_NoExceptionThrown() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, null, "123A", null, null, null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null,"123A", null, null, null, null);
 
         assertDoesNotThrow(() -> validator.validateUpdateDto(dto));
     }

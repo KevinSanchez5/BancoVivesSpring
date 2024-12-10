@@ -57,7 +57,7 @@ class ClientControllerTest {
     User user = new User(id, publicId, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
     Account account = new Account(UUID.randomUUID(), IdGenerator.generateId(), "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
     Client client = new Client(id, publicId, "12345678Z", "nameTest",address, "email@test.com", "654321987", null, null, user, List.of(account),true, false,LocalDateTime.now(), LocalDateTime.now());
-    ClientCreateDto createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "PORTUGAL", "usernameTest", "passwordTest");
+    ClientCreateDto createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987", "streetTest", "123", "CITYTEST", "PORTUGAL", "usernameTest", "passwordTest");
     ClientUpdateDto updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
     UserResponse userResponse = new UserResponse(publicId, "usernameTest", Collections.singleton(Role.USER), false);
     AccountResponseSimplified accountResponse = new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance());

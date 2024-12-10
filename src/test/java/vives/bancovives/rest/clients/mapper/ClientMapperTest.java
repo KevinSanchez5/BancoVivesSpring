@@ -37,7 +37,7 @@ class ClientMapperTest {
         Account account = new Account(UUID.randomUUID(), IdGenerator.generateId(), "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
         User user = new User(id, publicId, "usernameTest", "passwordTest", Collections.singleton(Role.USER), null, LocalDateTime.now(), LocalDateTime.now(), false);
         client = new Client(id, publicId, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, List.of(account), true, false, LocalDateTime.now(), LocalDateTime.now());
-        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
+        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987", "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("diferent@email.com").city("Barcelona").country("aNdORra").build();
     }
 

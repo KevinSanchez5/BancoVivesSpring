@@ -81,7 +81,7 @@ class ClientServiceImplTest {
         account = new Account(UUID.randomUUID(), id, "ES123456789", 0.0, "passwordTest", null, null, LocalDateTime.now(), LocalDateTime.now(), false);
         accountResponse = new AccountResponseSimplified(account.getPublicId(), account.getIban(), account.getBalance());
         client = new Client(uuid, id, "12345678Z", "nameTest", address, "email@test.com", "654321987", null, null, user, List.of(account), true, false, LocalDateTime.now(), LocalDateTime.now());
-        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987",null,null, "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
+        createDto = new ClientCreateDto("12345678Z", "nameTest", "email@test.com", "654321987", "streetTest", "123", "CITYTEST", "ESPAÑA", "usernameTest", "passwordTest");
         updateDto = ClientUpdateDto.builder().completeName("newNameTest").email("some@email.com").build();
         userResponse = new UserResponse(id, "usernameTest", Collections.singleton(Role.USER), false);
         responseDto = new ClientResponseDto(id, "12345678Z", "nameTest", "email@test.com", "654321987", null, null, address, userResponse, List.of(accountResponse), true, false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
@@ -313,7 +313,6 @@ class ClientServiceImplTest {
 
         ClientResponseDto result = clientService.validateClient(id);
 
-        //TODO COMPARAR RESULTADO CON ENTIDAD CLIENTE
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertTrue(result.getValidated()),

@@ -15,7 +15,7 @@ public class ClientUpdateValidator {
      * @param dto Objeto de la clase ClientUpdateDto que se va a validar
      */
     public void validateUpdateDto(ClientUpdateDto dto) {
-        validateNotNullAtributes(dto.getDni(), dto.getCompleteName(),dto.getEmail(), dto.getPhoneNumber(),dto.getPhoto(), dto.getDniPicture(), dto.getStreet(), dto.getHouseNumber() ,dto.getCity(),dto.getCountry(),dto.getUsername(),dto.getPassword());
+        validateNotNullAtributes(dto.getDni(), dto.getCompleteName(),dto.getEmail(), dto.getPhoneNumber(), dto.getStreet(), dto.getHouseNumber() ,dto.getCity(),dto.getCountry(),dto.getUsername(),dto.getPassword());
         validateDni(dto.getDni());
         validateCompleteName(dto.getCompleteName());
         validateEmail(dto.getEmail());
@@ -34,8 +34,6 @@ public class ClientUpdateValidator {
      * @param completeName
      * @param email
      * @param phoneNumber
-     * @param photo
-     * @param dniPicture
      * @param street
      * @param houseNumber
      * @param city
@@ -43,8 +41,8 @@ public class ClientUpdateValidator {
      * @param username
      * @param password
      */
-    private void validateNotNullAtributes (String dni, String completeName, String email, String phoneNumber, String photo, String dniPicture, String street, String houseNumber, String city, String country, String username, String password){
-        if (dni == null && completeName == null && email == null && phoneNumber == null && photo == null && dniPicture == null && street == null && houseNumber == null && city == null && country == null && username == null && password == null) {
+    private void validateNotNullAtributes (String dni, String completeName, String email, String phoneNumber, String street, String houseNumber, String city, String country, String username, String password){
+        if (dni == null && completeName == null && email == null && phoneNumber == null && street == null && houseNumber == null && city == null && country == null && username == null && password == null) {
             throw new ClientBadRequest("Debes introducir al menos un campo para actualizar");
         }
     }
