@@ -101,7 +101,7 @@ class ClientUpdateValidatorTest {
 
     @Test
     public void testValidateUpdateDto_InvalidStreet_ThrowsException() {
-        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, null, null, "A", null,  null, null);
+        ClientUpdateDto dto = new ClientUpdateDto(null, null, null, null, "A", null, null, null,  null, null);
 
         Exception exception = assertThrows(ClientBadRequest.class, () -> {
             validator.validateUpdateDto(dto);
