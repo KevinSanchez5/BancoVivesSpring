@@ -262,7 +262,7 @@ public class MovementServiceImpl implements MovementService{
      *
      * @param movement Movimiento a realizar
      */
-    private void moveMoney(Movement movement){
+    public void moveMoney(Movement movement){
         switch (movement.getMovementType()){
             case TRANSFERENCIA:
                 movement.setAmountBeforeMovement(movement.getAccountOfReference().getBalance());
@@ -304,9 +304,9 @@ public class MovementServiceImpl implements MovementService{
      * @param card
      * @param amount
      */
-    private void setNewLimitsInCard(Card card, Double amount){
+    public void setNewLimitsInCard(Card card, Double amount){
         card.setSpentToday(card.getSpentToday() + amount);
-        card.setSpentThisMonth(card.getSpentThisMonth() + amount);
+        card.setSpentThisWeek(card.getSpentThisWeek() + amount);
         card.setSpentThisMonth(card.getSpentThisMonth() + amount);
     }
 

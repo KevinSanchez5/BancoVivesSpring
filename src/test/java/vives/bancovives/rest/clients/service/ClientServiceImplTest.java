@@ -93,21 +93,6 @@ class ClientServiceImplTest {
     }
 
 
-//    @Test
-//    void findAll() {
-//        Page<ClientResponseDto> resultPage = new PageImpl<>(List.of(responseDto));
-//        when(clientRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(resultPage);
-//        when(clientMapper.fromEntityToResponse(client)).thenReturn(responseDto);
-//
-//        Page<ClientResponseDto> result = clientService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), PageRequest.of(0, 10));
-//
-//        assertAll(
-//                () -> assertNotNull(result),
-//                () -> assertEquals(1, result.getTotalElements())
-//        );
-//
-//        verify(clientRepository, times(1)).findAll(any(Specification.class), any(PageRequest.class));
-//    }
 
     @Test
     void findById_Success() {

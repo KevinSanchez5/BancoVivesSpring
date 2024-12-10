@@ -131,52 +131,6 @@ class MovementControllerTest {
     }
 
 
-//    @Test
-//    @WithMockUser(username = "user", roles = {"USER"})
-//    void createMovement()throws Exception {
-//        when(movementService.save(principalUser, movementCreateDto)).thenReturn(movementResponseDto);
-//
-//        MockHttpServletResponse response = mockMvc.perform(
-//                post(endpoint)
-//                        .content(jsonMapper.writeValueAsString(movementCreateDto))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//        ).andReturn().getResponse();
-//
-//        MovementResponseDto movementResponseDto = jsonMapper.readValue(response.getContentAsString(), MovementResponseDto.class);
-//
-//        assertAll(
-//                () -> assertEquals(HttpStatus.CREATED.value(), response.getStatus()),
-//                () -> assertEquals(movement.get_id(), movementResponseDto.getId()),
-//                () -> assertEquals(movement.getAmountOfMoney(), movementResponseDto.getAmountMoved()),
-//                () -> assertEquals(movement.getMovementType().toString(), movementResponseDto.getMovementType()),
-//                () -> assertEquals(movement.getAccountOfDestination().getIban(), movementResponseDto.getIbanOfDestination()),
-//                () -> assertEquals(movement.getAccountOfReference().getIban(), movementResponseDto.getAccountOfReference().getIban())
-//        );
-//
-//        verify(movementService, times(1)).save(principalUser, movementCreateDto);
-//
-//    }
-
-//    @Test
-//    @WithMockUser(username = "user", roles = {"USER"})
-//    void createMovement_BadRequest() throws Exception{
-//        when(movementService.save(principal, new MovementCreateDto())).thenThrow(new MovementBadRequest(""));
-//
-//        MockHttpServletResponse response = mockMvc.perform(
-//                post(endpoint)
-//                        .content(jsonMapper.writeValueAsString(movementCreateDto))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//        ).andReturn().getResponse();
-//
-//        assertAll(
-//                () -> assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus())
-//        );
-//
-//        verify(movementService, times(1)).save(principal, movementCreateDto);
-//    }
-
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateMovement() throws Exception{
@@ -210,23 +164,6 @@ class MovementControllerTest {
     @WithMockUser(username = "user", roles = {"USER"})
     void deleteMovement() throws Exception{
     }
-
-//    @Test
-//    @WithMockUser(username = "user", roles = {"USER"})
-//    void deleteMovement_NotFound() throws Exception{
-//        when(movementService.cancelMovement(principal,id)).thenThrow(new MovementNotFound(id.toHexString()));
-//
-//        MockHttpServletResponse response = mockMvc.perform(
-//                delete(endpoint + "/" + id)
-//                        .accept(MediaType.APPLICATION_JSON)
-//        ).andReturn().getResponse();
-//
-//        assertAll(
-//                () -> assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus())
-//        );
-//
-//        verify(movementService, times(1)).cancelMovement(principal, id);
-//    }
 
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
