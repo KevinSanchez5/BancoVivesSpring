@@ -11,8 +11,19 @@ import vives.bancovives.rest.products.cardtype.model.CardType;
 
 import java.time.LocalDateTime;
 
+/**
+ * Esta clase proporciona métodos para mapear objetos relacionados con {@link Card}.
+ */
 public class CardMapper {
 
+    /**
+     * Mapea un objeto {@link InputCard} a un objeto {@link Card}.
+     *
+     * @param inputCard El objeto {@link InputCard} que se va a mapear.
+     * @param cardType  El tipo de tarjeta asociado.
+     * @param account   La cuenta asociada.
+     * @return Un objeto {@link Card} que contiene los datos mapeados.
+     */
     public static Card toCard(InputCard inputCard, CardType cardType, Account account) {
         return Card.builder()
                 .cardOwner(inputCard.getCardOwner().trim().toUpperCase())
@@ -25,6 +36,13 @@ public class CardMapper {
                 .build();
     }
 
+    /**
+     * Mapea un objeto {@link UpdateRequestCard} a un objeto {@link Card} existente.
+     *
+     * @param request El objeto {@link UpdateRequestCard} que se va a mapear.
+     * @param card    El objeto {@link Card} existente que se va a actualizar.
+     * @return Un objeto {@link Card} que contiene los datos actualizados.
+     */
     public static Card toCard(UpdateRequestCard request, Card card) {
         return Card.builder()
                 .id(card.getId())
@@ -37,7 +55,7 @@ public class CardMapper {
                 .cvv(card.getCvv())
                 .cardType(card.getCardType())
                 .cardNumber(card.getCardNumber())
-                .isInactive((request.getIsInactive() != null ? request.getIsInactive() : card.getIsInactive()))
+                .isInactive(request.getIsInactive() != null ? request.getIsInactive() : card.getIsInactive())
                 .isDeleted(card.getIsDeleted())
                 .expirationDate(card.getExpirationDate())
                 .creationDate(card.getCreationDate())
@@ -45,6 +63,12 @@ public class CardMapper {
                 .build();
     }
 
+    /**
+     * Mapea un objeto {@link Card} a un objeto {@link OutputCard}.
+     *
+     * @param card El objeto {@link Card} que se va a mapear.
+     * @return Un objeto {@link OutputCard} que contiene los datos mapeados.
+     */
     public static OutputCard toOutputCard(Card card) {
         return OutputCard.builder()
                 .id(card.getPublicId())
