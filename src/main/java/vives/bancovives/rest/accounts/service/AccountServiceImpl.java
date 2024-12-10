@@ -54,7 +54,16 @@ public class AccountServiceImpl  implements AccountService {
         this.clientRepository = clientRepository;
         this.accountTypeRepository = accountTypeRepository;
     }
-
+    /**
+     * Encuentra todas las cuentas basadas en los criterios dados.
+     *
+     * @param iban el filtro opcional de IBAN
+     * @param clientDni el filtro opcional de DNI del cliente
+     * @param accountTypeName el filtro opcional de nombre del tipo de cuenta
+     * @param isDeleted el filtro opcional de si está eliminado
+     * @param pageable la información de paginación
+     * @return una página de cuentas
+     */
     @Override
     public Page<Account> findAll(
             Optional<String> iban,
@@ -85,20 +94,38 @@ public class AccountServiceImpl  implements AccountService {
                 .and(isDeletedSpec);
         return accountRepository.findAll(criterio, pageable);
     }
-
+    /**
+     * Encuentra una cuenta por su ID.
+     *
+     * @param id el ID de la cuenta
+     * @return la cuenta
+     * @throws AccountNotFoundException si la cuenta no se encuentra
+     */
     @Override
     @Cacheable(key = "#id")
     public Account findById(String id) {
         log.info("Buscando cuenta por id: " + id);
         return existsAccountByPublicId(id);
     }
-
+    /**
+     * Encuentra una cuenta por su IBAN.
+     *
+     * @param iban el IBAN de la cuenta
+     * @return la cuenta
+     * @throws AccountNotFoundException si la cuenta no se encuentra
+     */
     @Override
     public Account findByIban(String iban) {
         log.info("Buscando cuenta por iban: {}", iban);
         return accountRepository.findByIban(iban).orElseThrow(() -> new AccountNotFoundException("Cuenta no encontrada con iban " + iban));
     }
-
+    /**
+     * Guarda una nueva cuenta.
+     *
+     * @param inputAccount la cuenta a guardar
+     * @return la cuenta guardada
+     * @throws AccountConflictException si ya existe una cuenta con el mismo IBAN
+     */
     @Override
     @CachePut(key = "#result.id")
     public Account save (InputAccount inputAccount){
@@ -111,7 +138,13 @@ public class AccountServiceImpl  implements AccountService {
         }
         return accountRepository.save(mappedAccount);
     }
-
+    /**
+     * Elimina una cuenta por su ID.
+     *
+     * @param id el ID de la cuenta
+     * @return la cuenta eliminada
+     * @throws AccountNotFoundException si la cuenta no se encuentra
+     */
     @Override
     @CacheEvict(key = "#id")
     public Account deleteById(String id){
@@ -121,7 +154,15 @@ public class AccountServiceImpl  implements AccountService {
         account.setUpdatedAt(LocalDateTime.now());
         return accountRepository.save(account);
     }
-
+    /**
+     * Actualiza una cuenta por su ID.
+     *
+     * @param id el ID de la cuenta
+     * @param updatedAccount la información actualizada de la cuenta
+     * @return la cuenta actualizada
+     * @throws AccountNotFoundException si la cuenta no se encuentra
+     * @throws ClientBadRequest si el DNI del cliente no coincide
+     */
     @CachePut(key = "#id")
     @Override
     public Account updateById(String id, InputAccount updatedAccount) {
@@ -150,15 +191,34 @@ public class AccountServiceImpl  implements AccountService {
                 .orElseThrow(()->
                 new ClientNotFound("Cliente no encontrado")).getAccounts();
     }
-
+    /**
+     * Verifica si una cuenta existe por su ID público.
+     *
+     * @param id el ID público de la cuenta
+     * @return la cuenta
+     * @throws AccountNotFoundException si la cuenta no se encuentra
+     */
     public Account existsAccountByPublicId(String id){
         return accountRepository.findByPublicId(id).orElseThrow(()-> new AccountNotFoundException("Cuenta no encontrada con id " + id));
     }
-
+    /**
+     * Verifica si un tipo de cuenta existe por su nombre.
+     *
+     * @param name el nombre del tipo de cuenta
+     * @return el tipo de cuenta
+     * @throws ProductDoesNotExistException si el tipo de cuenta no se encuentra
+     */
     public AccountType existsAccountTypeByName(String name){
         return accountTypeRepository.findByName(name.trim().toUpperCase()).orElseThrow(() -> new ProductDoesNotExistException("No existe cuenta con nombre " + name));
     }
-
+    /**
+     * Verifica si un cliente existe por su DNI y está validado.
+     *
+     * @param dni el DNI del cliente
+     * @return el cliente
+     * @throws ClientNotFound si el cliente no se encuentra o está eliminado
+     * @throws ClientBadRequest si el cliente no está validado
+     */
     public Client existClientByDniAndValidated(String dni){
         Client client = clientRepository.findByDniIgnoreCase(dni).orElseThrow(()->
                 new ClientNotFound("Cliente no encontrado con dni " + dni));
@@ -170,7 +230,13 @@ public class AccountServiceImpl  implements AccountService {
         }
         return client;
     }
-
+    /**
+     * Verifica si el DNI del cliente de entrada coincide con el DNI del cliente guardado.
+     *
+     * @param dni el DNI del cliente
+     * @param account la cuenta
+     * @throws ClientBadRequest si los DNIs no coinciden
+     */
     public void sameDniInputAndSaved(String dni, Account account){
         if(!dni.equals(account.getClient().getDni())){
             throw new ClientBadRequest("El dni del cliente no coincide con el dni del cliente de la cuenta");
