@@ -38,7 +38,7 @@ public class SecurityConfig {
     /**
      * Constructor para la clase SecurityConfig.
      *
-     * @param userService       El servicio para recuperar los detalles del usuario.
+     * @param userService             El servicio para recuperar los detalles del usuario.
      * @param jwtAuthenticationFilter El filtro para manejar la autenticación JWT.
      */
     @Autowired
@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/products/accounts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/cards").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clients").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/convert").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
