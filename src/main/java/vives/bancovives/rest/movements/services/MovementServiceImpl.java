@@ -33,6 +33,9 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio que implementa la interfaz MovementService y que se encarga de gestionar los movimientos
+ */
 @Service
 @Slf4j
 public class MovementServiceImpl implements MovementService{
@@ -50,6 +53,18 @@ public class MovementServiceImpl implements MovementService{
         this.validator = movementValidator;
         this.movementMapper = movementMapper;
     }
+
+    /**
+     * Método que se encarga de buscar todos los movimientos en la base de datos
+     * @param movementType Tipo de movimiento
+     * @param ibanOfReference Iban de la cuenta de referencia
+     * @param fecha Fecha del movimiento
+     * @param clientOfReferenceDni Dni del cliente de referencia
+     * @param clientOfDestinationDni Dni del cliente de destino
+     * @param isDeleted Si el movimiento ha sido eliminado
+     * @param pageable Paginación
+     * @return Page<MovementResponseDto> Lista de movimientos
+     */
     @Override
     public Page<MovementResponseDto> findAll(
             Optional<String> movementType,
@@ -71,11 +86,22 @@ public class MovementServiceImpl implements MovementService{
         return movements.map(movementMapper::fromEntityToResponse);
     }
 
+    /**
+     * Método que se encarga de buscar un movimiento por su id
+     * @param id Id del movimiento
+     * @return MovementResponseDto Movimiento
+     */
     @Override
     public MovementResponseDto findById(ObjectId id) {
         return movementMapper.fromEntityToResponse(existsMovementById(id));
     }
 
+    /**
+     * Método que se encarga de guardar un movimiento en la base de datos
+     * @param principal Usuario autenticado
+     * @param movementCreateDto Movimiento a guardar
+     * @return  MovementResponseDto Movimiento guardado
+     */
     @Transactional
     @Override
     public MovementResponseDto save(Principal principal, MovementCreateDto movementCreateDto) {
@@ -99,6 +125,11 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(movementRepository.save(movementToSave));
     }
 
+    /**
+     * Método que se encarga de añadir interes a un movimiento
+     * @param createDto
+     * @return MovementResponseDto Movimiento con interes añadido
+     */
     @Transactional
     @Override
     public MovementResponseDto addInterest(MovementCreateDto createDto){
@@ -114,6 +145,12 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(movementRepository.save(movement));
     }
 
+    /**
+     * Método que se encarga de actualizar un movimiento
+     * @param id Id del movimiento
+     * @param movementDto Movimiento a actualizar
+     * @return MovementResponseDto Movimiento actualizado
+     */
     @Transactional
     @Override
     public MovementResponseDto update(ObjectId id, MovementCreateDto movementDto) {
@@ -147,6 +184,11 @@ public class MovementServiceImpl implements MovementService{
         return movementMapper.fromEntityToResponse(movementToUpdate);
     }
 
+    /**
+     * Método que se encarga de eliminar un movimiento
+     * @param id Id del movimiento
+     * @return Void
+     */
     @Override
     public Void deleteById(ObjectId id) {
         Movement movementToDelete = existsMovementById(id);
@@ -155,6 +197,12 @@ public class MovementServiceImpl implements MovementService{
         return null;
     }
 
+    /**
+     * Método que se encarga de cancelar un movimiento
+     * @param principal Usuario autenticado
+     * @param id Id del movimiento
+     * @return Boolean
+     */
     @Transactional
     @Override
     public Boolean cancelMovement(Principal principal, ObjectId id) {
@@ -177,22 +225,43 @@ public class MovementServiceImpl implements MovementService{
         return true;
     }
 
+    /**
+     * Método que se encarga de buscar un movimiento por su id
+     * @param id Id del movimiento
+     * @return
+     */
     public Movement existsMovementById(ObjectId id){
         return movementRepository.findById(id).orElseThrow(
                 () -> new MovementNotFound("Movimiento con id" + id.toHexString() + "no encontrado"));
     }
 
+    /**
+     * Método que se encarga de buscar una cuenta por su iban
+     * @param iban Iban de la cuenta
+     * @return Account Cuenta
+     * @throws AccountNotFoundException Excepción si la cuenta no existe
+     */
     public Account existsAccountByIban(String iban){
         return accountRepository.findByIban(iban).orElseThrow(
                 () -> new AccountNotFoundException("Cuenta con iban" + iban + "no encontrada"));
     }
 
+    /**
+     * Método que se encarga de buscar una tarjeta por su número
+     * @param cardNumber
+     * @return
+     */
     public Card existsCardByCardNumber(String cardNumber){
         return cardsRepository.findByCardNumber(cardNumber).orElseThrow(
                 () -> new CardDoesNotExistException("Tarjeta con numero" + cardNumber + "no encontrada"));
     }
 
 
+    /**
+     * Se encarga de mover el dinero dependiendo del tipo de transaccion e insertar el movimiento en la base de datos
+     *
+     * @param movement Movimiento a realizar
+     */
     private void moveMoney(Movement movement){
         switch (movement.getMovementType()){
             case TRANSFERENCIA:
@@ -221,16 +290,32 @@ public class MovementServiceImpl implements MovementService{
         }
     }
 
+    /**
+     * Calcula el interes que se va a realizar en una cuenta de un movimiento de tipo interes mensual
+     * @param accountOfReference
+     * @return
+     */
     private Double calculateInterest(Account accountOfReference){
         return accountOfReference.getBalance() * (accountOfReference.getAccountType().getInterest()/100);
     }
 
+    /**
+     * Actualiza los limites de una tarjeta despues de realizar un movimiento de tipo PAGO o EXTRACCION
+     * @param card
+     * @param amount
+     */
     private void setNewLimitsInCard(Card card, Double amount){
         card.setSpentToday(card.getSpentToday() + amount);
         card.setSpentThisMonth(card.getSpentThisMonth() + amount);
         card.setSpentThisMonth(card.getSpentThisMonth() + amount);
     }
 
+    /**
+     * Guarda las modificaciones en las cuentas y tarjetas despues de realizar un movimiento
+     * @param accountOfReference
+     * @param accountOfDestination
+     * @param card
+     */
     private void saveModificationsInAccountsAndCard(Account accountOfReference, Account accountOfDestination, Card card){
         accountRepository.save(accountOfReference);
         if(accountOfDestination != null){
@@ -241,6 +326,12 @@ public class MovementServiceImpl implements MovementService{
         }
     }
 
+    /**
+     * Revierte una transferencia en caso de que se cancele
+     * @param accountOfReference
+     * @param accountOfDestination
+     * @param amount
+     */
     private void revertTransfer(Account accountOfReference, Account accountOfDestination, Double amount){
         accountOfReference.setBalance(accountOfReference.getBalance() + amount);
         accountOfDestination.setBalance(accountOfDestination.getBalance() - amount);
@@ -248,6 +339,10 @@ public class MovementServiceImpl implements MovementService{
         accountRepository.save(accountOfDestination);
     }
 
+    /**
+     * Verifica si el movimiento es de tipo TRANSFERENCIA
+     * @param movemntType
+     */
     private void verifyIsATransferencia(MovementType movemntType){
         if(movemntType != MovementType.TRANSFERENCIA){
             throw new MovementBadRequest("Esta operacion solo permite en movimientos de tipo TRANSFERENCIA");
@@ -282,6 +377,12 @@ public class MovementServiceImpl implements MovementService{
         }
     }
 
+    /**
+     * Método que se encarga de buscar los movimientos de un usuario
+     * @param principal Usuario autenticado
+     * @param pageable Paginación
+     * @return Page<MovementResponseDto> Lista de movimientos
+     */
     @Override
     public Page<MovementResponseDto> findMyMovements(Principal principal, Pageable pageable){
         log.info("Buscando sus movientos");
@@ -303,6 +404,13 @@ public class MovementServiceImpl implements MovementService{
         return getPage(responses, pageable);
     }
 
+    /**
+     * Método que se encarga de paginar una lista de movimientos
+     * @param list Lista de movimientos
+     * @param pageable Paginación
+     * @param <T> Tipo de movimiento
+     * @return Page<T> Lista de movimientos paginada
+     */
     private <T> Page<T> getPage(List<T> list, Pageable pageable) {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
@@ -314,7 +422,11 @@ public class MovementServiceImpl implements MovementService{
         return new PageImpl<>(list.subList(start, end), pageable, list.size());
     }
 
-
+    /**
+     * Método que se encarga de validar si un usuario tiene acceso a una cuenta
+     * @param principal Usuario autenticado
+     * @param ibanOfReference Iban de la cuenta
+     */
     public void validateUser(Principal principal, String ibanOfReference){
         Authentication authentication = (Authentication) principal;
         boolean isAdmin = authentication.getAuthorities().stream()
