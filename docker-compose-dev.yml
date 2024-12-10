@@ -1,0 +1,114 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: banco-app
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - vives_network
+    depends_on:
+      - postgres-container
+      - mongo-container
+      - redis-container
+    volumes:
+      - docs-volume:/app/docs/docs
+      - coverage-volume:/app/docs/coverage
+      - test-volume:/app/docs/test
+
+  mongo-container:
+    image: mongo
+    container_name: mongo-container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: vivesbank
+    networks:
+      - vives_network
+
+  postgres-container:
+    container_name: postgres-container
+    image: postgres:12.0-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vivesbank
+    volumes:
+      - postgres-db-data:/var/lib/postgresql/data
+    networks:
+      - vives_network
+
+  redis-container:
+    image: redis:7-alpine
+    container_name: redis-container
+    networks:
+      - vives_network
+
+  # Jacoco
+  docs:
+    image: ubuntu/nginx
+    container_name: docs
+    networks:
+      - vives_network
+    restart: always
+    volumes:
+      - docs-volume:/var/www/html/
+      - ./website/docs/sites-available:/etc/nginx/sites-available
+    depends_on:
+      - app
+
+  # Coverage report
+  coverage:
+    image: ubuntu/nginx
+    container_name: coverage
+    networks:
+      - vives_network
+    restart: always
+    volumes:
+      - coverage-volume:/var/www/html/
+      - ./website/coverage/sites-available:/etc/nginx/sites-available
+    depends_on:
+      - app
+  # Jacoco report
+  test:
+    image: ubuntu/nginx
+    container_name: test
+    networks:
+      - vives_network
+    restart: always
+    volumes:
+      - test-volume:/var/www/html/
+      - ./website/test/sites-available:/etc/nginx/sites-available
+    depends_on:
+      - app
+
+  proxy:
+    image: ubuntu/nginx
+    container_name: proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    networks:
+      - vives_network
+    depends_on:
+      - app
+      - docs
+      - coverage
+      - test
+    volumes:
+      - ./website/proxy/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./website/proxy/certs:/etc/nginx/certs
+
+networks:
+  vives_network:
+    driver: bridge
+
+volumes:
+  docs-volume:
+  coverage-volume:
+  test-volume:
+  postgres-db-data:
+
