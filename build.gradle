@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'jacoco'
 }
 
 group = 'vives'
@@ -24,17 +25,71 @@ repositories {
 }
 
 dependencies {
+    //SpringBoot Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    //SpringBoot JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    //H2
+    runtimeOnly 'com.h2database:h2'
+    //SpringBoot WebSocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    //Lombok
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
-	annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+	//Validacion
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	//Redis
+	implementation 'org.springframework.data:spring-data-redis:3.4.0'
+	implementation("redis.clients:jedis:5.2.0")
+	//TestContainers
+	testImplementation("org.testcontainers:postgresql:1.20.4")
+	testImplementation("org.testcontainers:testcontainers:1.20.4")
+	testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+	//PostgreSQL
+	implementation 'org.postgresql:postgresql:42.6.0'
+	//MongoDB
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	//ProjectReactor
+	implementation("io.projectreactor:reactor-core:3.7.0")
+	//Swagger
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	//OpenPdf
+	implementation("com.github.librepdf:openpdf:2.0.3")
+	//Jwt Security
+	implementation("com.auth0:java-jwt:4.4.0")
+	// Seguridad
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-core'
+	implementation 'org.springframework.security:spring-security-web'
+	implementation 'org.springframework.security:spring-security-config'
+	//Librerias para tests
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation("org.springframework.security:spring-security-test:6.4.1")
+}
+
+tasks.build {
+	dependsOn(tasks.jacocoTestReport)
+	dependsOn(tasks.javadoc)
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+}
+
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+tasks.jacocoTestReport {
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+	}
 }

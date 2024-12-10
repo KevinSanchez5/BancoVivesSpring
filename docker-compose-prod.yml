@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - redis_network
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "5540:5540"
+    environment:
+      - REDISINSIGHT_HOST=redis
+      - REDISINSIGHT_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - redis_network
+
+networks:
+  redis_network:
+    driver: bridge
