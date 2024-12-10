@@ -68,13 +68,18 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test:6.4.1")
 }
 
+tasks.build {
+	dependsOn(tasks.jacocoTestReport)
+	dependsOn(tasks.javadoc)
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
 }
 
 tasks.jacocoTestReport {
-	dependsOn(tasks.test) // tests are required to run before generating the report
+	dependsOn(tasks.test)
 }
 
 jacoco {

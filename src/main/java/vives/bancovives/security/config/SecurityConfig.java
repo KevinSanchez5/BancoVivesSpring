@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/**").permitAll()
-                        .requestMatchers("/users/signIn").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/users/signIn").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/accounts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/cards").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clients").permitAll()

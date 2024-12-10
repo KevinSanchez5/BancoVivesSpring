@@ -1,0 +1,19 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        # Solo redirecciona si no tiene /test
+        if ($request_uri !~ ^/test) {
+            return 301 /test$request_uri;
+        }
+    }
+
+    location /test {
+        alias /var/www/html/;
+        try_files $uri $uri/ /index.html;
+    }
+}
