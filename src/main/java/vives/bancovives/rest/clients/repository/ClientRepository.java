@@ -8,6 +8,9 @@ import vives.bancovives.rest.clients.model.Client;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repositorio de la entidad Client.
+ */
 @Repository
 public interface ClientRepository extends JpaRepository<Client, UUID>, JpaSpecificationExecutor<Client> {
     Optional<Client> findByDniIgnoreCase(String dni);

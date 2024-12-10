@@ -28,8 +28,6 @@ public class ClientUpdateDto {
     @Pattern(regexp = "^[679]\\d{8}$", message = "El numero de telefono debe de tener 9 digitos y comenzar por 6, 7 o 9")
     private String phoneNumber;
 
-    private String photo;
-    private String dniPicture;
 
     @Length(min = 5, max = 255 , message = "El nombre de la calle tiene que tener entre 5 y 255 caracteres")
     private String street;
