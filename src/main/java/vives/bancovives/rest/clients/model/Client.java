@@ -3,10 +3,7 @@ package vives.bancovives.rest.clients.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import vives.bancovives.rest.accounts.model.Account;
 import vives.bancovives.rest.users.models.User;
 import vives.bancovives.utils.IdGenerator;
@@ -19,6 +16,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "clients")
 @JsonInclude(JsonInclude.Include.NON_NULL)

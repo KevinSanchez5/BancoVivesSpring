@@ -75,14 +75,17 @@ public class Card implements Serializable {
 
     @DecimalMin(value = "0.1", message = "El límite diario no puede ser negativo")
     @Column(name = "daily_limit", nullable = false)
+    @Builder.Default
     private double dailyLimit = 1000;
 
     @DecimalMin(value = "0.0", message = "El límite semanal no puede ser negativo")
     @Column(name = "weekly_limit", nullable = false)
+    @Builder.Default
     private double weeklyLimit = 5000;
 
     @DecimalMin(value = "0.0", message = "El límite mensual no puede ser negativo")
     @Column(name = "monthly_limit", nullable = false)
+    @Builder.Default
     private double monthlyLimit = 10000;
 
     @NotNull
